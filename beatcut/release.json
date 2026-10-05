@@ -1,7 +1,7 @@
 {
-  "name": "BeatCut",
-  "milestone": "M1 Song",
-  "source_repository": "PrinceJonaa/beatcut-web",
-  "source_commit": "871d0aaa72b09b185be70bb3cb43fc59b1a1c8ae",
-  "base_path": "/beatcut/"
+  "sourceRepository": "PrinceJonaa/beatcut-web",
+  "sourceCommit": "6055a35bea3cb405f5cb7196f5814d7ce3ab858d",
+  "milestone": "M2 Takes",
+  "verification": "15 focused tests, typecheck, build, Song and Takes Chromium flows at 1440/768/390/320px",
+  "camera": "HTTPS or localhost required; HTTP supports local imports"
 }
