@@ -1,7 +1,16 @@
 {
-  "sourceRepository": "PrinceJonaa/beatcut-web",
-  "sourceCommit": "6777a7099fca2ef24128fd1a4348fa0f28462ffd",
-  "milestone": "M2 + HyperFrames home",
-  "motion": "Fixed demo rhythm analyzed by BeatCut; no creator media used",
-  "cameraNote": "Camera capture requires secure context; HTTPS certificate repair is deferred"
+  "source_repository": "PrinceJonaa/beatcut-web",
+  "source_commit": "12280b5917feb19819e057ff959c532688abc2ac",
+  "source_branch": "codex/m3-m8",
+  "date": "2026-10-05",
+  "implementation": "M1\u2013M8 creation loop; browser-first native/WASM MP4 export",
+  "validation": "33 tests; local Chromium full flow; WebKit online flow",
+  "open_gates": [
+    "WebKit offline native video I/O",
+    "Firefox complete flow",
+    "physical iPhone/Android measurements",
+    "transcoded preview proxies",
+    "custom-domain HTTPS",
+    "optional production render/Sentry configuration"
+  ]
 }
