@@ -1,0 +1,10 @@
+{
+  "name": "BeatCut",
+  "short_name": "BeatCut",
+  "description": "Song + takes → generate → remix → export.",
+  "start_url": "/beatcut/",
+  "scope": "/beatcut/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808"
+}
