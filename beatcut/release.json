@@ -1,7 +1,7 @@
 {
   "sourceRepository": "PrinceJonaa/beatcut-web",
-  "sourceCommit": "6055a35bea3cb405f5cb7196f5814d7ce3ab858d",
-  "milestone": "M2 Takes",
-  "verification": "15 focused tests, typecheck, build, Song and Takes Chromium flows at 1440/768/390/320px",
-  "camera": "HTTPS or localhost required; HTTP supports local imports"
+  "sourceCommit": "6777a7099fca2ef24128fd1a4348fa0f28462ffd",
+  "milestone": "M2 + HyperFrames home",
+  "motion": "Fixed demo rhythm analyzed by BeatCut; no creator media used",
+  "cameraNote": "Camera capture requires secure context; HTTPS certificate repair is deferred"
 }
