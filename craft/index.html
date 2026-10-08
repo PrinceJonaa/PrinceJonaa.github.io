@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101116">
+  <meta name="description" content="Create with LightCraft, FilmCraft and EffectCraft in your browser. A Prince Jona creative tools hub.">
+  <title>Craft Studio — Prince Jona</title>
+  <style>
+    :root{color-scheme:dark;--bg:#101116;--surface:#191b23;--line:#30343e;--ink:#f4f3f1;--muted:#9fa2af;--accent:#d2fd76}
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,a{font:inherit}
+    button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+    .top{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(20px,5vw,76px);border-bottom:1px solid var(--line);background:#101116}
+    .wordmark{font-size:13px;font-weight:850;letter-spacing:.19em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+    .wordmark span{color:var(--accent)}
+    .nav{display:flex;gap:22px;align-items:center}
+    .nav a{color:var(--muted);text-decoration:none;font-size:13px}
+    .nav a:hover{color:var(--ink)}
+    .home{max-width:1410px;margin:auto;padding:clamp(48px,8vw,118px) clamp(20px,5vw,76px) 72px}
+    .eyebrow{font-size:11px;font-weight:800;color:var(--accent);letter-spacing:.24em;text-transform:uppercase}
+    h1{font-size:clamp(62px,10vw,158px);letter-spacing:-.095em;line-height:.91;margin:20px 0 24px;font-weight:790}
+    h1 em{font-weight:400;font-style:normal;color:var(--accent)}
+    .intro{color:var(--muted);font-size:clamp(15px,1.5vw,19px);max-width:650px;line-height:1.6;margin:0 0 58px}
+    .cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .card{border:1px solid var(--line);background:var(--surface);color:var(--ink);text-align:left;padding:28px;min-height:390px;cursor:pointer;border-radius:3px;display:flex;flex-direction:column;transition:border-color .2s,transform .2s,background .2s;position:relative;overflow:hidden}
+    .card:hover{border-color:#b2b9a6;transform:translateY(-4px);background:#20232b}
+    .card:after{content:"";position:absolute;right:-80px;bottom:-100px;width:260px;height:260px;border-radius:50%;filter:blur(70px);opacity:.16;pointer-events:none}
+    .light:after{background:#eac085}.film:after{background:#ad8bf4}.effect:after{background:#94b8ff}
+    .toprow{display:flex;align-items:center;justify-content:space-between;width:100%;font-size:11px;color:var(--muted);letter-spacing:.16em}
+    .symbol{font-size:82px;font-weight:200;line-height:1;margin:38px 0 auto;letter-spacing:-.07em}
+    .light .symbol{color:#eecb8a}.film .symbol{color:#b7a3ff}.effect .symbol{color:#a3c7fa}
+    h2{font-size:30px;letter-spacing:-.06em;margin:20px 0 9px}
+    .card p{font-size:14px;color:var(--muted);line-height:1.55;margin:0 0 20px;max-width:275px}
+    .launch{font-size:12px;font-weight:750;letter-spacing:.09em;text-transform:uppercase}
+    .launch span{color:var(--accent);margin-left:12px}
+    .foot{border-top:1px solid var(--line);margin-top:56px;padding-top:20px;display:flex;justify-content:space-between;gap:18px;flex-wrap:wrap;color:#8f929d;font-size:12px;line-height:1.6}
+    .foot a{color:#c5c8c9}
+    .workspace{height:calc(100dvh - 76px);display:flex;flex-direction:column;min-height:400px}
+    .workspace[hidden],.home[hidden]{display:none}
+    .toolbar{min-height:58px;display:flex;align-items:center;justify-content:space-between;gap:15px;padding:8px clamp(16px,3vw,42px);border-bottom:1px solid var(--line);background:#171820}
+    .left,.right{display:flex;align-items:center;gap:15px;min-width:0}
+    .toolname{font-weight:750;font-size:15px;white-space:nowrap}
+    .toolhint{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .toolbar button,.toolbar a{background:transparent;border:1px solid #424650;color:var(--ink);border-radius:4px;padding:9px 12px;cursor:pointer;font-size:12px;text-decoration:none;white-space:nowrap}
+    .toolbar button:hover,.toolbar a:hover{border-color:var(--accent)}
+    #editor{display:block;flex:1;width:100%;border:0;background:#18191c}
+    @media(max-width:850px){.cards{grid-template-columns:1fr}.card{min-height:270px}.symbol{font-size:54px;margin:15px 0 auto}.card p{max-width:100%}.foot{margin-top:36px}h1{font-size:clamp(64px,14vw,104px)}}
+    @media(max-width:520px){.top{height:62px;padding:0 16px}.nav{gap:12px}.nav a{font-size:12px}.home{padding-top:52px}.workspace{height:calc(100dvh - 62px)}.toolbar{flex-wrap:wrap}.toolhint{display:none}.toolbar button,.toolbar a{padding:7px 9px}}
+    @media(prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
+  </style>
+</head>
+<body>
+  <header class="top">
+    <a class="wordmark" href="/" aria-label="Prince Jona homepage">PRINCE<span>JONA</span> / LAB</a>
+    <nav class="nav" aria-label="Site navigation">
+      <a href="/beatcut/">BeatCut</a>
+      <a href="/rhythmcut/">RhythmCut</a>
+      <a href="/craft/" aria-current="page">Craft Studio</a>
+    </nav>
+  </header>
+  <main id="chooser" class="home">
+    <div class="eyebrow">The creative workbench / 001</div>
+    <h1>Make<br><em>anything.</em></h1>
+    <p class="intro">Three free, open-source creative tools. One browser workspace. Choose what you're making and get straight to work — no install, no account, no subscription.</p>
+    <section class="cards" aria-label="Choose a creative tool">
+      <button class="card light" data-tool="light" type="button" aria-label="Launch LightCraft photo editor">
+        <div class="toprow"><span>01 / PHOTOGRAPHY</span><span>V 0.2.1</span></div>
+        <div class="symbol" aria-hidden="true">☼</div>
+        <h2>LightCraft</h2><p>Edit and develop photos. Exposure, color, masking, RAW files and an organized photo library.</p>
+        <div class="launch">Open editor <span aria-hidden="true">↗</span></div>
+      </button>
+      <button class="card film" data-tool="film" type="button" aria-label="Launch FilmCraft video editor">
+        <div class="toprow"><span>02 / FILMMAKING</span><span>V 0.2.1</span></div>
+        <div class="symbol" aria-hidden="true">▤</div>
+        <h2>FilmCraft</h2><p>Cut and arrange footage, create stories, work with sound, effects and color on a video timeline.</p>
+        <div class="launch">Open editor <span aria-hidden="true">↗</span></div>
+      </button>
+      <button class="card effect" data-tool="effect" type="button" aria-label="Launch EffectCraft motion graphics editor">
+        <div class="toprow"><span>03 / MOTION & VFX</span><span>V 0.4.0</span></div>
+        <div class="symbol" aria-hidden="true">✳</div>
+        <h2>EffectCraft</h2><p>Build motion graphics, animated titles and visual effects with compositions, layers and keyframes.</p>
+        <div class="launch">Open editor <span aria-hidden="true">↗</span></div>
+      </button>
+    </section>
+    <footer class="foot">
+      <span>Apps run in your browser. Keep backups of projects and original media, especially when clearing site data.</span>
+      <span>Powered by <a href="https://github.com/storytold" target="_blank" rel="noopener noreferrer">ArtCraft's open-source Craft apps</a> · MIT / Apache-2.0</span>
+    </footer>
+  </main>
+  <section id="workspace" class="workspace" aria-label="Creative editor" hidden>
+    <div class="toolbar">
+      <div class="left"><button id="back" type="button">← All tools</button><span id="toolname" class="toolname"></span><span class="toolhint">Your creative workspace</span></div>
+      <div class="right"><a id="newtab" href="./" target="_blank" rel="noopener">Open full screen ↗</a></div>
+    </div>
+    <iframe id="editor" title="Craft editor" loading="eager" allow="fullscreen; clipboard-read; clipboard-write" allowfullscreen></iframe>
+  </section>
+  <script>
+    (function(){
+      const tools={
+        light:{name:"LightCraft",url:"./light/"},
+        film:{name:"FilmCraft",url:"./film/"},
+        effect:{name:"EffectCraft",url:"./effect/"}
+      };
+      const chooser=document.getElementById("chooser"),workspace=document.getElementById("workspace");
+      const frame=document.getElementById("editor"),name=document.getElementById("toolname");
+      const external=document.getElementById("newtab");
+      function render(key){
+        const tool=Object.prototype.hasOwnProperty.call(tools,key)?tools[key]:null;
+        chooser.hidden=!!tool;workspace.hidden=!tool;
+        if(tool){
+          name.textContent=tool.name;external.href=tool.url;frame.title=tool.name+" editor";
+          if(frame.getAttribute("src")!==tool.url) frame.src=tool.url;
+          document.title=tool.name+" — Craft Studio — Prince Jona";
+        } else {
+          frame.removeAttribute("src");document.title="Craft Studio — Prince Jona";
+        }
+      }
+      function navigate(key){
+        const uri=new URL(window.location.href);
+        if(key)uri.searchParams.set("app",key);else uri.searchParams.delete("app");
+        history.pushState({}, "", uri.pathname+uri.search+uri.hash);render(key);
+      }
+      document.querySelectorAll("[data-tool]").forEach(function(btn){
+        btn.addEventListener("click",function(){navigate(btn.dataset.tool);});
+      });
+      document.getElementById("back").addEventListener("click",function(){navigate(null);});
+      window.addEventListener("popstate",function(){render(new URLSearchParams(location.search).get("app"));});
+      render(new URLSearchParams(location.search).get("app"));
+    })();
+  </script>
+</body>
+</html>
