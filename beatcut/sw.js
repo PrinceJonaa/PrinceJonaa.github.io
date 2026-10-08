@@ -1,1 +1,9 @@
-const CACHE='beatcut-b66a32457abd',FILES=["/beatcut/","/beatcut/index.html","/beatcut/manifest.webmanifest","/beatcut/icon-192.png","/beatcut/icon-512.png","/beatcut/media/home-rhythm.jpg","/beatcut/assets/__vite-browser-external-9wXp6ZBx.js","/beatcut/assets/audio.worker-DkFFp80a.js","/beatcut/assets/index-B1MMEph2.js","/beatcut/assets/index-CMasGjmp.css","/beatcut/assets/local-export.worker-CpEXmXS5.js","/beatcut/assets/video.worker-KVPlGKFz.js","/beatcut/assets/worker-DYSz7Krg.js"];self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('beatcut-')&&k!==CACHE).map(k=>caches.delete(k))))));self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(e.request.method!=='GET'||u.origin!==self.location.origin||!FILES.includes(u.pathname))return;if(e.request.mode==='navigate')e.respondWith(fetch(e.request).catch(()=>caches.match('/beatcut/index.html')));else e.respondWith(caches.match(e.request,{ignoreVary:true}).then(r=>r||fetch(e.request)));});
+// Retire cached BeatCut app files without touching recordings in IndexedDB.
+self.addEventListener('install', event => event.waitUntil(self.skipWaiting()));
+self.addEventListener('activate', event => {
+  event.waitUntil((async () => {
+    const keys = await caches.keys();
+    await Promise.all(keys.filter(key => key.startsWith('beatcut-')).map(key => caches.delete(key)));
+    await self.registration.unregister();
+  })());
+});
