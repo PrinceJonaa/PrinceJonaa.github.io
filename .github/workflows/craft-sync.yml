@@ -1,0 +1,91 @@
+name: Sync Craft Studio browser apps
+
+# The site is published from main by GitHub Pages. This workflow stages
+# officially released WebAssembly builds in the repository; it does not
+# replace or change the existing Pages deployment settings.
+on:
+  push:
+    branches: [main]
+    paths:
+      - craft/index.html
+      - .github/workflows/craft-sync.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out website
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Download and verify official web releases
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/craft-releases
+          curl -fL --retry 5 --retry-all-errors -o /tmp/craft-releases/light.zip \
+            https://github.com/storytold/lightcraft/releases/download/v0.2.1/lightcraft-web-0.2.1.zip
+          curl -fL --retry 5 --retry-all-errors -o /tmp/craft-releases/film.zip \
+            https://github.com/storytold/filmcraft/releases/download/v0.2.1/filmcraft-web-0.2.1.zip
+          curl -fL --retry 5 --retry-all-errors -o /tmp/craft-releases/effect.zip \
+            https://github.com/storytold/effectcraft/releases/download/v0.4.0/effectcraft-web-0.4.0.zip
+          # Match the actual release ZIPs used to design and verify this integration.
+          cd /tmp/craft-releases
+          printf '%s\n' \
+            '5b64a944583330e38e36d879984fd71d02efbe68a2d354e6f5211819eee5a8a5  light.zip' \
+            'f496c41f65e3f38b32b05b92c27940c5f464b442573b617e69923df0f085005c  film.zip' \
+            '68f781094d119ab6428d0d4d50bd8718b8226916c8274345ac268562848ecccf  effect.zip' \
+            | sha256sum --check
+
+      - name: Expand runtime-only assets under craft
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/craft-releases/unpacked craft/light craft/film craft/effect
+          unzip -q /tmp/craft-releases/light.zip -d /tmp/craft-releases/unpacked
+          unzip -q /tmp/craft-releases/film.zip -d /tmp/craft-releases/unpacked
+          unzip -q /tmp/craft-releases/effect.zip -d /tmp/craft-releases/unpacked
+
+          # LightCraft release ZIP also contains ~100 MB of compiler intermediates.
+          # Publish only the static files the browser actually requests.
+          light=/tmp/craft-releases/unpacked/lightcraft-web-0.2.1
+          for f in index.html lightcraft_web.js lightcraft_web_bg.wasm worker.js LICENSE-MIT LICENSE-APACHE; do
+            test -s "$light/$f"
+            cp "$light/$f" craft/light/
+          done
+
+          # FilmCraft and EffectCraft releases contain only web runtime files.
+          cp -a /tmp/craft-releases/unpacked/filmcraft-web-0.2.1/. craft/film/
+          cp -a /tmp/craft-releases/unpacked/effectcraft-web-0.4.0/. craft/effect/
+
+          # Check absolute paths and app entry points.
+          for tool in light film effect; do
+            test -s "craft/$tool/index.html"
+          done
+          test -s craft/light/lightcraft_web_bg.wasm
+          test -s craft/film/filmcraft_web_bg.wasm
+          test -s craft/effect/effectcraft_web_bg.wasm
+          test -s craft/effect/snippets/effectcraft-web-cbd1cb05fd178d43/js/host.js
+          echo "Three web applications staged successfully."
+          du -sh craft/light craft/film craft/effect
+
+      - name: Commit static apps for existing GitHub Pages branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add craft/light craft/film craft/effect
+          if git diff --cached --quiet; then
+            echo "All Craft assets are already current."
+            exit 0
+          fi
+          git commit -m "Publish verified Craft Studio WASM browser apps"
+          git push origin HEAD:main
+          echo "Assets committed to main. Classic Pages is rebuilt by a subsequent normal main-branch update."
