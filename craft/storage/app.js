@@ -248,7 +248,16 @@
         body:blob.slice(offset,end)
       });
       if (response.status === 401) throw Error("Google authorization expired while uploading a file. Reconnect and create a new snapshot.");
-      if (response.status===308) {offset=end;continue;}
+      if (response.status===308) {
+        // Google may acknowledge fewer bytes than sent. Honor the server's Range
+        // when CORS exposes it; otherwise use the documented completed-chunk path.
+        const acknowledged=response.headers.get("Range");
+        const match=acknowledged?.match(/^bytes=0-(\d+)$/);
+        const received=match ? Number(match[1])+1 : end;
+        if (!Number.isSafeInteger(received) || received<=offset || received>end)
+          throw Error("Google Drive returned an invalid resumable upload offset.");
+        offset=received;continue;
+      }
       if (!response.ok) throw Error("Drive upload failed ("+response.status+"): "+(await response.text()).slice(0,350));
       result=await response.json();
       offset=end;
@@ -409,7 +418,7 @@
   function loadConfig() {
     const builtIn=(window.CRAFT_STORAGE_CONFIG?.googleOAuthClientId || "").trim();
     const stored=(localStorage.getItem(CLIENT_KEY)||"").trim();
-    state.clientId=stored || builtIn;
+    state.clientId=builtIn || stored;
     $("client-id").value=state.clientId;
     note("connect-note", state.clientId ? "" :
       "Google Drive requires a public OAuth Web client ID for princejona.me. Configure one below to activate connection.");
