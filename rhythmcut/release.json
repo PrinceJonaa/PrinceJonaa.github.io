@@ -1,8 +1,10 @@
 {
   "app": "RhythmCut",
+  "version": "0.2.0",
   "source": "https://github.com/PrinceJonaa/rhythmcut",
-  "commit": "6054b78635e7984a4788836db623def1f205a907",
+  "commit": "b52944038a2580528fe343c5dafbbadba7d3fa1d",
   "apiOrigin": "https://rhythmcut.vercel.app",
   "path": "/rhythmcut/",
-  "builtAt": "2026-10-08T09:55:16.852Z"
+  "builtAt": "2026-10-08T11:49:05.373Z",
+  "testing": "deferred by user"
 }
