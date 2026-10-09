@@ -1,0 +1,19 @@
+{
+  "id": "/rhythmcut/",
+  "name": "RhythmCut — Mobile Music Video Studio",
+  "short_name": "RhythmCut",
+  "description": "Shoot takes to music, cut on the beat and export videos.",
+  "start_url": "/rhythmcut/",
+  "scope": "/rhythmcut/",
+  "display": "standalone",
+  "background_color": "#050507",
+  "theme_color": "#050507",
+  "icons": [
+    {
+      "src": "/rhythmcut/app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
