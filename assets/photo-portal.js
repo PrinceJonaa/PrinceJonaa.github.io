@@ -1,0 +1,1 @@
+document.querySelectorAll('.photo-surface img').forEach((img)=>{const showFallback=()=>img.closest('.photo-surface')?.classList.add('is-missing');if(img.complete&&!img.naturalWidth)showFallback();else img.addEventListener('error',showFallback,{once:true});});

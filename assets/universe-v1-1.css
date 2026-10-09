@@ -1,0 +1,58 @@
+
+/* Prince Jona Universe v1.1 — Photo-first editorial refinement */
+:root{--portrait-ink:#f6f3fc;--photo-metal:#c4bae2;--photo-red:#f14465;--photo-blue:#2775e8}
+html{scroll-padding-top:5rem}
+body{accent-color:#a996fb}
+::selection{background:#d0b5ff;color:#080913}
+a{text-underline-offset:.22em}
+.portrait-cosmos{isolation:isolate}
+.portrait-cosmos .core-world{opacity:0;pointer-events:none}
+.portrait-cosmos .cosmos-grid{position:absolute;z-index:2}
+.portrait-stage{position:absolute;z-index:1;left:50%;top:50%;width:min(66%,400px);aspect-ratio:3/4;transform:translate(-50%,-50%);margin:0;pointer-events:none}
+.portrait-stage:before{content:"";position:absolute;inset:-9%;border:1px solid rgba(182,162,234,.34);border-radius:49% 51% 47% 53% / 48% 47% 53% 52%;transform:rotate(-19deg);box-shadow:0 0 58px -20px rgba(98,73,200,.25)}
+.portrait-stage:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(5,7,17,.65),transparent 30%);pointer-events:none}
+.portrait-stage__image{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 39%;opacity:1;mask-image:linear-gradient(to right,transparent 0%,black 14%,black 88%,transparent 100%),linear-gradient(to bottom,transparent 0%,black 9%,black 85%,transparent 100%);mask-composite:intersect}
+.portrait-stage__caption{position:absolute;z-index:4;left:17%;right:14%;bottom:5%;display:flex;justify-content:space-between;gap:1rem;letter-spacing:.17em;font-size:.58rem;color:rgba(232,229,255,.85)}
+.portrait-cosmos .node{z-index:7}
+.portrait-cosmos:has(.node:hover) .portrait-stage__image{filter:brightness(.76)}
+.photo-feature{position:relative;display:grid;grid-template-columns:.88fr 1.12fr;gap:4.5vw;align-items:center;margin:30px 0 0;min-height:750px;padding:85px 0 105px;border-top:1px solid rgba(175,169,236,.17);overflow:visible}
+.photo-feature:before{content:"";position:absolute;inset:8% -14% 0 45%;background:radial-gradient(ellipse at 62% 60%,rgba(182,30,66,.19),transparent 48%),radial-gradient(ellipse at 45% 58%,rgba(16,72,182,.20),transparent 54%);pointer-events:none}
+.photo-feature__small{margin:0 0 28px;font-size:.65rem;font-weight:700;color:#e3bdd2;letter-spacing:.23em}
+.photo-feature__intro{position:relative;z-index:1;padding-right:5%}
+.photo-feature h2{font-size:clamp(3rem,5.1vw,5.85rem);line-height:1.03;letter-spacing:-.038em}
+.photo-feature h2 em{font-weight:400;color:#ff9bb5;font-style:normal}
+.photo-feature__intro>p:not(.photo-feature__small){font-size:1rem;color:#c3bed2;max-width:42ch;margin:28px 0}
+.photo-feature__link{font-size:.91rem;color:#fff;border-bottom:1px solid rgba(255,183,204,.55);padding-bottom:.65rem;display:inline-flex;align-items:center;gap:1rem}
+.photo-feature__link:hover{border-color:#fff}
+.photo-feature__gallery{position:relative;z-index:1;height:620px}
+.photo-feature__gallery:before{content:"";position:absolute;inset:20% 0 6% 10%;background:radial-gradient(circle,rgba(226,38,65,.16),transparent 60%);filter:blur(45px)}
+.photo-feature__frame{position:absolute;margin:0;aspect-ratio:3/4;overflow:hidden;background:#14121f;box-shadow:16px 38px 65px -30px rgba(0,0,0,.8)}
+.photo-feature__frame img{display:block;width:100%;height:100%;object-fit:cover}
+.photo-feature__frame figcaption{position:absolute;bottom:10px;left:12px;font-size:.54rem;letter-spacing:.13em;color:white;background:rgba(12,10,17,.67);padding:6px 9px}
+.photo-feature__frame--front{left:4%;top:3%;height:81%;transform:rotate(-4deg);z-index:2}
+.photo-feature__frame--back{right:0;bottom:0;height:78%;transform:rotate(6deg);z-index:1}
+.photo-feature__frame--front img{filter:contrast(1.04) saturate(1.03)}
+.photo-feature__frame--back img{filter:contrast(1.08)}
+.portrait-story{display:grid;grid-template-columns:minmax(260px,.8fr) 1.2fr;align-items:center;gap:clamp(24px,5vw,85px);padding:45px 0 110px}
+.portrait-story__visual{margin:0;max-width:460px;position:relative;overflow:hidden;aspect-ratio:3/4;background:#07080c}
+.portrait-story__visual img{width:100%;height:100%;object-fit:cover}
+.portrait-story__visual:after{content:"";position:absolute;inset:0;box-shadow:inset 0 -65px 75px -20px rgba(5,7,17,.9);pointer-events:none}
+.portrait-story__visual figcaption{position:absolute;left:15px;bottom:16px;z-index:1;font-size:.59rem;letter-spacing:.17em}
+.portrait-story__text h2,.music-editorial h2{font-size:clamp(2.2rem,4.6vw,5.2rem);line-height:1.08;letter-spacing:-.035em}
+.portrait-story__text p,.music-editorial__body p{color:#c9c5d7;font-size:1.04rem;max-width:55ch}
+.portrait-story__text a{color:#e2c9ff;border-bottom:1px solid currentColor}
+.music-editorial{padding:48px 0 100px;display:grid;grid-template-columns:minmax(260px,.75fr) 1fr;gap:clamp(28px,6vw,90px);align-items:center}
+.music-editorial__portrait{margin:0;position:relative;max-width:430px;aspect-ratio:320/402;overflow:hidden;background:#151625}
+.music-editorial__portrait img{width:100%;height:100%;display:block;object-fit:cover}
+.music-editorial__portrait figcaption{position:absolute;left:16px;bottom:14px;letter-spacing:.18em;font-size:.6rem;text-shadow:0 2px 8px #050711}
+.music-editorial__body .btn{margin:20px 0 0}
+.music-editorial__body .fineprint{font-size:.76rem;color:#b5b2c9}
+.photo-surface.is-missing img{display:none}
+.photo-surface.is-missing{background:radial-gradient(ellipse at 40% 32%,rgba(133,101,211,.40),transparent 65%),#121226}
+.photo-surface.is-missing:before{content:"ARTIST / ENGINEER / MAKER";position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-size:.7rem;letter-spacing:.26em;color:#bcb1d9;z-index:1;padding:1.5rem}
+.portrait-stage.is-missing:before{border-radius:50%;z-index:0}
+@media (hover:hover) and (pointer:fine){.photo-feature__frame{transition:transform .55s cubic-bezier(.2,.7,.2,1)}.photo-feature__frame--front:hover{transform:translate(-3px,-10px) rotate(-2deg)}.photo-feature__frame--back:hover{transform:translate(4px,-10px) rotate(3deg)}}
+@media (max-width:1100px){.photo-feature{gap:2vw;grid-template-columns:1fr 1fr}.photo-feature__gallery{height:540px}.photo-feature__frame--front{height:74%}.photo-feature__frame--back{height:71%}}
+@media (max-width:820px){.portrait-stage{width:min(60%,380px)}.photo-feature{grid-template-columns:1fr;gap:35px;min-height:auto;padding:60px 0 80px}.photo-feature__intro{max-width:590px}.photo-feature__gallery{height:570px;max-width:660px}.photo-feature__frame--front{left:5%;height:87%}.photo-feature__frame--back{right:4%;height:83%}.portrait-story{grid-template-columns:1fr 1fr;padding:12px 0 75px}.music-editorial{grid-template-columns:1fr 1fr;padding:18px 0 75px}}
+@media(max-width:540px){.portrait-cosmos{height:465px;margin-top:12px}.portrait-stage{width:min(70%,290px);top:48%;height:auto;aspect-ratio:3/4}.portrait-stage__caption{bottom:7%;font-size:.48rem}.portrait-cosmos .node{min-height:39px}.photo-feature h2{font-size:clamp(2.75rem,12vw,4.4rem)}.photo-feature__gallery{height:455px}.photo-feature__frame--front{left:1%;height:75%}.photo-feature__frame--back{right:1%;height:73%}.portrait-story,.music-editorial{grid-template-columns:1fr;gap:28px}.portrait-story__visual,.music-editorial__portrait{max-width:390px}.portrait-story__text h2,.music-editorial h2{font-size:clamp(2.15rem,9vw,3.6rem)}}
+@media(prefers-reduced-motion:reduce){.photo-feature__frame,.portrait-stage__image{animation:none!important;transition:none!important;filter:none!important}}
