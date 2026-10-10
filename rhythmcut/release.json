@@ -1,9 +1,9 @@
 {
   "app": "RhythmCut",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "source": "https://github.com/PrinceJonaa/rhythmcut",
-  "commit": "fc174776b200e658ecb0743fc922a4964159faa6",
+  "commit": "437f7c3e740a682a4f78a7409cda7268cb0c9f42",
   "path": "/rhythmcut/",
-  "builtAt": "2026-10-09T15:57:46.683Z",
+  "builtAt": "2026-10-09T17:28:27.255Z",
   "testing": "typecheck and unit tests passed"
 }
