@@ -1,0 +1,38 @@
+name: Unpack verified RhythmCut 0.3.0
+on:
+  push:
+    branches: [rhythmcut-release-0.3.0]
+    paths: ['.release/rhythmcut-0.3.0.tar.gz']
+permissions:
+  contents: write
+jobs:
+  unpack:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify and unpack staged release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,pathlib,tarfile
+          archive=pathlib.Path('.release/rhythmcut-0.3.0.tar.gz')
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()=='59529592715d34cca4cb16da2312da7bb52724777962a6909bd7dc4961380c5b'
+          manifest={"rhythmcut/app-icon.svg":"5464dab4f6286478598ab72160a66aed1f0966d1","rhythmcut/assets/__vite-browser-external-9wXp6ZBx.js":"6e2a42aaad208cbff7fb6c7ae82d1f6f8f37637f","rhythmcut/assets/audioAnalysis.worker-DBWlXfjZ.js":"d3caac778d59db31cd3da22d04593284f4fce57e","rhythmcut/assets/export.worker-CwIyOR8I.js":"25cae349c295d42782e1103d9c23e3b25884e194","rhythmcut/assets/index-BsrbTE0r.css":"ba75dad3fd36d298474783aeeb34fd21d81d72df","rhythmcut/assets/index-jMdDrpQk.js":"6576c0970b2202ed261d3f80f2781f6845307673","rhythmcut/assets/nativeExport-Bpkcaik_.js":"838eaf90a8d9dc90c31c85a90040a1b964df53e6","rhythmcut/assets/subjectDetector-BkYxnxBG.js":"dc3d0bf131d0ec2b39668c359805d3acd2129563","rhythmcut/assets/takeAnalysis.worker-aN3kSbcA.js":"febbf0a3730e67381dbaca953ba754ea305dcf51","rhythmcut/assets/worker-0l8QF2aX.js":"3c61ba87efff9b3c3217eb40413a903dbf38025b","rhythmcut/coi-serviceworker.js":"bc3d31310f98e4a68b8e473419c6d9af612dc0a1","rhythmcut/index.html":"ebd429ac4ab199bbd61c984c534d022eaab78455","rhythmcut/release.json":"1f80dd98512855777d73af3c6810f656bc6de865","rhythmcut/rust/rhythmcut_audio.wasm":"6cd282d5941cff0efbb4da47000f47b2faa382e9","rhythmcut/site.webmanifest":"68432246bf98c43d7f77018b39f069df9f866281","rhythmcut/vision/MEDIAPIPE-README.txt":"3ebb48199180970dfdfc0121c82d7c8f17180582","rhythmcut/vision/README.md":"bd010055fa37bbd3dbcd0e5abb7c1f3630898789","rhythmcut/vision/blaze_face_short_range.tflite":"1b2b5220b8035704fc1eb97461b9c34a73cbd1e2","rhythmcut/vision/wasm/vision_wasm_module_internal.js":"68aa33537cadff1f10e0104b6a989e7dae38cb36","rhythmcut/vision/wasm/vision_wasm_module_internal.wasm":"31e3de5eb072082a63f099a88b78411bbb17855e"}
+          with tarfile.open(archive,'r:gz') as packed:
+              assert set(m.name for m in packed.getmembers())==set(manifest)
+              assert all(m.isfile() for m in packed.getmembers())
+              packed.extractall('.',filter='data')
+          for name,expected in manifest.items():
+              data=pathlib.Path(name).read_bytes()
+              actual=hashlib.sha1(b'blob '+str(len(data)).encode()+b'\0'+data).hexdigest()
+              assert actual==expected,name
+          assert json.loads(pathlib.Path('rhythmcut/release.json').read_text())['commit']=='437f7c3e740a682a4f78a7409cda7268cb0c9f42'
+          print('Verified all 20 staged release files')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add rhythmcut
+          git commit -m "Stage verified RhythmCut 0.3.0 static files"
+          git push origin HEAD:refs/heads/rhythmcut-release-0.3.0
