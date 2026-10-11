@@ -8,6 +8,7 @@ export const worlds=[
 {id:'operations',name:'Operations',subtitle:'In development',href:'/operations/',symbol:'⟡',tone:'#9bafee',x:92,y:50,mx:87,my:48}
 ];
 export const apps=[
+{id:'jonaaudio',name:'JonaAudio',category:'creative',status:'live',symbol:'♫',tone:'#9ee7b8',href:'/JonaAudio/',description:'Private in-browser BPM and musical key estimates, waveform, spectrogram and audio-quality inspection.'},
 {id:'craft',name:'Craft Studio',category:'creative',status:'live',symbol:'◉',tone:'#bc9dff',href:'/craft/',description:'A browser-based creative workstation with LightCraft, FilmCraft, and EffectCraft.'},
 {id:'lightcraft',name:'LightCraft',category:'creative',status:'live',symbol:'☼',tone:'#f2c3a1',href:'/craft/light/',description:'Explore photo editing and image creation in your browser.'},
 {id:'filmcraft',name:'FilmCraft',category:'creative',status:'live',symbol:'▣',tone:'#9eb6ff',href:'/craft/film/',description:'Video-focused editing and experimentation in your browser.'},
