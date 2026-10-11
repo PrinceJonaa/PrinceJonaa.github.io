@@ -64,7 +64,7 @@ export function computeSpectrogram(samples,sampleRate,segment,columns=180,rows=8
  const n=2048,start=Math.floor(segment.start*sampleRate),end=Math.min(samples.length,Math.floor(segment.end*sampleRate)),pixels=new Uint8Array(columns*rows),win=new Float32Array(n);
  for(let col=0;col<columns;col++){const pos=Math.max(0,Math.min(samples.length-n,Math.round(start+(end-start-n)*col/Math.max(1,columns-1))));
   for(let k=0;k<n;k++)win[k]=samples[pos+k]*(.5-.5*Math.cos(2*Math.PI*k/(n-1)));
-  const mag=fft(win);for(let r=0;r<rows;r++){const f=40*Math.pow(160,1-r/rows),bin=Math.max(1,Math.min(mag.length-1,Math.round(f*n/sampleRate)));const a=Math.max(mag[bin-1]||0,mag[bin],mag[bin+1]||0);const db=20*Math.log10(a/(n/2)+1e-8);pixels[r*columns+col]=Math.max(0,Math.min(255,Math.round((db+90)/80*255)));}}
+  const mag=fft(win);for(let r=0;r<rows;r++){const f=40*Math.pow(135,1-r/rows),bin=Math.max(1,Math.min(mag.length-1,Math.round(f*n/sampleRate)));const a=Math.max(mag[bin-1]||0,mag[bin],mag[bin+1]||0);const db=20*Math.log10(a/(n/2)+1e-8);pixels[r*columns+col]=Math.max(0,Math.min(255,Math.round((db+90)/80*255)));}}
  return {pixels:Array.from(pixels),columns,rows,start:segment.start,end:segment.end};
 }
 export function computeQuality(left,right,sampleRate){
