@@ -3,6 +3,7 @@ import {ENGINE_VERSION} from './config.js';
 import {resolveValues} from './store.js';
 // Spreadsheet formula injection is possible even inside quoted CSV fields.
 export function safeCsv(value){
+ if(typeof value==='number'&&Number.isFinite(value))return '"'+String(value)+'"'; // Preserve numeric dBFS, correlation and time cells.
  let s=String(value??'').replace(/[\x00-\x08\x0b\x0c\x0e-\x1f]/g,'');
  if(/^[\s\uFEFF]*[=+\-@]/.test(s))s="'"+s;
  return '"'+s.replaceAll('"','""')+'"';
