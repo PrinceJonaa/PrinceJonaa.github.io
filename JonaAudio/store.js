@@ -29,6 +29,18 @@ function invalidateRegion(track,id){for(const [key,entry] of Object.entries(trac
 export function dispatch(command) {
   const track = state.tracks.find(t => t.id === command.trackId);
   switch (command.type) {
+    case 'restore': {
+      if(!Array.isArray(command.entries))return false;
+      state.generation++;state.tracks=command.entries;state.selectedId=command.selectedId??command.entries[0]?.id??null;
+      state.standaloneTuning=command.standaloneTuning||null;break;
+    }
+    case 'relink': {
+      if(!track||track.sourceAvailable||!command.file||!command.url)return false;
+      track.file=command.file;track.url=command.url;track.lastModified=command.file.lastModified;
+      track.sourceAvailable=true;track.state='queued';track.error=null;track.sourceRevision++;
+      track.result=null;track.wave=null;track.analysis={};track.candidatesStale=true;
+      break;
+    }
     case 'add': {
       const t=command.track;
       const c=legacyCorrections[sourceKey(t.file)] || {};

@@ -249,3 +249,10 @@ html,body{overflow-x:clip}
 #app .compare-row strong{min-width:0;overflow-wrap:anywhere}
 #app button:focus-visible,#app input:focus-visible,#app select:focus-visible,.workspace-sheet button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 @media(max-width:760px){#app .compare-widget .quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#app .compare-widget .quick-actions .compare-label{grid-column:1 / -1}}
+
+/* M5 recovery and accessible controls */
+#app .track-row .job-action{min-height:44px}
+#app .settings-card button{max-width:100%;white-space:normal;text-align:center}
+#app .track-detail{overflow-wrap:anywhere}
+#app .settings-card{min-width:0}
+@media(max-width:760px){#app .settings-card{padding:16px}#app .settings-card .button{margin-right:5px}}
