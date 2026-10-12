@@ -265,3 +265,9 @@ html,body{overflow-x:clip}
 #app .sample-workspace input,#app .sample-workspace select{font-size:16px}
 @media(max-width:520px){#app .compare-row{display:grid;grid-template-columns:minmax(64px,.7fr) repeat(2,minmax(0,1fr));padding:12px 8px}#app .compare-row strong{font-size:12px;overflow-wrap:anywhere}#app .settings-card button{width:auto}}
 @media(prefers-reduced-motion:reduce){#app *,#app *::before,#app *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+/* M6 post-release WCAG scan: decorative nav glyphs are aria-hidden; visible theme text and footer link remain distinguishable. */
+#app .new-rail .rail-links b[aria-hidden="true"]{color:var(--text)}
+#theme.icon-btn{width:auto;min-width:44px;min-height:44px;padding:0 12px;font-size:12px;font-weight:750;color:var(--text)}
+.footer a{text-decoration:underline;text-underline-offset:.18em;text-decoration-thickness:1.5px;font-weight:750}
+.footer a:hover,.footer a:focus-visible{text-decoration-thickness:2.5px}
