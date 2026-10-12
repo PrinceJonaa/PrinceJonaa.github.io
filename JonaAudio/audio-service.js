@@ -36,7 +36,7 @@ export function createAudioService(audio, {onChange=()=>{}, onError=()=>{}}={}) 
     },
     async toggle(){if(loopBackend?.active){stopCompanions();if(loopBackend.playing)loopBackend.pause();else await loopBackend.resume();return;}if(!owner)return;try {if(audio.paused)await audio.play();else audio.pause();}catch {onError('Playback paused — tap to resume, or try another format.');}},
     pause(){stopCompanions();if(loopBackend?.active)loopBackend.pause();audio.pause();},
-    seek(seconds){if(loopBackend?.active){loopBackend.seek(seconds);return;}if(!owner||!Number.isFinite(seconds))return;audio.currentTime=Math.max(0,Math.min(seconds,owner.duration||audio.duration||0));remember();},
+    setListeningAttenuation(gain){audio.volume=Math.max(0,Math.min(1,Number.isFinite(gain)?gain:1));},get listeningAttenuation(){return audio.volume;},seek(seconds){if(loopBackend?.active){loopBackend.seek(seconds);return;}if(!owner||!Number.isFinite(seconds))return;audio.currentTime=Math.max(0,Math.min(seconds,owner.duration||audio.duration||0));remember();},
     setRate(rate){if(loopBackend?.active)return;if(Number.isFinite(rate)&&rate>0)audio.playbackRate=rate;},
     stop(){deactivateLoop();rangeEnd=null;stopCompanions();audio.pause();if(owner)this.seek(0);},
     clear(){select(null);}

@@ -48,9 +48,25 @@ const heading=(title,body)=>{const h=node('header','page-heading');h.append(node
 libraryPage.append(heading('Track library','Find, select or add a song.'),drop,library);
 const compare=node('section','panel compare-widget');compare.append(node('h3','','Compare tracks'));
 const first=node('select','compare-select'),second=node('select','compare-select');first.setAttribute('aria-label','First track');second.setAttribute('aria-label','Second track');
-const compareInputs=node('div','compare-inputs'),compareResult=node('div','compare-result');
+const compareInputs=node('div','compare-inputs'),compareResult=node('div','compare-result'),compareActions=node('div','quick-actions'),compareNote=node('p','muted');let compareMatch=false;
 const label=(text,control)=>{const l=node('label','compare-label',text);l.append(control);return l;};
-compareInputs.append(label('FIRST TRACK',first),node('span','compare-between','⇄'),label('SECOND TRACK',second));compare.append(compareInputs,compareResult);
+compareInputs.append(label('FIRST TRACK',first),node('span','compare-between','⇄'),label('SECOND TRACK',second));
+const matchToggle=node('input','');matchToggle.type='checkbox';matchToggle.setAttribute('aria-label','Enable attenuation-only RMS match');
+matchToggle.onchange=()=>{compareMatch=matchToggle.checked;bridge.setCompareAttenuation(1);renderCompare();};
+const listenA=button('▶ Listen A',()=>listenCompare(first.value)),listenB=button('▶ Listen B',()=>listenCompare(second.value));
+compareActions.append(listenA,listenB,label('Match quieter source (playback only)',matchToggle));
+compareNote.textContent='A/B keeps each source position. Match only attenuates the louder source; no file, export or analysis data changes.';
+compare.append(compareInputs,compareActions,compareNote,compareResult);
+async function listenCompare(id){
+ const list=bridge.list(),a=list.find(t=>String(t.id)===first.value),b=list.find(t=>String(t.id)===second.value),chosen=list.find(t=>String(t.id)===id);
+ if(!chosen)return;
+ const qa=a?.result?.quality,qb=b?.result?.quality,measured=qa&&qb&&[qa.stereoEnergyRmsDb,qb.stereoEnergyRmsDb].every(Number.isFinite);
+ if(compareMatch&&!measured){status('Analyze levels on both tracks before matching.');return;}
+ const target=Math.min(qa?.stereoEnergyRmsDb??0,qb?.stereoEnergyRmsDb??0);
+ const gain=compareMatch?Math.min(1,Math.pow(10,(target-chosen.result.quality.stereoEnergyRmsDb)/20)):1;
+ const ok=await bridge.auditionCompare(chosen.id,gain);
+ status(ok?'Auditioning '+(id===first.value?'A':'B')+(compareMatch?' · attenuation '+(20*Math.log10(gain)).toFixed(1)+' dB':' · original playback level'):'Unable to start A/B audio. Try again.');
+}
 const sampleView=createSampleView({bridge,status});studio.insertBefore(sampleView.element,studioWorkspace);
 const tuningView=createTuningView({bridge,openSheet,status}),tuning=tuningView.element;
 const stereo=node('section','panel');stereo.append(node('h3','','Stereo'));const stereoText=node('p','muted');stereo.append(stereoText);
@@ -102,7 +118,7 @@ function renderRoute(dest,previous){
   for(const b of toolnav.children)b.setAttribute('aria-current',b.dataset.tool===dest.tool?'page':'false');
   const descriptions={tune:'Choose your backing reference, edit allowed notes, audition a scale and copy the tuning setup.',sample:'Choose a region, audition the loop and prepare original-source WAV.',engineer:'Inspect the existing level and spectrum measurements.',compare:'Compare effective key, tempo and available measurements.'};
   sampleView.element.hidden=dest.page!=='studio'||dest.tool!=='sample';
-  toolIntro.textContent=descriptions[dest.tool]||'';
+  toolIntro.textContent=descriptions[dest.tool]||'';if(previous?.tool==='compare'&&dest.tool!=='compare')bridge.setCompareAttenuation(1);
   toolActions.replaceChildren();if(dest.tool==='engineer'){toolActions.append(button('Analyze levels',()=>bridge.requestAnalysis(['levels'])),button('Analyze spectrum',()=>bridge.requestAnalysis(['spectrum'])),button('Cancel analysis',()=>bridge.cancel(bridge.selectedId())));}
   applyWidgets();refresh();
   requestAnimationFrame(()=>{bridge.redraw();if(previous?.hash!==dest.hash)window.scrollTo(0,scrolls.get(dest.hash)||0);});
@@ -139,19 +155,27 @@ function refresh(){
   const old=trackSelect.value;trackSelect.replaceChildren();if(!all.length)trackSelect.append(node('option','','No track selected'));
   for(const t of all){const o=node('option','',t.name);o.value=String(t.id);trackSelect.append(o);}trackSelect.value=String(current?.id||old);trackSelect.disabled=!all.length;
   tuningView.refresh();sampleView.refresh();
-  stereoText.textContent=Number.isFinite(current?.result?.quality?.stereoCorrelation)?'Correlation: '+current.result.quality.stereoCorrelation.toFixed(2):'No stereo measurement available.';
+  const qualityInfo=current?.scopeResult?.quality||current?.result?.quality;
+ stereoText.textContent=qualityInfo?'Channel-energy RMS: '+(Number.isFinite(qualityInfo.stereoEnergyRmsDb)?qualityInfo.stereoEnergyRmsDb.toFixed(1)+' dBFS':'−∞ dBFS')+
+ ' · Mono-sum RMS: '+(Number.isFinite(qualityInfo.monoSumRmsDb)?qualityInfo.monoSumRmsDb.toFixed(1)+' dBFS':'−∞ dBFS')+
+ ' · L/R: '+(Number.isFinite(qualityInfo.leftRmsDb)?qualityInfo.leftRmsDb.toFixed(1):'−∞')+' / '+(qualityInfo.channels===1?'mono':Number.isFinite(qualityInfo.rightRmsDb)?qualityInfo.rightRmsDb.toFixed(1):'−∞')+' dBFS'+
+ ' · Correlation: '+(Number.isFinite(qualityInfo.stereoCorrelation)?qualityInfo.stereoCorrelation.toFixed(2):qualityInfo.stereoCorrelationReason||'undefined')+
+ ' · Scope: '+(current?.analysisScopeId?'selected region':'whole track')+
+ ' · LUFS/true peak unavailable (not measured).':'Analyze levels for measured channel energy and stereo correlation.';
   renderCompare();
 }
 function renderCompare(){
   const ready=bridge.list().filter(t=>t.result);const oldA=first.value,oldB=second.value;
   for(const s of [first,second]){s.replaceChildren();for(const t of ready){const o=node('option','',t.name);o.value=String(t.id);s.append(o);}s.disabled=ready.length<2;}
-  compareInputs.hidden=ready.length<2;compareResult.replaceChildren();
+  compareInputs.hidden=ready.length<2;compareActions.hidden=ready.length<2;compareNote.hidden=ready.length<2;compareResult.replaceChildren();
   if(ready.length<2){compareResult.append(node('p','muted','Add and analyze a reference track to compare.'),button('Add reference track',()=>fileInput.click()));return;}
   first.value=ready.some(t=>String(t.id)===oldA)?oldA:String(ready[0].id);
   second.value=ready.some(t=>String(t.id)===oldB&&oldB!==first.value)?oldB:String(ready.find(t=>String(t.id)!==first.value).id);
   const a=ready.find(t=>String(t.id)===first.value),b=ready.find(t=>String(t.id)===second.value),table=node('div','compare-table');
-  const measure=(id,t)=>{const v=t.effective,quality=t.result.quality||{};if(id==='tempo')return (v.bpm??'—')+' BPM · '+v.bpmSource;if(id==='key')return (v.key??'—')+' · '+v.keySource;if(id==='duration')return format(t.duration);const n=quality[id];return Number.isFinite(n)?n.toFixed(1)+(id==='stereoCorrelation'?'':' dB'):'—';};
-  for(const [id,title] of [['header','Metric'],['tempo','Tempo'],['key','Key'],['duration','Length'],['rmsDb','RMS dBFS'],['samplePeakDb','Sample peak dBFS'],['crestDb','Crest'],['stereoCorrelation','Stereo correlation']]){const row=node('div','compare-row'+(id==='header'?' is-header':''));row.append(node('span','',title),node('strong','',id==='header'?a.name:measure(id,a)),node('strong','',id==='header'?b.name:measure(id,b)));table.append(row);}compareResult.append(table);
+ const measured=[a.result.quality?.stereoEnergyRmsDb,b.result.quality?.stereoEnergyRmsDb].every(Number.isFinite);
+ matchToggle.disabled=!measured;matchToggle.checked=compareMatch&&measured;if(!measured){compareMatch=false;compareNote.textContent='RMS matching unavailable: analyze levels on both tracks first. A/B listening remains available.';}else compareNote.textContent='A/B uses each source’s last position. Matching attenuates only the louder playback, never boosts or changes original audio.';
+  const measure=(id,t)=>{const v=t.effective,quality=t.result.quality||{};if(id==='tempo')return (v.bpm??'—')+' BPM · '+v.bpmSource;if(id==='key')return (v.key??'—')+' · '+v.keySource;if(id==='duration')return format(t.duration);const n=quality[id];return Number.isFinite(n)?n.toFixed(id==='stereoCorrelation'?2:1)+(id==='stereoCorrelation'?'':' dB'):(id==='stereoCorrelation'&&quality.stereoCorrelationReason||'—');};
+  for(const [id,title] of [['header','Metric'],['tempo','Tempo'],['key','Key'],['duration','Length'],['stereoEnergyRmsDb','Channel-energy RMS dBFS'],['rmsDb','Mono-sum RMS dBFS'],['samplePeakDb','Sample peak dBFS'],['crestDb','Crest vs channel energy'],['stereoCorrelation','Stereo correlation']]){const row=node('div','compare-row'+(id==='header'?' is-header':''));row.append(node('span','',title),node('strong','',id==='header'?a.name:measure(id,a)),node('strong','',id==='header'?b.name:measure(id,b)));table.append(row);}compareResult.append(table);
 }
 function format(seconds){return Number.isFinite(seconds)?Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'):'—';}
 async function copyValues(){const t=bridge.list().find(t=>t.id===bridge.selectedId());if(!t)return;const text=summaryText(t,bridge.currentValues());try {await navigator.clipboard.writeText(text);status('Copied key and BPM.');}catch {const field=node('textarea','copy-fallback');field.value=text;field.readOnly=true;field.setAttribute('aria-label','Select and copy key and BPM');openSheet('Copy key & BPM',field);field.focus();field.select();}}
@@ -184,7 +208,7 @@ function openLayout(){
 rail.onclick=e=>{const b=e.target.closest('[data-route]');if(b)router.go(b.dataset.route);};
 presetSelect.onchange=()=>{const saved=layouts.select(presetSelect.value);if(!saved)status('Layout is available in this tab but could not be saved.');};
 depthSelect.onchange=()=>{mode.value=depthSelect.value;mode.dispatchEvent(new Event('change',{bubbles:true}));};mode.addEventListener('change',()=>depthSelect.value=mode.value);
-first.onchange=renderCompare;second.onchange=renderCompare;
+first.onchange=()=>{bridge.setCompareAttenuation(1);renderCompare();};second.onchange=()=>{bridge.setCompareAttenuation(1);renderCompare();};
 bridge.subscribe(()=>refresh());window.addEventListener('jona:status',e=>status(e.detail));
 window.addEventListener('jona:playback',refreshPlayerTitle);
 window.addEventListener('jona:reference-tone',e=>{referenceToneLabel=e.detail.label;stopReference.hidden=!e.detail.running;refreshPlayerTitle();dock.classList.toggle('has-reference-tone',e.detail.running);});
