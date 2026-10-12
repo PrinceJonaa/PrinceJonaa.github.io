@@ -21,9 +21,9 @@ jobs:
           node-version: '22'
       - name: All JonaAudio Node regression suites
         run: node --test JonaAudio/tests/*.test.mjs
-      - name: Parse app modules
+      - name: Parse app and browser test modules
         run: |
-          for f in JonaAudio/*.js; do node --check "$f" || exit 1; done
+          for f in JonaAudio/*.js JonaAudio/tests/*.cjs; do node --check "$f" || exit 1; done
       - name: Check patch whitespace
         run: git diff --check HEAD~1 HEAD
   browser:

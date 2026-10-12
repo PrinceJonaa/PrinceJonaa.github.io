@@ -56,3 +56,14 @@ test('analysis exports distinguish provenance and quote formula-style filenames'
  const report=JSON.parse(jsonReport(state));assert.equal(report.kind,'jonaaudio-analysis-report');assert.equal(report.sources[0].effective.bpm,75);
  assert.equal(report.recovery.tracks[0].sourceAvailable,false);assert.ok(!JSON.stringify(report).includes('blob:dummy'));
 });
+
+test('worker level response keeps numeric channel count separate from PCM transfer arrays',async()=>{
+ const messages=[];
+ globalThis.self={postMessage:(message,transfer=[])=>messages.push({message,transfer})};
+ await import('../worker.js');
+ const sample=Float32Array.from({length:1000},()=>.4);
+ globalThis.self.onmessage({data:{jobId:1,sessionGeneration:1,trackId:1,sourceRevision:1,
+  scopeId:null,scopeRevision:0,capability:'levels',requestRevision:1,input:{channels:[sample,sample],sampleRate:1000,ranges:[{start:0,end:1}]}}});
+ const final=messages.at(-1);assert.equal(final.message.type,'result');assert.equal(final.message.result.channels,2);
+ assert.equal(final.message.result.stereoCorrelation,1);assert.equal(final.transfer.length,0);
+});
