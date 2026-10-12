@@ -53,6 +53,6 @@ test('analysis exports distinguish provenance and quote formula-style filenames'
  const t=state.tracks[0];t.name='=2+2.wav';
  const csv=csvReport([t]);assert.match(csv,/"'=2\+2.wav"/);assert.ok(csv.includes('Corrected BPM'));assert.ok(csv.includes('Channel-energy RMS'));
  assert.equal(safeCsv(-12.4),'"-12.4"');assert.equal(safeCsv('-INJECT'),'"\'-INJECT"');
- const report=JSON.parse(jsonReport(state));assert.equal(report.kind,'jonaudio-analysis-report');assert.equal(report.sources[0].effective.bpm,75);
+ const report=JSON.parse(jsonReport(state));assert.equal(report.kind,'jonaaudio-analysis-report');assert.equal(report.sources[0].effective.bpm,75);
  assert.equal(report.recovery.tracks[0].sourceAvailable,false);assert.ok(!JSON.stringify(report).includes('blob:dummy'));
 });
