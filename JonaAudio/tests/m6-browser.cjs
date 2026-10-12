@@ -45,7 +45,7 @@ function wav(seconds=5,rate=44100,tempo=120){
   console.log('M6 browser: import x2, progressive result, engineer, A/B, session download, restore, relink, responsive x4 PASS');
  }catch(e){
   await page.screenshot({path:'JonaAudio/tests/m6-browser-failure.png',fullPage:true}).catch(()=>{});
-  console.log('M6 browser errors:',errors);
+  console.log('M6 browser errors:',errors);console.log('M6 browser state:',JSON.stringify(await page.evaluate(()=>({hash:location.hash,trackList:window.JonaAudioBridge?.list(),selectedId:window.JonaAudioBridge?.selectedId(),diagnostics:window.JonaAudioBridge?.diagnostics(),status:document.querySelector('#status')?.textContent,toast:document.querySelector('.global-status')?.textContent}))).catch(e=>({error:String(e)}))).slice(0,10000));
   throw e;
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exit(1);});
