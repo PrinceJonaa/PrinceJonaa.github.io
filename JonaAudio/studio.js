@@ -21,7 +21,7 @@ const scopeResult=t=>t?.analysisScopeId?t.regions.find(r=>r.id===t.analysisScope
 try{ui.mode.value=localStorage.getItem('jonaaudio-depth')==='verify'?'verify':'quick';}catch{}
 const jobs=createJobs({onChange:item=>{if(selectedTrack()?.id===item.id)renderDetail();renderLibrary();}});
 function notify(message){ui.message.textContent=message;window.dispatchEvent(new CustomEvent('jona:status',{detail:message}));}
-const playback=createAudioService(ui.audio,{onChange:(item,event)=>{if(event==='metadata'){renderDetail();renderLibrary();}updatePosition();window.dispatchEvent(new CustomEvent('jona:playback',{detail:item?.id??null}));},onError:notify});
+let nextPlaybackSave=0;const playback=createAudioService(ui.audio,{onChange:(item,event)=>{if(event==='metadata'){renderDetail();renderLibrary();}if(item&&performance.now()>nextPlaybackSave){nextPlaybackSave=performance.now()+10000;writer.schedule(state);}updatePosition();window.dispatchEvent(new CustomEvent('jona:playback',{detail:item?.id??null}));},onError:notify});
 const samples=createSampleService({jobs,transport:playback,onChange:()=>window.dispatchEvent(new Event('jona:sample'))});
 function switchMobile(view){
  const showLibrary=view==='library';document.body.classList.toggle('mobile-library-open',showLibrary);
@@ -49,7 +49,7 @@ async function addFiles(incoming){
   if(file.size>MAX_FILE_BYTES){notify(`${file.name} exceeds the 125 MB browser analysis limit.`);continue;}
   const fingerprint=await sampledFingerprint(file).catch(()=>null);
   const missing=state.tracks.find(t=>!t.sourceAvailable&&t.name===file.name&&t.size===file.size);
-  if(missing){await relinkFile(missing,file,fingerprint);continue;}
+  if(missing){if(window.confirm('A saved JonaAudio session has decisions for '+file.name+'. Relink this file to those decisions?'))await relinkFile(missing,file,fingerprint);continue;}
   if(state.tracks.length>=MAX_TRACKS){notify(`Session limit is ${MAX_TRACKS} tracks. Export or clear to add more.`);break;}
   const id=++runId,entry={id,file,url:URL.createObjectURL(file),name:file.name,size:file.size,fingerprint,duration:null,state:'queued',result:null,wave:null,error:null};
   dispatch({type:'add',track:entry});if(!selectedTrack())select(entry);jobs.request(entry,{mode:ui.mode.value});
@@ -121,7 +121,7 @@ async function importSession(file){
 function pickSession(){const picker=document.createElement('input');picker.type='file';picker.accept='.json,application/json';picker.onchange=()=>void importSession(picker.files?.[0]);picker.click();}
 const saveTypes=new Set(['add','restore','relink','select','remove','clear','region','grid','candidateFavorite','undo','tuning','correct','resetCorrection','selectScope']);
 subscribe(({type})=>{if(saveTypes.has(type))writer.schedule(state);});
-window.addEventListener('pagehide',()=>{void writer.flush();});
+window.addEventListener('pagehide',()=>{void writer.flush();});document.addEventListener('visibilitychange',()=>{if(document.hidden)void writer.flush();});
 async function startRecovery(){
  try{const restored=await readSavedSession();if(restored&&state.tracks.length===0)applyRecovered(restored);}
  catch(e){if(!/IndexedDB is unavailable/.test(e.message))notify('Saved session could not be restored. Existing corrections remain; you can import session JSON.');}
