@@ -1,4 +1,5 @@
 import {createRouter} from './router.js';
+import {createSampleView} from './sample-view.js';
 import {createTuningView} from './tuning-view.js';
 import {createLayouts, WIDGETS} from './layouts.js';
 import {createTapTempo,tempoMultiple,summaryText,createMetronome} from './musical-controls.js';
@@ -50,6 +51,7 @@ const first=node('select','compare-select'),second=node('select','compare-select
 const compareInputs=node('div','compare-inputs'),compareResult=node('div','compare-result');
 const label=(text,control)=>{const l=node('label','compare-label',text);l.append(control);return l;};
 compareInputs.append(label('FIRST TRACK',first),node('span','compare-between','⇄'),label('SECOND TRACK',second));compare.append(compareInputs,compareResult);
+const sampleView=createSampleView({bridge,status});studio.insertBefore(sampleView.element,studioWorkspace);
 const tuningView=createTuningView({bridge,openSheet,status}),tuning=tuningView.element;
 const stereo=node('section','panel');stereo.append(node('h3','','Stereo'));const stereoText=node('p','muted');stereo.append(stereoText);
 const widgets={tempo:q('.metric.bpm'),key:q('.metric.key'),waveform:wave,'tuning-notes':tuning,candidates:harmonic,levels:quality,stereo,spectrum,'compare-summary':compare};
@@ -59,7 +61,7 @@ trackSelect.onchange=()=>bridge.choose(trackSelect.value);
 const dock=node('section','player-dock');dock.setAttribute('aria-label','Persistent audio player');
 const playerTitle=node('button','text-button','No track selected');playerTitle.type='button';playerTitle.onclick=()=>router.go('studio/sample');dock.append(playerTitle,transport);
 const stopReference=button('Stop notes',()=>bridge.transport.stopCompanions());stopReference.hidden=true;dock.append(stopReference);let referenceToneLabel=null;
-function refreshPlayerTitle(){playerTitle.textContent=referenceToneLabel||bridge.transport.owner?.name||'No track selected';}
+function refreshPlayerTitle(){playerTitle.textContent=referenceToneLabel||(bridge.transport.owner?(bridge.transport.isLoop?'Loop · ':'')+bridge.transport.owner.name:'No track selected');}
 const toast=node('div','global-status');toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');toast.hidden=true;
 settings.append(heading('Settings','Appearance, workspace layouts and browser session.'));
 const cards=node('div','settings-cards');settings.append(cards);
@@ -98,7 +100,8 @@ function renderRoute(dest,previous){
   trackBar.hidden=!['quick','studio'].includes(dest.page);
   for(const b of rail.querySelectorAll('[data-route]'))b.setAttribute('aria-current',b.dataset.route===dest.page?'page':'false');
   for(const b of toolnav.children)b.setAttribute('aria-current',b.dataset.tool===dest.tool?'page':'false');
-  const descriptions={tune:'Choose your backing reference, edit allowed notes, audition a scale and copy the tuning setup.',sample:'Audition the source waveform. Region editing and WAV export arrive in M4.',engineer:'Inspect the existing level and spectrum measurements.',compare:'Compare effective key, tempo and available measurements.'};
+  const descriptions={tune:'Choose your backing reference, edit allowed notes, audition a scale and copy the tuning setup.',sample:'Choose a region, audition the loop and prepare original-source WAV.',engineer:'Inspect the existing level and spectrum measurements.',compare:'Compare effective key, tempo and available measurements.'};
+  sampleView.element.hidden=dest.page!=='studio'||dest.tool!=='sample';
   toolIntro.textContent=descriptions[dest.tool]||'';
   toolActions.replaceChildren();if(dest.tool==='engineer'){toolActions.append(button('Analyze levels',()=>bridge.requestAnalysis(['levels'])),button('Analyze spectrum',()=>bridge.requestAnalysis(['spectrum'])),button('Cancel analysis',()=>bridge.cancel(bridge.selectedId())));}
   applyWidgets();refresh();
@@ -121,6 +124,7 @@ function applyWidgets(){
   if(dest.sheet==='evidence')widgets.candidates.hidden=false;
   if(dest.sheet==='spectrum')widgets.spectrum.hidden=false;
   if(dest.sheet==='levels')widgets.levels.hidden=false;
+  if(dest.tool==='sample')widgets.waveform.hidden=true;
   if(dest.tool==='compare'){for(const [id,w] of Object.entries(widgets))w.hidden=id!=='compare-summary';}
   quickActions.hidden=!bridge.selectedId();shortcuts.hidden=!bridge.selectedId();
   bridge.redraw();
@@ -134,7 +138,7 @@ function refresh(){
   intro.classList.toggle('has-track',!!current);
   const old=trackSelect.value;trackSelect.replaceChildren();if(!all.length)trackSelect.append(node('option','','No track selected'));
   for(const t of all){const o=node('option','',t.name);o.value=String(t.id);trackSelect.append(o);}trackSelect.value=String(current?.id||old);trackSelect.disabled=!all.length;
-  tuningView.refresh();
+  tuningView.refresh();sampleView.refresh();
   stereoText.textContent=Number.isFinite(current?.result?.quality?.stereoCorrelation)?'Correlation: '+current.result.quality.stereoCorrelation.toFixed(2):'No stereo measurement available.';
   renderCompare();
 }

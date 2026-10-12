@@ -222,3 +222,22 @@ html,body{overflow-x:clip}
 .player-dock>button:last-child:not([hidden]){border:1px solid var(--line);background:var(--inset);color:var(--text)}
 @media(max-width:760px){#app .tuning-form{grid-template-columns:1fr}#app .note-mask,#app .reference-keyboard{gap:5px}#app .note-toggle{flex-direction:column;gap:4px;padding:6px 0;min-height:54px}#app .tuning-workspace .quick-actions .button{white-space:normal}.player-dock>button:last-child:not([hidden]){margin-top:6px;min-height:44px;border-radius:8px}}
 @media(max-width:365px){#app .note-mask,#app .reference-keyboard{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* M4 sampling is a focused tool; source overview/detail and exact numeric edits. */
+#app .sample-workspace{margin:0 0 16px;padding:16px}
+#app .sample-workspace h4{font-size:15px;margin:20px 0 12px}
+#app .sample-status{color:var(--accent);font-size:13px;overflow-wrap:anywhere}
+#app .sample-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+#app .sample-workspace input:not([type=checkbox]),#app .sample-workspace select{min-height:44px;min-width:0;width:100%;font-size:16px;background:var(--inset);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px}
+#app .sample-workspace .quick-actions>select{width:auto;max-width:100%}
+#app .region-wave{position:relative;border:1px solid var(--line);border-radius:10px;margin:10px 0 16px;overflow:hidden;padding-bottom:34px;background:var(--inset)}
+#app .sample-overview,#app .sample-detail{display:block;width:100%;height:128px;touch-action:pan-y}
+#app .sample-detail{height:160px;border:1px solid var(--line);border-radius:10px;touch-action:pan-y}
+#app .region-handle{position:absolute;top:0;bottom:0;min-width:44px;border:0;border-left:2px solid var(--accent);background:transparent;color:var(--accent);font:inherit;font-size:12px;text-align:left;padding:130px 4px 0;touch-action:none}
+#app .out-handle{transform:translateX(-100%);border-left:0;border-right:2px solid var(--accent);text-align:right}
+#app .sample-workspace .button{min-height:44px;white-space:normal}
+#app .sample-candidates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#app .sample-candidate{min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--inset);padding:14px}
+#app .sample-candidate>strong{font-size:14px;overflow-wrap:anywhere}
+#app .sample-workspace label:has(input[type=checkbox]){display:flex;align-items:center;gap:12px;min-height:44px;padding:8px}
+#app .sample-workspace input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+@media(max-width:760px){#app .sample-form,#app .sample-candidates{grid-template-columns:1fr}#app .sample-workspace{padding:12px}#app .sample-workspace .quick-actions{gap:6px}#app .sample-workspace .quick-actions>.button{flex:1}}
