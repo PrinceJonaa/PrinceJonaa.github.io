@@ -85,7 +85,9 @@ jobs:
               html=page.read_text()
               if 'id="craft-storage-launch"' not in html:
                   html=html.replace('</head>',style+'</head>').replace('</body>',link+'</body>')
-                  page.write_text(html)
+              if '/assets/app-return.js' not in html:
+                  html=html.replace('</body>','<script type="module" src="/assets/app-return.js"></script></body>')
+              page.write_text(html)
           PY
 
           # Check absolute paths and app entry points.

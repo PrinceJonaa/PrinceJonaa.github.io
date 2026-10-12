@@ -73,11 +73,17 @@ async function withStore(mode,action){
 export async function readSavedSession(){const value=await withStore('readonly',store=>store.get(KEY));return value?parseSession(value):null;}
 export async function deleteSavedSession(){return withStore('readwrite',store=>store.delete(KEY));}
 export function createSessionWriter({onError=()=>{}}={}){
- let next=null,busy=false,failed=false,timer=null;
- const drain=async()=>{if(busy)return;busy=true;try{
-  while(next){const snapshot=next;next=null;try{await withStore('readwrite',store=>store.put(snapshot,KEY));failed=false;}catch(e){if(!failed)onError('Session changes are available in this tab but could not be saved. Export session JSON.');failed=true;}}
- }finally{busy=false;}};
+ let next=null,running=null,failed=false,timer=null;
+ const drain=()=>{
+  if(running)return running;
+  if(!next)return Promise.resolve();
+  running=(async()=>{try{
+   while(next){const snapshot=next;next=null;try{await withStore('readwrite',store=>store.put(snapshot,KEY));failed=false;}catch(e){if(!failed)onError('Session changes are available in this tab but could not be saved. Export session JSON.');failed=true;}}
+  }finally{running=null;}})();
+  return running;
+ };
  return {schedule(state){next=sessionSnapshot(state);if(timer)clearTimeout(timer);timer=setTimeout(()=>{timer=null;void drain();},650);},
-  async flush(){if(timer){clearTimeout(timer);timer=null;}await drain();},
-  async forget(){if(timer){clearTimeout(timer);timer=null;}next=null;await deleteSavedSession();}};
+  isDirty:()=>!!(next||running||failed),
+  async flush(){if(timer){clearTimeout(timer);timer=null;}if(next||running)await drain();return !failed;},
+  async forget(){if(timer){clearTimeout(timer);timer=null;}if(running)await running;next=null;await deleteSavedSession();failed=false;}};
 }

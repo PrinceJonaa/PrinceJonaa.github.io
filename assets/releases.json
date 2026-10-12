@@ -1,0 +1,190 @@
+{
+  "schema": 1,
+  "reviewedAt": "2026-10-12",
+  "apps": [
+    {
+      "appId": "app:jonaaudio",
+      "releaseId": "app:jonaaudio:unversioned",
+      "version": null,
+      "sourceCommit": "1ec398be7a2913582b928448be2b35171d7ec216",
+      "builtFrom": "1ec398be7a2913582b928448be2b35171d7ec216",
+      "artifactHash": null,
+      "deployTarget": "https://princejona.me/JonaAudio/",
+      "servedBuildId": null,
+      "builtAt": null,
+      "deploymentVerifiedAt": null,
+      "qualityStates": {
+        "source": "inspected public source or pinned release",
+        "unit": "M6 baseline 39/39; current release results in docs",
+        "browser": "M6 Node 39/39 and Chromium synthetic WAV workflow recorded in JonaAudio/docs/M6.md",
+        "physicalDevice": null,
+        "realMedia": null
+      },
+      "knownIssues": [
+        "Physical Safari and long-file memory behavior unverified. Key/BPM are estimates."
+      ],
+      "rollbackRef": "1ec398be7a2913582b928448be2b35171d7ec216"
+    },
+    {
+      "appId": "app:craft",
+      "releaseId": "app:craft:unversioned",
+      "version": null,
+      "sourceCommit": "1ec398be7a2913582b928448be2b35171d7ec216",
+      "builtFrom": null,
+      "artifactHash": null,
+      "deployTarget": "https://princejona.me/craft/",
+      "servedBuildId": null,
+      "builtAt": null,
+      "deploymentVerifiedAt": null,
+      "qualityStates": {
+        "source": "inspected public source or pinned release",
+        "unit": null,
+        "browser": null,
+        "physicalDevice": null,
+        "realMedia": null
+      },
+      "knownIssues": [
+        "Browser/device acceptance not yet measured for this catalog release."
+      ],
+      "rollbackRef": "1ec398be7a2913582b928448be2b35171d7ec216"
+    },
+    {
+      "appId": "app:lightcraft",
+      "releaseId": "app:lightcraft:0.2.1",
+      "version": "0.2.1",
+      "sourceCommit": null,
+      "builtFrom": null,
+      "artifactHash": "5b64a944583330e38e36d879984fd71d02efbe68a2d354e6f5211819eee5a8a5",
+      "deployTarget": "https://princejona.me/craft/light/",
+      "servedBuildId": null,
+      "builtAt": null,
+      "deploymentVerifiedAt": null,
+      "qualityStates": {
+        "source": "inspected public source or pinned release",
+        "unit": null,
+        "browser": null,
+        "physicalDevice": null,
+        "realMedia": null
+      },
+      "knownIssues": [
+        "Browser/device acceptance not yet measured for this catalog release."
+      ],
+      "rollbackRef": "1ec398be7a2913582b928448be2b35171d7ec216"
+    },
+    {
+      "appId": "app:filmcraft",
+      "releaseId": "app:filmcraft:0.2.1",
+      "version": "0.2.1",
+      "sourceCommit": null,
+      "builtFrom": null,
+      "artifactHash": "f496c41f65e3f38b32b05b92c27940c5f464b442573b617e69923df0f085005c",
+      "deployTarget": "https://princejona.me/craft/film/",
+      "servedBuildId": null,
+      "builtAt": null,
+      "deploymentVerifiedAt": null,
+      "qualityStates": {
+        "source": "inspected public source or pinned release",
+        "unit": null,
+        "browser": null,
+        "physicalDevice": null,
+        "realMedia": null
+      },
+      "knownIssues": [
+        "Browser/device acceptance not yet measured for this catalog release."
+      ],
+      "rollbackRef": "1ec398be7a2913582b928448be2b35171d7ec216"
+    },
+    {
+      "appId": "app:effectcraft",
+      "releaseId": "app:effectcraft:0.4.0",
+      "version": "0.4.0",
+      "sourceCommit": null,
+      "builtFrom": null,
+      "artifactHash": "68f781094d119ab6428d0d4d50bd8718b8226916c8274345ac268562848ecccf",
+      "deployTarget": "https://princejona.me/craft/effect/",
+      "servedBuildId": null,
+      "builtAt": null,
+      "deploymentVerifiedAt": null,
+      "qualityStates": {
+        "source": "inspected public source or pinned release",
+        "unit": null,
+        "browser": null,
+        "physicalDevice": null,
+        "realMedia": null
+      },
+      "knownIssues": [
+        "Browser/device acceptance not yet measured for this catalog release."
+      ],
+      "rollbackRef": "1ec398be7a2913582b928448be2b35171d7ec216"
+    },
+    {
+      "appId": "app:storage",
+      "releaseId": "app:storage:unversioned",
+      "version": null,
+      "sourceCommit": "1ec398be7a2913582b928448be2b35171d7ec216",
+      "builtFrom": null,
+      "artifactHash": null,
+      "deployTarget": "https://princejona.me/craft/storage/",
+      "servedBuildId": null,
+      "builtAt": null,
+      "deploymentVerifiedAt": null,
+      "qualityStates": {
+        "source": "inspected public source or pinned release",
+        "unit": null,
+        "browser": null,
+        "physicalDevice": null,
+        "realMedia": null
+      },
+      "knownIssues": [
+        "Google Drive requires a configured public OAuth client ID; IndexedDB fallback is not backed up."
+      ],
+      "rollbackRef": "1ec398be7a2913582b928448be2b35171d7ec216"
+    },
+    {
+      "appId": "app:rhythmcut",
+      "releaseId": "app:rhythmcut:0.4.0",
+      "version": "0.4.0",
+      "sourceCommit": "6d188fc87b4665eff4db07c98fd4b256132d2c91",
+      "builtFrom": "7cd6cb38cdffad993b8734cad29e8b9c37ffc06d",
+      "artifactHash": null,
+      "deployTarget": "https://princejona.me/rhythmcut/",
+      "servedBuildId": "7cd6cb38cdffad993b8734cad29e8b9c37ffc06d",
+      "builtAt": "2026-10-10T15:56:21.554Z",
+      "deploymentVerifiedAt": "2026-10-12",
+      "qualityStates": {
+        "source": "inspected public source or pinned release",
+        "unit": null,
+        "browser": null,
+        "physicalDevice": null,
+        "realMedia": null
+      },
+      "knownIssues": [
+        "Pages artifact is behind source main. Physical iPhone shuffle/export behavior is unverified."
+      ],
+      "rollbackRef": "1ec398be7a2913582b928448be2b35171d7ec216"
+    },
+    {
+      "appId": "app:beatcut",
+      "releaseId": "app:beatcut:unversioned",
+      "version": null,
+      "sourceCommit": null,
+      "builtFrom": null,
+      "artifactHash": null,
+      "deployTarget": null,
+      "servedBuildId": null,
+      "builtAt": null,
+      "deploymentVerifiedAt": null,
+      "qualityStates": {
+        "source": "inspected public source or pinned release",
+        "unit": null,
+        "browser": null,
+        "physicalDevice": null,
+        "realMedia": null
+      },
+      "knownIssues": [
+        "Browser/device acceptance not yet measured for this catalog release."
+      ],
+      "rollbackRef": "1ec398be7a2913582b928448be2b35171d7ec216"
+    }
+  ]
+}

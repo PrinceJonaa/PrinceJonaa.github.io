@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "assets": [
+    {
+      "assetId": "photo:neon-one",
+      "path": "/assets/portraits/neon-one.webp",
+      "width": 240,
+      "height": 320,
+      "bytes": 2904,
+      "status": "approved existing preview; high-resolution replacement pending",
+      "rightsSource": "UNIVERSE-v1.1.md",
+      "preload": "lazy"
+    },
+    {
+      "assetId": "photo:neon-two",
+      "path": "/assets/portraits/neon-two.webp",
+      "width": 240,
+      "height": 320,
+      "bytes": 3142,
+      "status": "approved existing preview; high-resolution replacement pending",
+      "rightsSource": "UNIVERSE-v1.1.md",
+      "preload": "lazy"
+    },
+    {
+      "assetId": "photo:portrait",
+      "path": "/assets/portraits/portrait.webp",
+      "width": 320,
+      "height": 427,
+      "bytes": 2944,
+      "status": "approved existing preview; high-resolution replacement pending",
+      "rightsSource": "UNIVERSE-v1.1.md",
+      "preload": "hero only"
+    },
+    {
+      "assetId": "photo:street",
+      "path": "/assets/portraits/street.webp",
+      "width": 240,
+      "height": 301,
+      "bytes": 2718,
+      "status": "approved existing preview; high-resolution replacement pending",
+      "rightsSource": "UNIVERSE-v1.1.md",
+      "preload": "lazy"
+    }
+  ]
+}
