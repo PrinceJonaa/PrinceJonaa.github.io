@@ -1,0 +1,121 @@
+{
+  "schema": 1,
+  "canonicalOrigin": "https://princejona.me",
+  "cname": "princejona.me",
+  "reviewedAt": "2026-10-12",
+  "routes": [
+    {
+      "path": "/",
+      "owner": "Universe",
+      "storage": "optional motion preference",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/apps/",
+      "owner": "Universe",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/atlas/",
+      "owner": "Universe public preview",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/music/",
+      "owner": "Universe",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/work/",
+      "owner": "Universe",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/about/",
+      "owner": "Universe",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/operations/",
+      "owner": "Universe proposal",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/JonaAudio/",
+      "owner": "JonaAudio",
+      "storage": "jonaaudio session metadata and preferences",
+      "workerScope": "none",
+      "return": "flush app-owned session; relink originals"
+    },
+    {
+      "path": "/craft/",
+      "owner": "Craft hosting shell",
+      "storage": "mounted editor-owned sessions",
+      "workerScope": "none",
+      "return": "retained frames; site links in new tab"
+    },
+    {
+      "path": "/craft/light/",
+      "owner": "storytold/lightcraft",
+      "storage": "OPFS library/originals/thumbs; fallback",
+      "workerScope": "none observed",
+      "return": "new tab; editor retained"
+    },
+    {
+      "path": "/craft/film/",
+      "owner": "storytold/filmcraft",
+      "storage": "OPFS recovery/media; fallback",
+      "workerScope": "none observed",
+      "return": "new tab; editor retained"
+    },
+    {
+      "path": "/craft/effect/",
+      "owner": "storytold/effectcraft",
+      "storage": "OPFS config/files; fallback",
+      "workerScope": "/craft/effect/",
+      "return": "new tab; editor retained"
+    },
+    {
+      "path": "/craft/storage/",
+      "owner": "Craft Storage Manager",
+      "storage": "allowlisted OPFS; Drive only on explicit consent",
+      "workerScope": "none",
+      "return": "backups are manual; close editors before restore"
+    },
+    {
+      "path": "/rhythmcut/",
+      "owner": "PrinceJonaa/rhythmcut; pinned Pages dist",
+      "storage": "IndexedDB projects and media",
+      "workerScope": "/rhythmcut/ COI helper; PWA scope unchanged",
+      "return": "new tab; project library inside app"
+    },
+    {
+      "path": "/beatcut/",
+      "owner": "legacy source pointer",
+      "storage": "unknown",
+      "workerScope": "none",
+      "return": "source repository"
+    }
+  ],
+  "migration": "No origin, CNAME, storage schema, worker scope or route migration in S0/S1.",
+  "privateData": "No private data exported.",
+  "performanceTargets": {
+    "LCPms": 2500,
+    "CLS": 0.1,
+    "INPms": 200,
+    "state": "design targets; not field measurements"
+  }
+}

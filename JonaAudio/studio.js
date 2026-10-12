@@ -131,6 +131,7 @@ refreshMobile();renderDetail();renderLibrary();
 // Explicit subscriptions replace DOM mutation observation in the shell.
 subscribe(({type})=>{if(['correct','resetCorrection','region','selectScope','undo'].includes(type)){renderDetail();}});
 window.JonaAudioBridge=Object.freeze({
+ saveSession:()=>writer.flush(),sessionDirty:()=>writer.isDirty(),
  list:()=>state.tracks.map(t=>({id:t.id,name:t.name,state:t.state,sourceAvailable:t.sourceAvailable,duration:t.duration,analysis:t.analysis,analysisScopeId:t.analysisScopeId,scopeRange:t.analysisScopeId?t.regions.find(r=>r.id===t.analysisScopeId):null,effective:resolveValues(t),activeEffective:valuesFor(t),scopeResult:scopeResult(t),result:t.result?{tempo:t.result.tempo,keys:t.result.keys,quality:t.result.quality}:null})),
  samples,findSamples:options=>{const t=selectedTrack();if(t?.sourceAvailable){samples.stopLoop();return jobs.request(t,{capabilities:['suggestions'],force:true,extraOptions:{gridRevision:t.gridRevision,settings:{grid:t.sampleGrid,gridStale:t.gridStale,...options}}});}},
  selectedId:()=>state.selectedId,
@@ -146,3 +147,17 @@ window.JonaAudioBridge=Object.freeze({
  redraw:()=>{drawWave();drawSpectrum();},exportJson,exportSession,pickSession,transport:playback
 });
 window.dispatchEvent(new Event('jona:ready'));
+
+// Site exits pass through the app-owned save barrier. A failed write keeps the tab.
+let leaving=false;
+document.addEventListener('click',async event=>{
+ const a=event.target.closest?.('a[href]');if(!a||a.target==='_blank'||event.metaKey||event.ctrlKey||event.shiftKey||event.altKey)return;
+ const dest=new URL(a.href,location.href);if(dest.origin!==location.origin||!['/','/apps/'].includes(dest.pathname))return;
+ event.preventDefault();if(leaving)return;leaving=true;
+ try{writer.schedule(state);const saved=await writer.flush();
+  if(!saved){notify('Could not save this session. Export session JSON or open the Universe in another tab; your work is still here.');return;}
+  location.assign(dest.href);
+ }catch(e){notify('Could not save this session. Keep this tab open and export session JSON.');}
+ finally{leaving=false;}
+});
+window.addEventListener('beforeunload',event=>{if(writer.isDirty()){event.preventDefault();event.returnValue='';}});

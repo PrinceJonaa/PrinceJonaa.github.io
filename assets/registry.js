@@ -1,5 +1,5 @@
 
-export const worlds=[
+const worldDefinitions=[
 {id:'atlas',name:'Atlas',subtitle:'Research & relations',href:'/atlas/',symbol:'✳',tone:'#b6a2ff',x:30,y:19,mx:22,my:15},
 {id:'apps',name:'Apps',subtitle:'Tools you can use',href:'/apps/',symbol:'⌘',tone:'#83f3d1',x:80,y:24,mx:82,my:18},
 {id:'work',name:'Work',subtitle:'Projects & resume',href:'/work/',symbol:'◈',tone:'#b0c5ff',x:12,y:59,mx:18,my:58},
@@ -7,15 +7,15 @@ export const worlds=[
 {id:'about',name:'About',subtitle:'Story & philosophy',href:'/about/',symbol:'◎',tone:'#f5cca0',x:44,y:88,mx:39,my:90},
 {id:'operations',name:'Operations',subtitle:'In development',href:'/operations/',symbol:'⟡',tone:'#9bafee',x:92,y:50,mx:87,my:48}
 ];
-export const apps=[
-{id:'jonaaudio',name:'JonaAudio',category:'creative',status:'live',symbol:'♫',tone:'#9ee7b8',href:'/JonaAudio/',description:'Private in-browser BPM and musical key estimates, waveform, spectrogram and audio-quality inspection.'},
-{id:'craft',name:'Craft Studio',category:'creative',status:'live',symbol:'◉',tone:'#bc9dff',href:'/craft/',description:'A browser-based creative workstation with LightCraft, FilmCraft, and EffectCraft.'},
-{id:'lightcraft',name:'LightCraft',category:'creative',status:'live',symbol:'☼',tone:'#f2c3a1',href:'/craft/light/',description:'Explore photo editing and image creation in your browser.'},
-{id:'filmcraft',name:'FilmCraft',category:'creative',status:'live',symbol:'▣',tone:'#9eb6ff',href:'/craft/film/',description:'Video-focused editing and experimentation in your browser.'},
-{id:'effectcraft',name:'EffectCraft',category:'creative',status:'live',symbol:'✶',tone:'#c4a6ff',href:'/craft/effect/',description:'Visual effects workspace for creative experiments.'},
-{id:'storage',name:'Craft Storage Manager',category:'utility',status:'live',symbol:'☁',tone:'#96eee2',href:'/craft/storage/',description:'Manage browser project storage and configure Google Drive backups.'},
-{id:'rhythmcut',name:'RhythmCut',category:'creative',status:'preview',symbol:'◫',tone:'#f3abd5',href:'/rhythmcut/',description:'Music-forward editing experiment. Availability and features may evolve.'},
-{id:'beatcut',name:'BeatCut',category:'creative',status:'preview',symbol:'◷',tone:'#aac8ff',href:'https://github.com/PrinceJonaa/beatcut-web',description:'An evolving direction for music-synchronized creation. Follow its GitHub repository while the web application is in development.'}
+const appDefinitions=[
+{id:'jonaaudio',name:'JonaAudio',category:'music',status:'unknown',symbol:'♫',tone:'#9ee7b8',href:'/JonaAudio/',description:'Private in-browser BPM and musical key estimates, waveform, spectrogram and audio-quality inspection.'},
+{id:'craft',name:'Craft Studio',category:'creative',status:'unknown',symbol:'◉',tone:'#bc9dff',href:'/craft/',description:'A browser-based creative workstation with LightCraft, FilmCraft, and EffectCraft.'},
+{id:'lightcraft',name:'LightCraft',category:'creative',status:'unknown',symbol:'☼',tone:'#f2c3a1',href:'/craft/light/',description:'Explore photo editing and image creation in your browser.'},
+{id:'filmcraft',name:'FilmCraft',category:'creative',status:'unknown',symbol:'▣',tone:'#9eb6ff',href:'/craft/film/',description:'Video-focused editing and experimentation in your browser.'},
+{id:'effectcraft',name:'EffectCraft',category:'creative',status:'unknown',symbol:'✶',tone:'#c4a6ff',href:'/craft/effect/',description:'Visual effects workspace for creative experiments.'},
+{id:'storage',name:'Craft Storage Manager',category:'utility',status:'unknown',symbol:'☁',tone:'#96eee2',href:'/craft/storage/',description:'Manage browser project storage and configure Google Drive backups.'},
+{id:'rhythmcut',name:'RhythmCut',category:'creative',status:'preview',symbol:'◫',tone:'#f3abd5',href:'/rhythmcut/',description:'Arrange video takes to music and export beat-synced edits. The Pages build is a pinned preview.'},
+{id:'beatcut',name:'BeatCut',category:'experiment',status:'source-only',symbol:'◷',tone:'#aac8ff',href:'https://github.com/PrinceJonaa/beatcut-web',description:'An evolving direction for music-synchronized creation. Follow its GitHub repository while the web application is in development.'}
 ];
 export const atlasTopics=[
 {id:'relation',name:'Relation',x:50,y:46,description:'A way of starting with connections and interactions rather than isolated labels.'},
@@ -25,3 +25,19 @@ export const atlasTopics=[
 {id:'boundary',name:'Boundary',x:22,y:73,description:'Where do a rule, permission, capability, or understanding stop applying?'},
 {id:'action',name:'Action',x:50,y:88,description:'What bounded step turns a conceptual model into an observable result?'}
 ];
+
+const siteRepo='PrinceJonaa/PrinceJonaa.github.io';
+const baseline='1ec398be7a2913582b928448be2b35171d7ec216';
+const reviewedAt='2026-10-12';
+const appEvidence={
+  jonaaudio:{categories:['music','creative'],tags:['bpm','key','tempo','autotune','sample','mix','compare'],owningRepo:siteRepo,owner:'Prince Jona',sourceCommit:baseline,builtArtifactCommit:baseline,storageKind:'IndexedDB metadata; localStorage preferences',persistMode:'Metadata only; original audio must be relinked',howToRecover:'Reopen saved session or import session JSON, then relink the original audio.',lastKnownIssue:'Physical Safari and long-file memory behavior unverified. Key/BPM are estimates.',browserSupportEvidence:'M6 Node 39/39 and Chromium synthetic WAV workflow recorded in JonaAudio/docs/M6.md',safeDeepLinks:['#quick','#studio/tune','#studio/sample','#studio/engineer','#studio/compare'],privacy:'local-files'},
+  craft:{categories:['creative'],owner:'Prince Jona hosting; ArtCraft upstream tools',owningRepo:siteRepo,sourceCommit:baseline,storageKind:'Editor-owned OPFS / IndexedDB / memory fallback',persistMode:'Depends on upstream editor and browser',howToRecover:'Use each editor’s project export or Craft Storage backup. Keep original media.',privacy:'local-files'},
+  lightcraft:{categories:['creative'],owner:'ArtCraft / storytold',owningRepo:'storytold/lightcraft',releaseVersion:'0.2.1',artifactHash:'5b64a944583330e38e36d879984fd71d02efbe68a2d354e6f5211819eee5a8a5',storageKind:'OPFS library/, originals/, thumbs/; fallback depends on browser',howToRecover:'Reopen library on the same origin; use editor exports or OPFS backup.',privacy:'local-files'},
+  filmcraft:{categories:['creative'],owner:'ArtCraft / storytold',owningRepo:'storytold/filmcraft',releaseVersion:'0.2.1',artifactHash:'f496c41f65e3f38b32b05b92c27940c5f464b442573b617e69923df0f085005c',storageKind:'OPFS recovery/, media/; browser-dependent fallback',howToRecover:'Use project export and recovery journal; retain source media.',privacy:'local-files'},
+  effectcraft:{categories:['creative'],owner:'ArtCraft / storytold',owningRepo:'storytold/effectcraft',releaseVersion:'0.4.0',artifactHash:'68f781094d119ab6428d0d4d50bd8718b8226916c8274345ac268562848ecccf',storageKind:'OPFS config/, files/; browser-dependent fallback',howToRecover:'Open exported .ecproj or restore the editor’s OPFS backup.',privacy:'local-files'},
+  storage:{categories:['utility'],owner:'Prince Jona',owningRepo:siteRepo,sourceCommit:baseline,storageKind:'OPFS inventory; preferences in localStorage',persistMode:'Manual backups; no continuous sync',howToRecover:'Restore a completed backup after closing all editors; matching files can be overwritten.',lastKnownIssue:'Google Drive requires a configured public OAuth client ID; IndexedDB fallback is not backed up.',privacy:'local-backup'},
+  rhythmcut:{categories:['music','creative'],tags:['video','beat','takes','shuffle','director'],owner:'Prince Jona',owningRepo:'PrinceJonaa/rhythmcut',sourceCommit:'6d188fc87b4665eff4db07c98fd4b256132d2c91',builtArtifactCommit:'7cd6cb38cdffad993b8734cad29e8b9c37ffc06d',builtAt:'2026-10-10T15:56:21.554Z',servedDeploymentId:'7cd6cb38cdffad993b8734cad29e8b9c37ffc06d',deploymentVerifiedAt:reviewedAt,releaseVersion:'0.4.0',storageKind:'App-owned IndexedDB project/audio/video blobs',persistMode:'App-owned project autosave',howToRecover:'Return to RhythmCut’s Projects library on this origin. Keep original media and exports.',lastKnownIssue:'Pages artifact is behind source main. Physical iPhone shuffle/export behavior is unverified.',privacy:'local-files'},
+  beatcut:{categories:['music','experiment'],owner:'Prince Jona',owningRepo:'PrinceJonaa/beatcut-web',storageKind:'Unknown at linked source revision',howToRecover:'Consult the source repository; this catalog entry opens code, not a verified app.',privacy:'public-source'}
+};
+export const worlds=worldDefinitions.map(r=>({...r,publicId:'world:'+r.id,kind:'world',slug:r.id,title:r.name,summary:r.subtitle,canonicalPath:r.href,visibility:'public',editorialState:'published',revision:1,createdAt:null,updatedAt:reviewedAt,tags:r.id==='work'?['hire','software','services','collaborate']:r.id==='atlas'?['explore','research','connections']:[],sourceRefs:['https://github.com/'+siteRepo],mediaRefs:[],publishedAt:null,verifiedAt:null}));
+export const apps=appDefinitions.map(r=>({...r,publicId:'app:'+r.id,kind:'app',appId:r.id,slug:r.id,title:r.name,summary:r.description,canonicalPath:r.href,currentLaunchHref:r.href,visibility:'public',editorialState:'published',revision:1,createdAt:null,updatedAt:reviewedAt,sourceCommit:null,builtArtifactCommit:null,builtAt:null,servedDeploymentId:null,deploymentVerifiedAt:null,browserSupportEvidence:null,deviceEvidence:null,requiresNetwork:'Initial app/assets load; optional services depend on app',touchesLocalFiles:r.id!=='beatcut',safeDeepLinks:[],lastKnownIssue:'Browser/device acceptance not yet measured for this catalog release.',tags:[],mediaRefs:[],publishedAt:null,verifiedAt:null,...appEvidence[r.id],repositoryHref:'https://github.com/'+appEvidence[r.id].owningRepo,sourceRefs:['https://github.com/'+appEvidence[r.id].owningRepo]}));

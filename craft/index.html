@@ -15,7 +15,7 @@
     .top{height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 clamp(20px,5vw,76px);border-bottom:1px solid var(--line);background:#101116}
     .wordmark{font-size:13px;font-weight:850;letter-spacing:.19em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
     .wordmark span{color:var(--accent)}
-    .nav{display:flex;gap:22px;align-items:center}
+    .nav{display:flex;gap:16px;align-items:center;flex-wrap:wrap}.top{height:auto;min-height:76px;padding-top:12px;padding-bottom:12px}.nav a{min-height:44px;align-content:center}
     .nav a{color:var(--muted);text-decoration:none;font-size:13px}
     .nav a:hover{color:var(--ink)}
     .home{max-width:1410px;margin:auto;padding:clamp(48px,8vw,118px) clamp(20px,5vw,76px) 72px}
@@ -45,7 +45,8 @@
     .toolhint{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
     .toolbar button,.toolbar a{background:transparent;border:1px solid #424650;color:var(--ink);border-radius:4px;padding:9px 12px;cursor:pointer;font-size:12px;text-decoration:none;white-space:nowrap}
     .toolbar button:hover,.toolbar a:hover{border-color:var(--accent)}
-    #editor{display:block;flex:1;width:100%;border:0;background:#18191c}
+    #editor,iframe[data-tool-frame]{display:block;flex:1;width:100%;border:0;background:#18191c}
+    iframe[hidden]{display:none!important}
     @media(max-width:850px){.cards{grid-template-columns:1fr}.card{min-height:270px}.symbol{font-size:54px;margin:15px 0 auto}.card p{max-width:100%}.foot{margin-top:36px}h1{font-size:clamp(64px,14vw,104px)}}
     @media(max-width:520px){.top{height:62px;padding:0 16px}.nav{gap:12px}.nav a{font-size:12px}.home{padding-top:52px}.workspace{height:calc(100dvh - 62px)}.toolbar{flex-wrap:wrap}.toolhint{display:none}.toolbar button,.toolbar a{padding:7px 9px}}
     @media(prefers-reduced-motion:reduce){.card{transition:none}.card:hover{transform:none}}
@@ -53,12 +54,12 @@
 </head>
 <body>
   <header class="top">
-    <a class="wordmark" href="/" aria-label="Prince Jona homepage">PRINCE<span>JONA</span> / LAB</a>
+    <a class="wordmark" href="/" target="_blank" rel="noopener noreferrer" aria-label="Prince Jona homepage (new tab; editor remains open)">PRINCE<span>JONA</span> / LAB</a>
     <nav class="nav" aria-label="Site navigation">
-      <a href="/beatcut/">BeatCut</a>
-      <a href="/rhythmcut/">RhythmCut</a>
-      <a href="/craft/" aria-current="page">Craft Studio</a>
-      <a href="/craft/storage/">Storage Manager ↗</a>
+      <a href="/apps/" target="_blank" rel="noopener noreferrer">Applications ↗</a>
+      <a href="/rhythmcut/" target="_blank" rel="noopener noreferrer">RhythmCut</a>
+      <a href="/craft/" data-show-chooser aria-current="page">Craft Studio</a>
+      <a href="/craft/storage/" target="_blank" rel="noopener noreferrer">Storage Manager ↗</a>
     </nav>
   </header>
   <main id="chooser" class="home">
@@ -106,16 +107,23 @@
       };
       const chooser=document.getElementById("chooser"),workspace=document.getElementById("workspace");
       const frame=document.getElementById("editor"),name=document.getElementById("toolname");
+      let activeFrame=frame,lastTool=null;
       const external=document.getElementById("newtab");
       function render(key){
         const tool=Object.prototype.hasOwnProperty.call(tools,key)?tools[key]:null;
         chooser.hidden=!!tool;workspace.hidden=!tool;
         if(tool){
-          name.textContent=tool.name;external.href=tool.url;frame.title=tool.name+" editor";
-          if(frame.getAttribute("src")!==tool.url) frame.src=tool.url;
+          name.textContent=tool.name;external.href=tool.url;
+          if(activeFrame.getAttribute("src")!==tool.url){
+            const existing=document.querySelector('iframe[data-tool-frame="'+key+'"]');
+            if(existing){activeFrame.hidden=true;activeFrame=existing;activeFrame.hidden=false;}
+            else if(!activeFrame.getAttribute('src')){activeFrame.src=tool.url;activeFrame.dataset.toolFrame=key;}
+            else{activeFrame.hidden=true;activeFrame=frame.cloneNode(false);activeFrame.removeAttribute('id');activeFrame.dataset.toolFrame=key;activeFrame.src=tool.url;activeFrame.hidden=false;workspace.append(activeFrame);}
+          }
+          activeFrame.title=tool.name+" editor";lastTool=key;document.getElementById("back").focus();
           document.title=tool.name+" — Craft Studio — Prince Jona";
         } else {
-          frame.removeAttribute("src");document.title="Craft Studio — Prince Jona";
+          document.title="Craft Studio — Prince Jona";if(lastTool)document.querySelector('[data-tool="'+lastTool+'"]')?.focus();
         }
       }
       function navigate(key){
@@ -126,6 +134,7 @@
       document.querySelectorAll("[data-tool]").forEach(function(btn){
         btn.addEventListener("click",function(){navigate(btn.dataset.tool);});
       });
+      document.querySelector("[data-show-chooser]").addEventListener("click",function(e){e.preventDefault();navigate(null);});
       document.getElementById("back").addEventListener("click",function(){navigate(null);});
       window.addEventListener("popstate",function(){render(new URLSearchParams(location.search).get("app"));});
       render(new URLSearchParams(location.search).get("app"));
