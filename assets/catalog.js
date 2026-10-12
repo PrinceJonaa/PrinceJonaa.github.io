@@ -1,8 +1,9 @@
 import {worlds, apps} from './registry.js';
+import {services, caseStudies} from './work-records.js';
 
 export const categories = ['music', 'creative', 'research', 'utility', 'client', 'experiment'];
 export const statusLabels = {'live-verified':'Live verified', preview:'Preview', planned:'Planned', unknown:'Unverified deploy', 'source-only':'Source only'};
-export const privacyLabels = {'local-files':'Files stay on device', 'local-backup':'Local files · optional Drive backup', 'public-source':'Public source repository'};
+export const privacyLabels = {'local-files':'Files stay on device', 'local-backup':'Local files · optional Drive backup', 'public-source':'Public source repository', unpublished:'No public application yet'};
 
 // Only individually reviewed public records are searchable. No Notion ingestion.
 export function isPublic(record) {
@@ -19,10 +20,11 @@ export const musicTasks = [
 export const paths = [
   {id:'listen',name:'Listen',description:'Enter the music world.',href:'/music/'},
   {id:'make',name:'Make something',description:'Find a tool for your next idea.',href:'/apps/'},
-  {id:'hire',name:'Hire / collaborate',description:'Explore the work and connect.',href:'/work/#contact'},
+  {id:'hire',name:'Hire / collaborate',description:'Review services and project proof.',href:'/services/'},
   {id:'explore',name:'Explore connections',description:'Start with the public Atlas map.',href:'/atlas/'}
 ];
-export const publicIndex = [...worlds, ...apps, ...musicTasks].filter(isPublic);
+export const publicResources = [{publicId:'resume:public',kind:'resume',id:'public-resume',name:'Jonathan Bonner — public résumé & skills',description:'Redacted software and creative engineering résumé, with downloadable PDF and links to public work.',href:'/work/cases/resume/',tags:['resume','résumé','skills','career','download','PDF'],visibility:'public',editorialState:'published'}];
+export const publicIndex = [...worlds, ...apps, ...musicTasks, ...services, ...caseStudies, ...publicResources].filter(isPublic);
 
 export function normalize(value) {
   return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();

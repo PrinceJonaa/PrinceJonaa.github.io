@@ -35,7 +35,7 @@
     {
       "path": "/work/",
       "owner": "Universe",
-      "storage": "none",
+      "storage": "in-memory inquiry draft only; no persistent local contact data",
       "workerScope": "none",
       "return": "ordinary links"
     },
@@ -104,13 +104,55 @@
     },
     {
       "path": "/beatcut/",
-      "owner": "legacy source pointer",
-      "storage": "unknown",
+      "owner": "Universe planned project status",
+      "storage": "none",
       "workerScope": "none",
-      "return": "source repository"
+      "return": "ordinary links"
+    },
+    {
+      "path": "/services/",
+      "owner": "Universe reviewed service offers",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/work/cases/jonaaudio/",
+      "owner": "Universe reviewed public proof",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/work/cases/universe/",
+      "owner": "Universe reviewed public proof",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/work/cases/heartz4sale/",
+      "owner": "Universe reviewed public proof",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/work/cases/song-to-video/",
+      "owner": "Universe reviewed public proof",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
+    },
+    {
+      "path": "/work/cases/resume/",
+      "owner": "Universe redacted public resume",
+      "storage": "none",
+      "workerScope": "none",
+      "return": "ordinary links"
     }
   ],
-  "migration": "No origin, CNAME, storage schema, worker scope or route migration in S0/S1.",
+  "migration": "No origin, CNAME, editor storage schema or worker scope migration in S0/S1/S2.",
   "privateData": "No private data exported.",
   "performanceTargets": {
     "LCPms": 2500,

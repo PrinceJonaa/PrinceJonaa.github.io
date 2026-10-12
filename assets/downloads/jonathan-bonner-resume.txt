@@ -1,0 +1,39 @@
+JONATHAN BONNER / PRINCE JONA
+Software + creative engineering
+https://princejona.me/work/
+https://www.intervised.com
+Professional contact: contact@intervised.com
+
+Founder and lead engineer at Intervised. Build useful public interfaces, local audio workflows and artist-facing web experiences with clear scope, inspectable artifacts and practical handoff.
+
+CURRENT EXPERIENCE
+Intervised LLC - Founder & lead engineer | 2021-present
+Software and creative workflow development, public web interfaces and artist website work. Focus on understandable behavior, recoverable local state and a defined delivery scope.
+
+SELECTED PUBLIC WORK
+JonaAudio - Local browser audio workspace
+Waveform/spectrum, tempo/key estimates, sampling regions, reference-note planning, on-demand level/reference measurements, worker WAV export and session metadata relinking. M6 records 39 regression checks and Chromium synthetic-WAV import/export/relink evidence. Physical-device, long-original-media and musical-quality acceptance remain limited.
+https://princejona.me/work/cases/jonaaudio/
+
+Universe - Public discovery and editor navigation
+Shared catalog, keyboard search, task routes and responsive navigation. Editor returns preserve local editing contexts or await metadata saves. S0/S1 records 45 Node checks and Chromium navigation/layout evidence. Craft engine work retains upstream attribution.
+https://princejona.me/work/cases/universe/
+
+Heartz4Sale - Artist website contribution
+Public artist web presence for Hbkrevenge across releases, merchandise and show-related discovery. Artist brand and content belong to their respective owners. No commercial-growth statistics asserted.
+https://princejona.me/work/cases/heartz4sale/
+
+SKILLS
+Public project evidence: JavaScript modules, static HTML/CSS, Web Audio API, Web Workers, IndexedDB-aware recovery, Node regression checks and Playwright browser checks.
+Additional owner-reported skills: TypeScript, React, Tailwind CSS, Node.js, Python, SQL, REST APIs, MongoDB, Gradio and Docker. This inventory does not imply every technology appears in the projects above.
+
+SELECTIVE EARLIER EXPERIENCE
+Hostos Community College - IT support / media design | September 2019-June 2020
+JobsPlus - IT support / tutoring | 2017-2018
+
+EDUCATION & TRAINING
+General Assembly - Software Engineering Bootcamp | January-May 2022
+Borough of Manhattan Community College - Human Services coursework; no completed degree claimed
+
+PUBLIC EDITION - 12 OCT 2026
+Skills proof: https://princejona.me/work/cases/resume/
