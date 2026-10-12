@@ -31,7 +31,16 @@ function wav(seconds=5,rate=44100,tempo=120){
   await page.locator('[data-tool=compare]').click();await page.getByRole('button',{name:'Measure both levels'}).click();
   await page.waitForFunction(()=>window.JonaAudioBridge.list().every(t=>!!t.result?.quality),null,{timeout:30000});
   await page.locator('.compare-widget button', {hasText:'Listen A'}).click();
+  await page.getByRole('checkbox',{name:'Enable attenuation-only RMS match'}).check();
+  await page.locator('.compare-widget button', {hasText:'Listen B'}).click();
+  assert.ok(await page.evaluate(()=>document.querySelector('#audio').volume<=1));
+  await page.locator('[data-tool=sample]').click();
+  await page.getByRole('button',{name:'Prepare WAV',exact:true}).click();
+  await page.waitForFunction(()=>!document.querySelector('.sample-workspace button')?.disabled&&[...document.querySelectorAll('.sample-workspace button')].some(b=>b.textContent==='Download WAV'&&!b.disabled),null,{timeout:30000});
+  const [wavDownload]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Download WAV',exact:true}).click()]);
+  assert.match(wavDownload.suggestedFilename(),/\\.wav$/i);
   await page.locator('[data-route=settings]').click();
+  assert.equal(await page.evaluate(()=>document.querySelector('#audio').volume),1,'Compare attenuation resets on exit');
   const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'Export session JSON'}).click()]);
   assert.match(download.suggestedFilename(),/session.json/);
   await page.reload();await page.waitForFunction(()=>window.JonaAudioBridge?.list().length===2,null,{timeout:15000});
