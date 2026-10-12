@@ -27,3 +27,16 @@
 .universe-return:focus-visible,.universe-return-dialog :focus-visible{outline:2px solid #d2fd76;outline-offset:4px}
 /* No reserved top row. RhythmCut and other editors occupy their full viewport.
    The floating shortcut does not resize #root, the body, canvas, or playback. */
+
+/* Existing non-RhythmCut editors can opt in to the compact button without
+   changing their viewport model in this focused patch. */
+body.universe-editor-shell:not(.universe-rhythmcut){--return-row:calc(60px + env(safe-area-inset-top));padding:0!important}
+body.universe-editor-shell:not(.universe-rhythmcut) #root{
+  position:fixed;inset:var(--return-row) 0 0;height:auto;overflow:hidden
+}
+body.universe-editor-shell:not(.universe-rhythmcut) .rc-app{height:100%!important}
+body.universe-editor-shell:not(.universe-rhythmcut)>canvas{
+  top:var(--return-row)!important;height:calc(100% - var(--return-row))!important
+}
+body.universe-editor-shell:not(.universe-rhythmcut)>#loading,
+body.universe-editor-shell:not(.universe-rhythmcut)>#lightcraft_loading{top:var(--return-row)}
