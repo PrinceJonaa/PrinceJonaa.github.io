@@ -1,6 +1,9 @@
 // The editor owns its viewport and media. Universe navigation is optional UI,
 // not an extra page row or a change to app-owned IndexedDB/OPFS.
 if (window.top === window) {
+  // Keep legacy viewport accommodations in other apps until individually tested.
+  document.body.classList.add('universe-editor-shell');
+  if (location.pathname.replace(/\/+$/,'') === '/rhythmcut') document.body.classList.add('universe-rhythmcut');
   const KEY = 'pj-universe-shortcut-size-v1';
   const modes = new Set(['icon', 'pill', 'hidden']);
   const savedMode = () => {
