@@ -113,3 +113,9 @@ let resizeQueued=false;window.addEventListener('resize',()=>{if(resizeQueued)ret
 ui['mobile-analyze'].addEventListener('click',()=>switchMobile('analyze'));
 ui['mobile-library'].addEventListener('click',()=>switchMobile('library'));
 refreshMobile();renderDetail();renderLibrary();
+// Read-only adapter for the multi-view navigation and comparison workspace.
+window.JonaAudioBridge=Object.freeze({
+ list:()=>tracks.map(t=>({id:t.id,name:t.name,state:t.state,duration:t.duration,result:t.result?{tempo:t.result.tempo,keys:t.result.keys,quality:t.result.quality}:null})),
+ selectedId:()=>selected?.id??null,
+ choose:id=>{const match=tracks.find(t=>t.id===Number(id));if(match)select(match);}
+});
