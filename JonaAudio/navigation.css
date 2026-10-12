@@ -200,3 +200,25 @@ html,body{overflow-x:clip}
 #app .job-action{min-height:44px;padding:8px}
 .diagnostic-text{font:12px ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
 @media(max-width:365px){#app .quick-controls .quick-actions>.button{flex:1;white-space:normal}}
+/* M3 note masks, harmonic context and reference audition. */
+#app .tuning-workspace{grid-column:1/-1!important}
+#app .tuning-workspace h4{font-size:14px;margin:18px 0 10px}
+#app .tuning-provenance{color:var(--accent);font-size:14px;font-weight:700;overflow-wrap:anywhere}
+#app .tuning-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+#app .tuning-form select,#app .tuning-form input,#app .tuning-workspace>label select{width:100%;min-width:0;min-height:44px;border:1px solid var(--line);background:var(--inset);border-radius:8px;padding:9px;color:var(--text);font-size:16px}
+#app .note-mask,#app .reference-keyboard{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:12px 0}
+#app .note-toggle{display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);border-radius:8px;min-height:48px;background:var(--inset);font-size:14px;cursor:pointer}
+#app .note-toggle input{width:20px;height:20px;margin:0;accent-color:var(--accent)}
+#app .note-toggle.included{border-color:var(--accent)}
+#app .reference-key{min-height:64px;border:1px solid var(--line);border-radius:8px;background:var(--inset);color:var(--muted);font:inherit;font-size:14px;cursor:pointer}
+#app .reference-key[data-accidental=false]{background:var(--panel);color:var(--text)}
+#app .reference-key.included{border-color:var(--accent);color:var(--accent)}
+#app .reference-key.sounding{background:var(--accent);color:var(--accentText)}
+#app .tuning-summary{border-left:3px solid var(--accent);padding:8px 12px;background:var(--inset);font-size:13px;overflow-wrap:anywhere}
+#app .tuning-candidate{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0}
+#app .tuning-candidate strong{margin-right:auto;font-size:14px}
+#app .tuning-workspace .button{min-height:44px}
+.player-dock.has-reference-tone{grid-template-columns:minmax(120px,.4fr) minmax(0,1fr) auto}
+.player-dock>button:last-child:not([hidden]){border:1px solid var(--line);background:var(--inset);color:var(--text)}
+@media(max-width:760px){#app .tuning-form{grid-template-columns:1fr}#app .note-mask,#app .reference-keyboard{gap:5px}#app .note-toggle{flex-direction:column;gap:4px;padding:6px 0;min-height:54px}#app .tuning-workspace .quick-actions .button{white-space:normal}.player-dock>button:last-child:not([hidden]){margin-top:6px;min-height:44px;border-radius:8px}}
+@media(max-width:365px){#app .note-mask,#app .reference-keyboard{grid-template-columns:repeat(4,minmax(0,1fr))}}

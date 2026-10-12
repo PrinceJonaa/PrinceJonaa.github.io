@@ -1,4 +1,5 @@
 import {createRouter} from './router.js';
+import {createTuningView} from './tuning-view.js';
 import {createLayouts, WIDGETS} from './layouts.js';
 import {createTapTempo,tempoMultiple,summaryText,createMetronome} from './musical-controls.js';
 const q=(s,r=document)=>r.querySelector(s);
@@ -49,7 +50,7 @@ const first=node('select','compare-select'),second=node('select','compare-select
 const compareInputs=node('div','compare-inputs'),compareResult=node('div','compare-result');
 const label=(text,control)=>{const l=node('label','compare-label',text);l.append(control);return l;};
 compareInputs.append(label('FIRST TRACK',first),node('span','compare-between','⇄'),label('SECOND TRACK',second));compare.append(compareInputs,compareResult);
-const tuning=node('section','panel');tuning.append(node('h3','','Tuning reference'));const tuningText=node('p','muted');tuning.append(tuningText,node('p','muted','Note masks and reference-key audition arrive in M3. This is the shared key reference; no pitch correction is applied.'));
+const tuningView=createTuningView({bridge,openSheet,status}),tuning=tuningView.element;
 const stereo=node('section','panel');stereo.append(node('h3','','Stereo'));const stereoText=node('p','muted');stereo.append(stereoText);
 const widgets={tempo:q('.metric.bpm'),key:q('.metric.key'),waveform:wave,'tuning-notes':tuning,candidates:harmonic,levels:quality,stereo,spectrum,'compare-summary':compare};
 for(const [id,widget] of Object.entries(widgets))widget.dataset.widget=id;
@@ -57,6 +58,8 @@ const trackBar=node('section','source-bar'),trackSelect=node('select','source-se
 trackSelect.onchange=()=>bridge.choose(trackSelect.value);
 const dock=node('section','player-dock');dock.setAttribute('aria-label','Persistent audio player');
 const playerTitle=node('button','text-button','No track selected');playerTitle.type='button';playerTitle.onclick=()=>router.go('studio/sample');dock.append(playerTitle,transport);
+const stopReference=button('Stop notes',()=>bridge.transport.stopCompanions());stopReference.hidden=true;dock.append(stopReference);let referenceToneLabel=null;
+function refreshPlayerTitle(){playerTitle.textContent=referenceToneLabel||bridge.transport.owner?.name||'No track selected';}
 const toast=node('div','global-status');toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');toast.hidden=true;
 settings.append(heading('Settings','Appearance, workspace layouts and browser session.'));
 const cards=node('div','settings-cards');settings.append(cards);
@@ -87,6 +90,7 @@ function closeSheet(){if(!dialog.open)return;if(sheetRouteOwned){history.back();
 dialog.addEventListener('cancel',e=>{e.preventDefault();closeSheet();});
 dialog.addEventListener('keydown',e=>{if(e.key!=='Tab')return;const nodes=[...dialog.querySelectorAll('button,input,select,textarea,[tabindex="0"]')].filter(e=>!e.disabled&&!e.hidden);const a=nodes[0],b=nodes.at(-1);if(e.shiftKey&&document.activeElement===a){b.focus();e.preventDefault();}else if(!e.shiftKey&&document.activeElement===b){a.focus();e.preventDefault();}});
 function renderRoute(dest,previous){
+  if(previous&&previous.hash!==dest.hash)tuningView.stop();
   if(dialog.open && (previous?.hash!==dest.hash||!history.state?.jonaSheet))dismissSheet();
   if(previous&&previous.hash!==dest.hash)scrolls.set(previous.hash,window.scrollY);
   if(dest.page==='quick'||dest.page==='studio')lastAudioRoute=dest.page==='quick'?'quick':'studio/'+dest.tool;
@@ -94,9 +98,9 @@ function renderRoute(dest,previous){
   trackBar.hidden=!['quick','studio'].includes(dest.page);
   for(const b of rail.querySelectorAll('[data-route]'))b.setAttribute('aria-current',b.dataset.route===dest.page?'page':'false');
   for(const b of toolnav.children)b.setAttribute('aria-current',b.dataset.tool===dest.tool?'page':'false');
-  const descriptions={tune:'Use the shared key reference and inspect alternative readings.',sample:'Audition the source waveform. Region editing and WAV export arrive in M4.',engineer:'Inspect the existing level and spectrum measurements.',compare:'Compare effective key, tempo and available measurements.'};
+  const descriptions={tune:'Choose your backing reference, edit allowed notes, audition a scale and copy the tuning setup.',sample:'Audition the source waveform. Region editing and WAV export arrive in M4.',engineer:'Inspect the existing level and spectrum measurements.',compare:'Compare effective key, tempo and available measurements.'};
   toolIntro.textContent=descriptions[dest.tool]||'';
-  toolActions.replaceChildren();if(dest.tool==='engineer'){toolActions.append(button('Analyze levels',()=>bridge.requestAnalysis(['levels'])),button('Analyze spectrum',()=>bridge.requestAnalysis(['spectrum'])),button('Cancel analysis',()=>bridge.cancel(bridge.selectedId())));}else if(dest.tool==='tune'){toolActions.append(button('Analyze key',()=>bridge.requestAnalysis(['key'])),button('Correct reference',()=>router.go('quick?corrections')));}
+  toolActions.replaceChildren();if(dest.tool==='engineer'){toolActions.append(button('Analyze levels',()=>bridge.requestAnalysis(['levels'])),button('Analyze spectrum',()=>bridge.requestAnalysis(['spectrum'])),button('Cancel analysis',()=>bridge.cancel(bridge.selectedId())));}
   applyWidgets();refresh();
   requestAnimationFrame(()=>{bridge.redraw();if(previous?.hash!==dest.hash)window.scrollTo(0,scrolls.get(dest.hash)||0);});
   if(dest.sheet==='corrections')openSheet('Correct an estimate',corrections,{historyEntry:false});
@@ -106,7 +110,8 @@ function applyWidgets(){
   main.dataset.density=layout.density;
   const required=dest.page==='quick'?['tempo','key','waveform']:({tune:['tuning-notes'],sample:['waveform'],engineer:['levels'],compare:['compare-summary']}[dest.tool]||[]);
   const host=dest.page==='quick'?quickWorkspace:studioWorkspace;
-  const ordered=dest.page==='quick'?[...['tempo','key'].map(id=>layout.widgets.find(w=>w.id===id)),...layout.widgets.filter(w=>!['tempo','key'].includes(w.id))]:layout.widgets;
+  const pinned=dest.page==='quick'?['tempo','key']:required;
+  const ordered=[...pinned.map(id=>layout.widgets.find(w=>w.id===id)),...layout.widgets.filter(w=>!pinned.includes(w.id))];
   for(const w of ordered){
     const element=widgets[w.id];host.append(element);element.style.gridColumn='span '+w.span;
     element.hidden=!required.includes(w.id)&&!w.visible;
@@ -124,12 +129,12 @@ function refreshPresetOptions(){presetSelect.replaceChildren();for(const {id,nam
 function refresh(){
   const all=bridge.list(),current=all.find(t=>t.id===bridge.selectedId());
   q('#rail-count').textContent=all.length;q('#rail-name').textContent=current?.name||'No track selected';q('#rail-state').textContent=current?.state||'Add audio to begin';
-  playerTitle.textContent=current?.name||'No track selected';dock.classList.toggle('is-empty',!current);
+  refreshPlayerTitle();dock.classList.toggle('is-empty',!current);
   empty.hidden=!!current;quickWorkspace.hidden=!current;quickActions.hidden=!current;shortcuts.hidden=!current;controls.hidden=!current;toolActions.hidden=!current;refreshMusical(current);
   intro.classList.toggle('has-track',!!current);
   const old=trackSelect.value;trackSelect.replaceChildren();if(!all.length)trackSelect.append(node('option','','No track selected'));
   for(const t of all){const o=node('option','',t.name);o.value=String(t.id);trackSelect.append(o);}trackSelect.value=String(current?.id||old);trackSelect.disabled=!all.length;
-  tuningText.textContent=current?`${current.activeEffective.key||'No key chosen'} · ${current.activeEffective.keySource} · ${current.activeEffective.scope}`:'Choose a track; manual key corrections work before analysis.';
+  tuningView.refresh();
   stereoText.textContent=Number.isFinite(current?.result?.quality?.stereoCorrelation)?'Correlation: '+current.result.quality.stereoCorrelation.toFixed(2):'No stereo measurement available.';
   renderCompare();
 }
@@ -177,7 +182,8 @@ presetSelect.onchange=()=>{const saved=layouts.select(presetSelect.value);if(!sa
 depthSelect.onchange=()=>{mode.value=depthSelect.value;mode.dispatchEvent(new Event('change',{bubbles:true}));};mode.addEventListener('change',()=>depthSelect.value=mode.value);
 first.onchange=renderCompare;second.onchange=renderCompare;
 bridge.subscribe(()=>refresh());window.addEventListener('jona:status',e=>status(e.detail));
-window.addEventListener('jona:playback',()=>{playerTitle.textContent=bridge.list().find(t=>t.id===bridge.selectedId())?.name||'No track selected';});
+window.addEventListener('jona:playback',refreshPlayerTitle);
+window.addEventListener('jona:reference-tone',e=>{referenceToneLabel=e.detail.label;stopReference.hidden=!e.detail.running;refreshPlayerTitle();dock.classList.toggle('has-reference-tone',e.detail.running);});
 library.addEventListener('click',e=>{if(e.target.closest('button.track'))router.go(lastAudioRoute);});fileInput.addEventListener('change',()=>router.go('quick'));clear.addEventListener('click',()=>router.go('quick'));
 window.addEventListener('keydown',e=>{if(!e.altKey||!/^Digit[1-4]$/.test(e.code)||/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName))return;router.go(['quick','library','studio','settings'][Number(e.code.at(-1))-1]);e.preventDefault();});
 function measureDock(){document.documentElement.style.setProperty('--nav-height',rail.getBoundingClientRect().height+'px');document.documentElement.style.setProperty('--player-height',dock.getBoundingClientRect().height+'px');}

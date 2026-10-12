@@ -1,7 +1,8 @@
 import {KEYS} from './engine.js';
+import {validateTuning} from './tuning-model.js';
 const VALID_KEYS=new Set(KEYS.flatMap(n=>[n+' major',n+' minor']));
 // Musical decisions have one owner. Layout and playback never rewrite estimates.
-export const state = {tracks: [], selectedId: null, generation: 0};
+export const state = {tracks: [], selectedId: null, generation: 0, standaloneTuning:null};
 const listeners = new Set();
 export const selectedTrack = () => state.tracks.find(t => t.id === state.selectedId) || null;
 export const sourceKey = f => [f.name, f.size, f.lastModified].join(':');
@@ -28,7 +29,7 @@ export function dispatch(command) {
     case 'add': {
       const t=command.track;
       const c=legacyCorrections[sourceKey(t.file)] || {};
-      t.sourceIdentity=sourceKey(t.file);t.sourceRevision=1;t.analysis={};t.regions=[];t.corrections={};
+      t.tuningSetup=null;t.sourceIdentity=sourceKey(t.file);t.sourceRevision=1;t.analysis={};t.regions=[];t.corrections={};
       if(Number.isFinite(c.bpm)&&c.bpm>=25&&c.bpm<=400)t.corrections.bpm=c.bpm;
       if(VALID_KEYS.has(c.key))t.corrections.key=c.key;
       t.corrections.origins=c.origins&&typeof c.origins==='object'?c.origins:{};
@@ -36,15 +37,21 @@ export function dispatch(command) {
       state.tracks.push(t);break;
     }
     case 'select': if (!track) return false;state.selectedId=track.id;break;
+    case 'selectScope':if(!track||(command.regionId!=null&&!track.regions.some(r=>r.id===command.regionId)))return false;track.analysisScopeId=command.regionId||null;break;
     case 'patch': if (!track) return false;Object.assign(track, command.patch);break;
     case 'remove': state.tracks=state.tracks.filter(t => t.id!==command.trackId);if(state.selectedId===command.trackId)state.selectedId=null;break;
-    case 'clear': state.tracks=[];state.selectedId=null;state.generation++;break;
+    case 'clear': state.tracks=[];state.selectedId=null;state.standaloneTuning=null;state.generation++;break;
     case 'region': {
       if(!track)return false;
       const r=command.region;
       if(!r || !Number.isFinite(r.start)||!Number.isFinite(r.end)||r.start<0||r.end<=r.start||r.end>(track.duration??Infinity))return false;
       const current=track.regions.find(v=>v.id===r.id);
       if(current){if(current.start!==r.start||current.end!==r.end){current.regionRevision=(current.regionRevision||0)+1;current.result=null;for(const [key,entry] of Object.entries(track.analysis||{}))if(key.startsWith(r.id+':')){entry.requestRevision++;entry.status='idle';entry.reason=null;}}Object.assign(current,r);}else track.regions.push({...r,regionRevision:1,trackId:track.id,corrections:r.corrections||{}});
+      break;
+    }
+    case 'tuning': {
+      const setup=validateTuning(command.setup);if(!setup)return false;
+      if(command.trackId==null){state.standaloneTuning=setup;}else {const target=command.regionId==null?track:track?.regions.find(r=>r.id===command.regionId);if(!target)return false;target.tuningSetup=setup;track.decisionRevision++;}
       break;
     }
     case 'correct':
