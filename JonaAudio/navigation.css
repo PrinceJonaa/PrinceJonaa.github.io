@@ -271,3 +271,7 @@ html,body{overflow-x:clip}
 #theme.icon-btn{width:auto;min-width:44px;min-height:44px;padding:0 12px;font-size:12px;font-weight:750;color:var(--text)}
 .footer a{text-decoration:underline;text-underline-offset:.18em;text-decoration-thickness:1.5px;font-weight:750}
 .footer a:hover,.footer a:focus-visible{text-decoration-thickness:2.5px}
+
+/* M6 accessibility follow-up: vector navigation symbols, no glyph-only text nodes. */
+#app .rail-links svg{display:block;flex:0 0 auto;width:22px;height:22px;stroke:currentColor;stroke-width:1.8;fill:none;stroke-linecap:round;stroke-linejoin:round}
+@media(max-width:760px){#app .rail-links svg{width:21px;height:21px}}
