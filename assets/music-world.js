@@ -4,7 +4,7 @@ const node=(tag,text,cls='')=>{const n=document.createElement(tag);n.textContent
 const safeStream=s=>{try{const u=new URL(s,location.origin);return u.protocol==='https:'&&/(^|\.)spotify\.com$|(^|\.)soundcloud\.com$|(^|\.)youtube\.com$|^youtu\.be$/.test(u.hostname)?u.href:null;}catch{return null;}};
 const safePreview=s=>{try{const u=new URL(s,location.origin);return u.origin===location.origin&&u.pathname.startsWith('/assets/music/')?u.href:null;}catch{return null;}};
 const clock=s=>Number.isFinite(s)?Math.floor(s/60)+':'+String(Math.floor(s%60)).padStart(2,'0'):'0:00';
-let tracks=[],releases=[],videos=[],queue=[],local=[],current=-1,resume=null;
+let tracks=[],releases=[],videos=[],queue=[],local=[],current=-1,resume=null,lastQueueSignature='';
 try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x?.schema===1&&x.playerResume?.trackPublicId)resume=x.playerResume;}catch{}
 const audio=$('[data-music-audio]'),status=$('[data-music-status]'),seek=$('[data-music-seek]');
 const currentTrack=()=>queue[current]||null;
@@ -20,6 +20,9 @@ function draw(){
  seek.max=Number.isFinite(audio.duration)?Math.floor(audio.duration):0;
  seek.value=Math.min(Number(seek.max),Math.floor(audio.currentTime||0));
  $('[data-music-time]').textContent=clock(audio.currentTime)+' / '+clock(audio.duration);
+ const signature=queue.map(x=>x.id).join('|')+'#'+current;
+ if(signature===lastQueueSignature)return;
+ lastQueueSignature=signature;
  const root=$('[data-music-queue]');root.replaceChildren();
  queue.forEach((item,i)=>{const li=node('li','');const b=node('button',item.title+(item.local?' · local':''));
  b.type='button';b.setAttribute('aria-current',String(i===current));if(i===current)b.className='is-current';b.onclick=()=>select(i,false);li.append(b);root.append(li);});
