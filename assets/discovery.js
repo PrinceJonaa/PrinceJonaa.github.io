@@ -16,8 +16,8 @@ function appCard(app) {
   const body=element('div','app-content'),badge=element('span','status',statusLabels[app.status]);badge.dataset.status=app.status;
   const title=element('h3','',app.name),summary=element('p','',app.description);
   const privacy=element('span','privacy-label',privacyLabels[app.privacy]);
-  const actions=element('div','app-actions');actions.append(link(app.status==='source-only'?'View source ↗':'Launch →',app.href,'btn btn-primary'));
-  if(app.repositoryHref!==app.href)actions.append(link('Source ↗',app.repositoryHref,'app-link'));
+  const actions=element('div','app-actions');actions.append(link(app.status==='planned'?'View plan →':app.status==='source-only'?'View source ↗':'Launch →',app.href,'btn btn-primary'));
+  if(app.repositoryHref && app.repositoryHref!==app.href)actions.append(link('Source ↗',app.repositoryHref,'app-link'));
   const details=element('details','app-details');details.append(element('summary','','About this tool'));
   const info=element('dl');
   for(const [label,value] of [['Owner',app.owner],['Storage',app.storageKind],['Recover',app.howToRecover],['Release',app.releaseVersion?`v${app.releaseVersion}${app.builtArtifactCommit?' · '+app.builtArtifactCommit.slice(0,12):''}`:'No versioned artifact recorded'],['Checks',app.browserSupportEvidence||'Current app/device workflow not verified'],['Limit',app.lastKnownIssue]]) {
@@ -56,11 +56,12 @@ function initPalette() {
   function select(index){selected=matches.length?(index+matches.length)%matches.length:0;nodes.forEach((n,i)=>n.setAttribute('aria-selected',String(i===selected)));if(nodes[selected]){input.setAttribute('aria-activedescendant',nodes[selected].id);nodes[selected].scrollIntoView({block:'nearest'});}else input.removeAttribute('aria-activedescendant');}
   function render(){
     matches=searchRecords(publicIndex,input.value);nodes=[];results.replaceChildren();
-    for(const [kind,label] of [['action','Music tasks'],['app','Applications'],['world','Worlds']]){
+    for(const [kind,label] of [['action','Music tasks'],['app','Applications'],['service','Services'],['caseStudy','Project proof'],['resume','Résumé & skills'],['world','Worlds']]){
       const group=matches.filter(r=>r.kind===kind);if(!group.length)continue;
       const wrapper=element('div','search-group');wrapper.setAttribute('role','group');wrapper.setAttribute('aria-label',label);
       const heading=element('div','search-group-label',label);heading.setAttribute('role','presentation');wrapper.append(heading);
       for(const r of group){const row=link('',r.href,'search-result');if(r.href.startsWith('https://'))row.setAttribute('aria-label',r.name+' (opens another site in a new tab)');row.id='search-'+r.publicId.replace(':','-');row.setAttribute('role','option');row.tabIndex=-1;row.dataset.publicId=r.publicId;
+        row.addEventListener('click',()=>{previousFocus=null;dialog.close();});
         row.append(element('strong','',r.name),element('span','',r.description||r.subtitle));wrapper.append(row);nodes.push(row);
       }results.append(wrapper);
     }

@@ -1,10 +1,10 @@
-name: Universe S0-S1 acceptance
+name: Universe acceptance
 on:
   push:
-    branches: [main, feat/universe-s0-s1]
-    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', '.github/workflows/universe-discovery.yml']
+    branches: [main, feat/universe-s0-s1, feat/universe-s1-s2]
+    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', '.github/workflows/universe-discovery.yml']
   pull_request:
-    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', '.github/workflows/universe-discovery.yml']
+    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', '.github/workflows/universe-discovery.yml']
 permissions:
   contents: read
 jobs:
@@ -20,11 +20,13 @@ jobs:
         run: node --test tests/*.test.mjs JonaAudio/tests/*.test.mjs
       - name: Browser runtime
         run: |
-          npm install --no-save --no-package-lock playwright@1.58.2
+          npm install --no-save --no-package-lock playwright@1.58.2 @electric-sql/pglite@0.5.9
           npx playwright install --with-deps chromium
       - name: Consolidated browser acceptance
         run: |
           node tests/universe-browser.cjs
+      - name: Prepared inquiry schema and private permissions
+        run: node tests/inquiry-db.cjs
       - name: Preserve acceptance evidence
         if: always()
         uses: actions/upload-artifact@v4

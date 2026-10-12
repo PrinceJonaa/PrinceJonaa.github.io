@@ -1,0 +1,22 @@
+# Intervised inquiry activation gate
+
+**Prepared source, not a live service.** The public configuration remains `endpoint: null`. Existing Intervised hosting returned an authorization error and Supabase management is not connected. No table/function, email sender or receipt has been provisioned or verified by this change.
+
+## Deploy to the existing Intervised Supabase project
+
+1. Connect authorized Supabase management and confirm project `jnfnqtohljybohlcslnm` against Intervised's current configuration. Review and apply the single migration; do not create a second copy of the database or migrate editor storage.
+2. From the repository root, use an authorized current Supabase CLI: `supabase functions deploy universe-inquiries --project-ref jnfnqtohljybohlcslnm --use-api`. The `--use-api` deployment supports the shared `assets/inquiry-core.js` import outside `supabase/`; verify bundling on the actual project before activation. The anonymous endpoint uses `verify_jwt = false`; the private table and RPC remain inaccessible to anonymous/authenticated client roles. Use a server secret key from `SUPABASE_SECRET_KEYS` or explicit `SUPABASE_SECRET_KEY`, never a publishable key. Set a random `UNIVERSE_RATE_SALT` of at least 32 characters in server secrets.
+3. Verify the trusted gateway overwrites `x-real-ip` before relying on per-network rate limits. If it does not, adjust to the provider's documented trusted client-IP header. The current missing-header fallback deliberately shares a single network bucket.
+4. Owner review uses the existing authenticated Supabase project dashboard and `universe_inquiries` table, ordered by `received_at`. No guest or ordinary user can select, update, delete or invoke the intake RPC. Verify those permissions using actual anonymous and authenticated tokens before activation.
+5. Configure a verified sender in `UNIVERSE_MAIL_FROM` and `RESEND_API_KEY` if using Resend. The only notification recipient is the owner-selected, published `contact@intervised.com`. `sent` means provider acceptance; this implementation does not claim delivery or add a webhook that can assert it. Without a verified sender, receipts explicitly say `unconfigured`.
+6. Schedule `select public.purge_universe_inquiries()` daily using the project's existing authenticated scheduler (180-day inquiry retention; expired rate buckets removed after a day). Confirm the job succeeds before activating. Owner deletion: delete a selected request ID in the protected dashboard. Privacy/removal requests go to `contact@intervised.com` with the receipt ID. Email copies have separate mailbox/provider retention; purge them as part of a deletion request.
+
+## Required live acceptance before changing public config
+
+- TLS and exact Princejona.me CORS/preflight work. Origin rejection, consent, body/field limits, honeypot and unsafe-reference failures create no rows. No attachments are accepted and raw IPs are not stored. Draft contents never enter browser page/query URLs, logs or analytics. The explicit “Open email draft” action places the brief in a `mailto:` email-app handoff for the user to review and send.
+- Real valid request yields exactly one private row and a real ID/time. Concurrent same-key retries return that ID; changed-body same-key returns 409. Storage failure produces no success. Genuine rate limits produce 429. Run these against the database, not a simulated dependency.
+- Provider failure leaves the stored inquiry with failed/queued notification state. Provider acceptance becomes `sent`, never `delivered`. Replay does not send a second notification. Owner-only manual retry must use `universe/<receipt-ID>` and the identical mail body within the provider's idempotency window; review outside that window before retrying.
+- Protected owner review and deletion work. Daily expiry cleanup is scheduled and verified. Logs redact request bodies, reply addresses and references.
+- Set the verified HTTPS function URL in `assets/inquiry-config.js`, rerun browser acceptance and publish. An unavailable health check keeps email-draft/copy fallbacks available and disables online submission.
+
+The local handler tests cover validation ordering, errors, storage wait and truthful receipt/transport handling. `tests/inquiry-db.cjs` executes this actual migration/RPC in disposable PostgreSQL and checks private permissions, service-role access, replay/conflict, rate boundaries, rollback and purge. These checks do **not** prove the hosted provider gateway, owner dashboard, scheduled cleanup or email delivery in production.

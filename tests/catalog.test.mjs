@@ -6,7 +6,7 @@ import {searchRecords,publicIndex,musicTasks,paths} from '../assets/catalog.js';
 const ids=new Set();
 test('public index has unique IDs and routes for every approved app and world',()=>{
  for(const r of [...apps,...worlds]){assert.equal(r.visibility,'public');assert.equal(r.editorialState,'published');}
- for(const r of publicIndex){assert.ok(!ids.has(r.publicId),r.publicId);ids.add(r.publicId);assert.ok(['app','world','action'].includes(r.kind));const url=new URL(r.href,'https://princejona.me');assert.ok(['https:'].includes(url.protocol));if(url.origin==='https://princejona.me')assert.ok(existsSync('.'+url.pathname+(url.pathname.endsWith('/')?'index.html':'')),r.href);}
+ for(const r of publicIndex){assert.ok(!ids.has(r.publicId),r.publicId);ids.add(r.publicId);assert.ok(['app','world','action','service','caseStudy','resume'].includes(r.kind));const url=new URL(r.href,'https://princejona.me');assert.ok(['https:'].includes(url.protocol));if(url.origin==='https://princejona.me')assert.ok(existsSync('.'+url.pathname+(url.pathname.endsWith('/')?'index.html':'')),r.href);}
  assert.equal(apps.length,8);for(const a of apps){assert.equal(searchRecords(publicIndex,a.name).some(r=>r.publicId===a.publicId),true);assert.ok(a.owner);assert.ok(a.owningRepo);assert.ok(a.howToRecover);assert.equal(a.deviceEvidence,null);}
  for(const w of worlds)assert.ok(searchRecords(publicIndex,w.name).some(r=>r.publicId===w.publicId));
 });

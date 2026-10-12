@@ -1,0 +1,4 @@
+# Anonymous intake: validation, abuse limits and service-only persistence live
+# inside the function. No public client key grants access to the private table.
+[functions.universe-inquiries]
+verify_jwt = false
