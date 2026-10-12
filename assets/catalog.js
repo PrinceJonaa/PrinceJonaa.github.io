@@ -1,4 +1,4 @@
-import {worlds, apps} from './registry.js';
+import {worlds, apps, atlasTopics} from './registry.js';
 import {services, caseStudies} from './work-records.js';
 
 export const categories = ['music', 'creative', 'research', 'utility', 'client', 'experiment'];
@@ -24,7 +24,8 @@ export const paths = [
   {id:'explore',name:'Explore connections',description:'Start with the public Atlas map.',href:'/atlas/'}
 ];
 export const publicResources = [{publicId:'resume:public',kind:'resume',id:'public-resume',name:'Jonathan Bonner — public résumé & skills',description:'Redacted software and creative engineering résumé, with downloadable PDF and links to public work.',href:'/work/cases/resume/',tags:['resume','résumé','skills','career','download','PDF'],visibility:'public',editorialState:'published'}];
-export const publicIndex = [...worlds, ...apps, ...musicTasks, ...services, ...caseStudies, ...publicResources].filter(isPublic);
+export const atlasSearch = atlasTopics.map(t=>({publicId:'article:'+t.id,kind:'article',name:t.name,description:t.description,href:'/atlas/?article='+encodeURIComponent(t.id),visibility:'public',editorialState:'published',tags:['atlas','concept','research',t.id]}));
+export const publicIndex = [...atlasSearch,...worlds, ...apps, ...musicTasks, ...services, ...caseStudies, ...publicResources].filter(isPublic);
 
 export function normalize(value) {
   return String(value || '').normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();

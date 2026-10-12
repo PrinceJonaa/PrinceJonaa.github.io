@@ -19,7 +19,7 @@ async function serve(){const root=process.cwd();const mime={'.html':'text/html',
  await page.locator('[data-app-search]').fill('missing');assert.match(await page.locator('[data-app-count]').innerText(),/^0/);await page.getByRole('button',{name:'Show all tools'}).click();assert.equal(await page.locator('.app-card').count(),8);
  await page.locator('[data-app-status]').selectOption('preview');assert.equal(await page.locator('.app-card').count(),1);assert.match(await page.locator('.app-card h3').innerText(),/RhythmCut/);await page.reload();await page.locator('.app-card').first().waitFor();assert.equal(await page.locator('.app-card').count(),1);await page.locator('[data-app-reset]').click();
  await page.locator('[data-open-search]').first().click();await page.locator('[data-global-query]').fill('no result');assert.equal(await page.locator('.search-result').count(),0);await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-close-search')!==null),true);await page.keyboard.press('Tab');assert.equal(await page.locator('[data-global-query]').evaluate(el=>document.activeElement===el),true);await page.keyboard.press('Escape');
- for(const width of [320,390,430,768,1200,1440])for(const route of ['/','/apps/','/404.html','/work/','/services/','/work/cases/jonaaudio/','/work/cases/universe/','/work/cases/heartz4sale/','/work/cases/song-to-video/','/work/cases/resume/','/beatcut/','/continue/','/updates/','/music/']){
+ for(const width of [320,390,430,768,1200,1440])for(const route of ['/','/apps/','/404.html','/work/','/services/','/work/cases/jonaaudio/','/work/cases/universe/','/work/cases/heartz4sale/','/work/cases/song-to-video/','/work/cases/resume/','/beatcut/','/continue/','/updates/','/music/','/atlas/','/operations/']){
   await page.setViewportSize({width,height:900});await page.goto(base+route);if(route==='/apps/')await page.locator('.app-card').first().waitFor();
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);assert.equal(overflow,false,route+' overflows at '+width);
  }
@@ -96,6 +96,32 @@ async function serve(){const root=process.cwd();const mime={'.html':'text/html',
  assert.equal(await page.locator('[data-updates-list] article').count(),3);
  await page.locator('[data-updates-filter]').selectOption('apps');
  assert.equal(await page.locator('[data-updates-list] article').count(),1);
+
+ // S5 Atlas list, graph, deep link, direct load and retraction-safe public index.
+ await page.setViewportSize({width:390,height:844});await page.goto(base+'/atlas/');
+ await page.locator('[data-atlas-list] article').first().waitFor();
+ assert.equal(await page.locator('[data-atlas-list] article').count(),6);
+ assert.equal(await page.locator('[data-atlas-graph] [data-atlas-node]').count(),6);
+ await page.locator('[data-atlas-list] a').first().click();
+ await page.locator('[data-atlas-window]').waitFor({state:'visible'});
+ assert.match(page.url(),/article=/);
+ assert.equal(await page.locator('[data-atlas-window] [href*="github.com"]').count()>0,true);
+ await page.locator('[data-atlas-close]').click();
+ assert.equal(await page.locator('[data-atlas-window]').evaluate(el=>el.open),false);
+ assert.equal(new URL(page.url()).searchParams.has('article'),false);
+ await page.goto(base+'/atlas/?article=correction');
+ await page.locator('[data-atlas-window]').waitFor({state:'visible'});
+ assert.match(await page.locator('[data-atlas-detail] h2').innerText(),/Correction/);
+ await page.goto(base+'/atlas/?article=nonexistent');
+ assert.equal(await page.locator('[data-atlas-window]').evaluate(el=>el.open),false);
+ await page.locator('[data-atlas-search]').fill('boundary');
+ assert.equal(await page.locator('[data-atlas-list] article:not([hidden])').count(),1);
+ await page.locator('[data-open-search]').first().click();
+ await page.locator('[data-global-query]').fill('composition');
+ assert.equal(await page.locator('[data-public-id="article:composition"]').count(),1);
+ await page.keyboard.press('Escape');
+ await page.goto(base+'/operations/');
+ assert.equal(await page.locator('a[href*="princejona-universe-owner.jbonner.workers.dev"]').count(),1);
  // Scope errors: upstream WASM on this desktop is not a verified compatibility claim.
  const shellErrors=errors.filter(e=>!e.includes('WebAssembly')&&!e.includes('SharedArrayBuffer')&&!e.includes('GPU')&&!e.includes('fetch')&&!e.includes('memory'));
  console.log(JSON.stringify({result:'PASS',viewports:[320,390,430,768,1200,1440],writer:result,observedErrors:errors,shellErrors}));assert.equal(shellErrors.length,0);
