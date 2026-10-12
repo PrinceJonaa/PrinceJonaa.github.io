@@ -34,7 +34,7 @@ test('S6 owner API fails closed without valid signed JWT, even with spoofed head
  assert.ok(!raw.includes('service_role'));
  const handler=new Function(raw.replace('export default {fetch:respond};','return respond;'))();
  const fakeDb={prepare(){throw Error('DB must not be touched by unsigned users');}};
- const response=await handler(new Request('https://princejona-universe-owner.jbonner.workers.dev/api/items',{headers:{'Cf-Access-Authenticated-User-Email':'jonathanbonner128@gmail.com'}}),{DB:fakeDb});
+ const response=await handler(new Request('https://princejona-universe-owner.jbonner.workers.dev/api/items',{headers:{'Cf-Access-Authenticated-User-Email':'owner@example.invalid'}}),{DB:fakeDb});
  assert.equal(response.status,401);
  assert.equal(response.headers.get('Cache-Control'),'no-store, private');
  const spoof=await handler(new Request('https://princejona-universe-owner.jbonner.workers.dev/',{headers:{'Cf-Access-Jwt-Assertion':'not.a.jwt'}}),{DB:fakeDb});
