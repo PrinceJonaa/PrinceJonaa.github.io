@@ -42,3 +42,12 @@ test('owner API verifies actual signed Access token and deny forged audience, or
   assert.equal(originDenied.status,403);
  }finally{globalThis.fetch=saved;}
 });
+
+test('owner proposal pipeline records review without executing external operations',()=>{
+ assert.match(source,/agent_proposals/);
+ assert.match(source,/path==='\/api\/proposals'/);
+ assert.match(source,/path==='\/api\/proposal-review'/);
+ assert.match(source,/No automatic execution/);
+ assert.match(source,/state='proposed'/);
+ assert.doesNotMatch(source,/eval\(|new Function\(/);
+});
