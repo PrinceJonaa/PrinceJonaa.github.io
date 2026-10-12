@@ -1,8 +1,29 @@
-.universe-return{position:fixed;top:calc(8px + env(safe-area-inset-top));right:12px;z-index:2147483000;min-height:44px;min-width:44px;padding:10px 14px;border:1px solid #65745b;border-radius:12px;background:#11151bf2;color:#d2fd76;cursor:pointer;font:600 12px/1.4 system-ui,sans-serif;box-shadow:0 2px 12px #0007}
-.universe-return-dialog{width:min(440px,calc(100% - 24px));padding:24px;border:1px solid #65745b;border-radius:16px;color:#f4f5f8;background:#141822;font:15px/1.6 system-ui,sans-serif;max-height:90dvh;overflow:auto}.universe-return-dialog::backdrop{background:#000b}.universe-return-dialog h2{font-size:22px;margin:0 0 12px}.universe-return-dialog p{color:#c1c6d1}.universe-return-dialog nav{display:grid;gap:12px}.universe-return-dialog a,.universe-return-dialog button{display:block;min-height:44px;padding:12px;background:#222c30;border:1px solid #53635b;border-radius:8px;color:#d2fd76;text-decoration:none;font:inherit}.universe-return-dialog small{color:#c1c6d1}.universe-return-dialog button{margin-top:16px;cursor:pointer;width:100%}.universe-return:focus-visible,.universe-return-dialog :focus-visible{outline:2px solid #d2fd76;outline-offset:4px}
-/* The return button has its own reserved row, avoiding editor controls. */
-body.universe-editor-shell{--return-row:calc(60px + env(safe-area-inset-top));padding:0!important}
-body.universe-editor-shell #root{position:fixed;inset:var(--return-row) 0 0;height:auto;overflow:hidden}
-body.universe-editor-shell .rc-app{height:100%!important}
-body.universe-editor-shell>canvas{top:var(--return-row)!important;height:calc(100% - var(--return-row))!important}
-body.universe-editor-shell>#loading,body.universe-editor-shell>#lightcraft_loading{top:var(--return-row)}
+.universe-return{
+  position:fixed;top:calc(58px + env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));
+  z-index:2147483000;min-height:42px;min-width:42px;padding:0;
+  border:1px solid #65745b;border-radius:999px;background:#11151be8;color:#d2fd76;
+  cursor:pointer;font:700 19px/1 system-ui,sans-serif;box-shadow:0 2px 12px #0008;
+  -webkit-tap-highlight-color:transparent
+}
+.universe-return[data-size="pill"]{min-height:40px;padding:8px 13px;font:600 12px/1.4 system-ui,sans-serif}
+.universe-return[hidden]{display:none!important}
+.universe-return-dialog{
+  width:min(440px,calc(100% - 24px));max-height:90dvh;overflow:auto;padding:24px;
+  border:1px solid #65745b;border-radius:16px;color:#f4f5f8;background:#141822;
+  font:15px/1.6 system-ui,sans-serif
+}
+.universe-return-dialog::backdrop{background:#000b}
+.universe-return-dialog h2{font-size:22px;margin:0 0 12px}
+.universe-return-dialog p{color:#c1c6d1}
+.universe-return-dialog nav{display:grid;gap:12px;margin-bottom:20px}
+.universe-return-dialog a,.universe-return-dialog button{
+  display:block;min-height:44px;padding:12px;background:#222c30;border:1px solid #53635b;
+  border-radius:8px;color:#d2fd76;text-decoration:none;font:inherit
+}
+.universe-return-dialog small{color:#c1c6d1}
+.universe-return-dialog label{display:block;margin-bottom:6px}
+.universe-return-dialog select{width:100%;min-height:44px;padding:8px;border-radius:8px;background:#222c30;color:white;border:1px solid #53635b;font:inherit}
+.universe-return-dialog button{margin-top:16px;cursor:pointer;width:100%}
+.universe-return:focus-visible,.universe-return-dialog :focus-visible{outline:2px solid #d2fd76;outline-offset:4px}
+/* No reserved top row. RhythmCut and other editors occupy their full viewport.
+   The floating shortcut does not resize #root, the body, canvas, or playback. */
