@@ -1,6 +1,7 @@
 
 import{worlds,atlasTopics}from'/assets/registry.js';
 import './discovery.js';
+import './return.js';
 const $=(s,scope=document)=>scope.querySelector(s);
 const reducedMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 function initNav(){const b=$('[data-menu-toggle]'),nav=$('[data-nav]');if(!b||!nav)return;const close=()=>{nav.classList.remove('is-open');b.setAttribute('aria-expanded','false');if(nav.contains(document.activeElement))b.focus();};b.addEventListener('click',()=>{const opening=!nav.classList.contains('is-open');nav.classList.toggle('is-open',opening);b.setAttribute('aria-expanded',String(opening))});document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});document.addEventListener('click',e=>{if(!nav.contains(e.target)&&!b.contains(e.target))close()});nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',close))}
