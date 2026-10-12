@@ -2,12 +2,36 @@
 export const KEYS = ['C','C♯','D','E♭','E','F','F♯','G','A♭','A','B♭','B'];
 const MAJOR=[6.35,2.23,3.48,2.33,4.38,4.09,2.52,5.19,2.39,3.66,2.29,2.88];
 const MINOR=[6.33,2.68,3.52,5.38,2.6,3.53,2.54,4.75,3.98,2.69,3.34,3.17];
+// Cached twiddle factors and Hann windows avoid repeat trig inside each FFT frame.
+const twiddleCache = new Map(), hannCache = new Map();
+function twiddles(size){
+ let table=twiddleCache.get(size);if(table)return table;
+ const half=size>>>1,cos=new Float64Array(half),sin=new Float64Array(half);
+ for(let k=0;k<half;k++){const angle=-2*Math.PI*k/size;cos[k]=Math.cos(angle);sin[k]=Math.sin(angle);}
+ table={cos,sin};twiddleCache.set(size,table);return table;
+}
+function hann(n){let table=hannCache.get(n);if(!table){table=new Float32Array(n);for(let i=0;i<n;i++)table[i]=.5-.5*Math.cos(2*Math.PI*i/(n-1));hannCache.set(n,table);}return table;}
+// Worker-side extraction scans original audio only once, preserving brief peaks.
+export function extractForAnalysis(left,right,sampleRate,targetRate=11025){
+ if(!left?.length||!Number.isFinite(sampleRate)||sampleRate<=0)throw Error('Invalid decoded audio');
+ const stereo=Boolean(right&&right.length===left.length);
+ const step=Math.max(1,Math.round(sampleRate/targetRate)),n=Math.ceil(left.length/step);
+ const mono=new Float32Array(n),peaks=new Float32Array(1200);
+ for(let i=0;i<left.length;i++){
+  const a=left[i],b=stereo?right[i]:a,block=Math.floor(i/step);
+  mono[block]+=(a+b)*.5;
+  const peakIndex=Math.min(1199,Math.floor(i/left.length*1200));
+  const value=Math.max(Math.abs(a),Math.abs(b));if(value>peaks[peakIndex])peaks[peakIndex]=value;
+ }
+ for(let i=0;i<n;i++)mono[i]/=Math.min(step,left.length-i*step);
+ return {mono,peaks,sampleRate:sampleRate/step};
+}
 export function fft(samples) {
  const n=samples.length,real=new Float64Array(samples),imag=new Float64Array(n);
  let j=0;
  for(let i=1;i<n;i++){let bit=n>>1;for(;j&bit;bit>>=1)j^=bit;j^=bit;if(i<j){const t=real[i];real[i]=real[j];real[j]=t;}}
- for(let size=2;size<=n;size<<=1){const half=size>>1,phase=-2*Math.PI/size;
-  for(let start=0;start<n;start+=size){for(let k=0;k<half;k++){const wr=Math.cos(phase*k),wi=Math.sin(phase*k),l=start+k,r=l+half,tr=wr*real[r]-wi*imag[r],ti=wr*imag[r]+wi*real[r];real[r]=real[l]-tr;imag[r]=imag[l]-ti;real[l]+=tr;imag[l]+=ti;}}}
+ for(let size=2;size<=n;size<<=1){const half=size>>1,{cos,sin}=twiddles(size);
+  for(let start=0;start<n;start+=size){for(let k=0;k<half;k++){const wr=cos[k],wi=sin[k],l=start+k,r=l+half,tr=wr*real[r]-wi*imag[r],ti=wr*imag[r]+wi*real[r];real[r]=real[l]-tr;imag[r]=imag[l]-ti;real[l]+=tr;imag[l]+=ti;}}}
  const out=new Float32Array(n>>1);for(let k=0;k<out.length;k++)out[k]=Math.hypot(real[k],imag[k]);return out;
 }
 export function rankKeys(chroma){
@@ -17,9 +41,9 @@ export function rankKeys(chroma){
  return results.sort((a,b)=>b.score-a.score);
 }
 export function computeChroma(samples,sampleRate,segments){
- const n=4096,hop=2048,chroma=new Float64Array(12),window=new Float32Array(n);
+ const n=4096,hop=2048,chroma=new Float64Array(12),window=new Float32Array(n),weights=hann(n);
  for(const segment of segments){const start=Math.max(0,Math.floor(segment.start*sampleRate)),end=Math.min(samples.length,Math.floor(segment.end*sampleRate));
-  for(let pos=start;pos+n<=end;pos+=hop){for(let i=0;i<n;i++)window[i]=samples[pos+i]*(0.5-0.5*Math.cos(2*Math.PI*i/(n-1)));
+  for(let pos=start;pos+n<=end;pos+=hop){for(let i=0;i<n;i++)window[i]=samples[pos+i]*weights[i];
    const mag=fft(window);let max=0;for(let k=30;k<Math.min(mag.length,600);k++)if(mag[k]>max)max=mag[k];if(max<0.0001)continue;
    for(let k=1;k<mag.length;k++){const hz=k*sampleRate/n;if(hz<80||hz>1600)continue;const midi=Math.round(69+12*Math.log2(hz/440));const pc=((midi%12)+12)%12;chroma[pc]+=Math.pow(mag[k]/max,1.15)/Math.sqrt(hz/110);}
   }
@@ -61,9 +85,9 @@ export function sampleSections(duration,mode='quick'){
  if(seg.end-seg.start>2&&!found.some(x=>Math.abs(x.start-seg.start)<seconds*.45))found.push(seg);}return found;
 }
 export function computeSpectrogram(samples,sampleRate,segment,columns=180,rows=80){
- const n=2048,start=Math.floor(segment.start*sampleRate),end=Math.min(samples.length,Math.floor(segment.end*sampleRate)),pixels=new Uint8Array(columns*rows),win=new Float32Array(n);
+ const n=2048,start=Math.floor(segment.start*sampleRate),end=Math.min(samples.length,Math.floor(segment.end*sampleRate)),pixels=new Uint8Array(columns*rows),win=new Float32Array(n),weights=hann(n);
  for(let col=0;col<columns;col++){const pos=Math.max(0,Math.min(samples.length-n,Math.round(start+(end-start-n)*col/Math.max(1,columns-1))));
-  for(let k=0;k<n;k++)win[k]=samples[pos+k]*(.5-.5*Math.cos(2*Math.PI*k/(n-1)));
+  for(let k=0;k<n;k++)win[k]=samples[pos+k]*weights[k];
   const mag=fft(win);for(let r=0;r<rows;r++){const f=40*Math.pow(135,1-r/rows),bin=Math.max(1,Math.min(mag.length-1,Math.round(f*n/sampleRate)));const a=Math.max(mag[bin-1]||0,mag[bin],mag[bin+1]||0);const db=20*Math.log10(a/(n/2)+1e-8);pixels[r*columns+col]=Math.max(0,Math.min(255,Math.round((db+90)/80*255)));}}
  return {pixels:Array.from(pixels),columns,rows,start:segment.start,end:segment.end};
 }
