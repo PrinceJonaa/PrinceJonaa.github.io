@@ -54,7 +54,7 @@ compareInputs.append(label('FIRST TRACK',first),node('span','compare-between','�
 const matchToggle=node('input','');matchToggle.type='checkbox';matchToggle.setAttribute('aria-label','Enable attenuation-only RMS match');
 matchToggle.onchange=()=>{compareMatch=matchToggle.checked;bridge.setCompareAttenuation(1);renderCompare();};
 const listenA=button('▶ Listen A',()=>listenCompare(first.value)),listenB=button('▶ Listen B',()=>listenCompare(second.value));
-compareActions.append(listenA,listenB,label('Match quieter source (playback only)',matchToggle));
+compareActions.append(listenA,listenB,button('Measure both levels',()=>{for(const id of [first.value,second.value])bridge.requestFor(id,['levels']);status('Requested levels for A and B.');}),label('Match quieter source (playback only)',matchToggle));
 compareNote.textContent='A/B keeps each source position. Match only attenuates the louder source; no file, export or analysis data changes.';
 compare.append(compareInputs,compareActions,compareNote,compareResult);
 async function listenCompare(id){
@@ -173,7 +173,7 @@ function renderCompare(){
   first.value=ready.some(t=>String(t.id)===oldA)?oldA:String(ready[0].id);
   second.value=ready.some(t=>String(t.id)===oldB&&oldB!==first.value)?oldB:String(ready.find(t=>String(t.id)!==first.value).id);
   const a=ready.find(t=>String(t.id)===first.value),b=ready.find(t=>String(t.id)===second.value),table=node('div','compare-table');
- const measured=[a.result.quality?.stereoEnergyRmsDb,b.result.quality?.stereoEnergyRmsDb].every(Number.isFinite);
+ const measured=[a.result.quality?.stereoEnergyRmsDb,b.result.quality?.stereoEnergyRmsDb].every(Number.isFinite);listenA.disabled=!a.sourceAvailable;listenB.disabled=!b.sourceAvailable;
  matchToggle.disabled=!measured;matchToggle.checked=compareMatch&&measured;if(!measured){compareMatch=false;compareNote.textContent='RMS matching unavailable: analyze levels on both tracks first. A/B listening remains available.';}else compareNote.textContent='A/B uses each source’s last position. Matching attenuates only the louder playback, never boosts or changes original audio.';
   const measure=(id,t)=>{const v=t.effective,quality=t.result.quality||{};if(id==='tempo')return (v.bpm??'—')+' BPM · '+v.bpmSource;if(id==='key')return (v.key??'—')+' · '+v.keySource;if(id==='duration')return format(t.duration);const n=quality[id];return Number.isFinite(n)?n.toFixed(id==='stereoCorrelation'?2:1)+(id==='stereoCorrelation'?'':' dB'):(id==='stereoCorrelation'&&quality.stereoCorrelationReason||'—');};
   for(const [id,title] of [['header','Metric'],['tempo','Tempo'],['key','Key'],['duration','Length'],['stereoEnergyRmsDb','Channel-energy RMS dBFS'],['rmsDb','Mono-sum RMS dBFS'],['samplePeakDb','Sample peak dBFS'],['crestDb','Crest vs channel energy'],['stereoCorrelation','Stereo correlation']]){const row=node('div','compare-row'+(id==='header'?' is-header':''));row.append(node('span','',title),node('strong','',id==='header'?a.name:measure(id,a)),node('strong','',id==='header'?b.name:measure(id,b)));table.append(row);}compareResult.append(table);

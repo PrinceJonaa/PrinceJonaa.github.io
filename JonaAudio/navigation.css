@@ -256,3 +256,12 @@ html,body{overflow-x:clip}
 #app .track-detail{overflow-wrap:anywhere}
 #app .settings-card{min-width:0}
 @media(max-width:760px){#app .settings-card{padding:16px}#app .settings-card .button{margin-right:5px}}
+
+/* M5 accessibility: 200%-zoom flow and keyboard-friendly actions */
+#app .nav-page,#app .settings-card,#app .compare-widget,#app .sample-workspace{min-width:0;max-width:100%}
+#app .compare-row{overflow-wrap:anywhere}
+#app .new-layout{max-width:100%}
+#app .settings-card .button,#app .compare-widget .button{min-height:44px}
+#app .sample-workspace input,#app .sample-workspace select{font-size:16px}
+@media(max-width:520px){#app .compare-row{display:grid;grid-template-columns:minmax(64px,.7fr) repeat(2,minmax(0,1fr));padding:12px 8px}#app .compare-row strong{font-size:12px;overflow-wrap:anywhere}#app .settings-card button{width:auto}}
+@media(prefers-reduced-motion:reduce){#app *,#app *::before,#app *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}

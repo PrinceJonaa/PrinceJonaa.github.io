@@ -18,7 +18,7 @@ export function jsonReport(state){return JSON.stringify({kind:'jonaaudio-analysi
  sources:state.tracks.map(t=>({name:t.name,sourceIdentity:t.sourceIdentity,duration:t.duration,
   effective:resolveValues(t),auto:{tempo:t.result?.tempo||null,keys:t.result?.keys||[]},
   quality:t.result?.quality||null,measurementsScope:'whole track',spectrogram:t.result?.spectrogram?{start:t.result.spectrogram.start,end:t.result.spectrogram.end}:null,
-  regions:t.regions.map(r=>({id:r.id,start:r.start,end:r.end,values:resolveValues(t,r.id)}))})),
+  regions:t.regions.map(r=>({id:r.id,start:r.start,end:r.end,values:resolveValues(t,r.id),measurementsScope:'selected region',quality:r.result?.quality||null,spectrumRange:r.result?.spectrogram?{start:r.result.spectrogram.start,end:r.result.spectrogram.end}:null}))})),
  recovery:sessionSnapshot(state)},null,2);}
 export function downloadText(text,name,mime){
  const url=URL.createObjectURL(new Blob([text],{type:mime})),a=document.createElement('a');a.href=url;a.download=name;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),15000);
