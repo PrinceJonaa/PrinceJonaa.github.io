@@ -1,0 +1,26 @@
+{
+  "schema": 1,
+  "reviewedAt": "2026-10-12",
+  "rightsRule": "Only owner-cleared public previews, released artwork, approved attribution and public URLs may be added. Private drafts and original source media are excluded.",
+  "platforms": [
+    {
+      "id": "spotify",
+      "name": "Spotify",
+      "url": "https://open.spotify.com/artist/4oLxy1WTGaWi2D5bCwRkzP",
+      "embedUrl": "https://open.spotify.com/embed/artist/4oLxy1WTGaWi2D5bCwRkzP"
+    },
+    {
+      "id": "soundcloud",
+      "name": "SoundCloud",
+      "url": "https://soundcloud.com/princejona"
+    },
+    {
+      "id": "youtube",
+      "name": "YouTube",
+      "url": "https://www.youtube.com/@princejona"
+    }
+  ],
+  "releases": [],
+  "tracks": [],
+  "videos": []
+}

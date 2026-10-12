@@ -1,0 +1,6 @@
+
+export const siteUpdates=[
+ {id:'universe-s2-public',date:'2026-10-12',category:'work',status:'published',title:'Services, public proof and contact handoff',summary:'Three quote-based services, case studies, redacted résumé and a draft-or-copy inquiry path are live. Private server intake is not active.',evidence:'https://github.com/PrinceJonaa/PrinceJonaa.github.io/pull/7',release:'36b9ee150c1468de6dfc6036bb3e5c4b01dab4a8'},
+ {id:'universe-s1-public',date:'2026-10-12',category:'site',status:'published',title:'Universe discovery and responsive portraits',summary:'Four paths, global search, app filters, safe editor returns and approved responsive photography.',evidence:'https://github.com/PrinceJonaa/PrinceJonaa.github.io/pull/6',release:'3d28456ffbf3cb650f02e9afaa501d974cd07ef9'},
+ {id:'jonaaudio-m6',date:'2026-10-12',category:'apps',status:'published',title:'JonaAudio M6 public studio',summary:'Quick, Tune, Sample, Engineer and Compare are in the public app. Physical-device and original-media acceptance remain unverified.',evidence:'https://github.com/PrinceJonaa/PrinceJonaa.github.io/commit/582598c38df0c721cab14fb8caba6099c85cb094',release:'582598c38df0c721cab14fb8caba6099c85cb094'}
+];

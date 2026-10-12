@@ -19,7 +19,7 @@ async function serve(){const root=process.cwd();const mime={'.html':'text/html',
  await page.locator('[data-app-search]').fill('missing');assert.match(await page.locator('[data-app-count]').innerText(),/^0/);await page.getByRole('button',{name:'Show all tools'}).click();assert.equal(await page.locator('.app-card').count(),8);
  await page.locator('[data-app-status]').selectOption('preview');assert.equal(await page.locator('.app-card').count(),1);assert.match(await page.locator('.app-card h3').innerText(),/RhythmCut/);await page.reload();await page.locator('.app-card').first().waitFor();assert.equal(await page.locator('.app-card').count(),1);await page.locator('[data-app-reset]').click();
  await page.locator('[data-open-search]').first().click();await page.locator('[data-global-query]').fill('no result');assert.equal(await page.locator('.search-result').count(),0);await page.keyboard.press('Tab');assert.equal(await page.evaluate(()=>document.activeElement.getAttribute('data-close-search')!==null),true);await page.keyboard.press('Tab');assert.equal(await page.locator('[data-global-query]').evaluate(el=>document.activeElement===el),true);await page.keyboard.press('Escape');
- for(const width of [320,390,430,768,1200,1440])for(const route of ['/','/apps/','/404.html','/work/','/services/','/work/cases/jonaaudio/','/work/cases/universe/','/work/cases/heartz4sale/','/work/cases/song-to-video/','/work/cases/resume/','/beatcut/']){
+ for(const width of [320,390,430,768,1200,1440])for(const route of ['/','/apps/','/404.html','/work/','/services/','/work/cases/jonaaudio/','/work/cases/universe/','/work/cases/heartz4sale/','/work/cases/song-to-video/','/work/cases/resume/','/beatcut/','/continue/','/updates/','/music/']){
   await page.setViewportSize({width,height:900});await page.goto(base+route);if(route==='/apps/')await page.locator('.app-card').first().waitFor();
   const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+1);assert.equal(overflow,false,route+' overflows at '+width);
  }
@@ -59,6 +59,43 @@ async function serve(){const root=process.cwd();const mime={'.html':'text/html',
  await page.goto(base+'/rhythmcut/');await page.locator('.universe-return').waitFor();await page.locator('.rc-app').waitFor();assert.equal(await page.locator('.rc-app').evaluate(el=>el.getBoundingClientRect().bottom<=innerHeight+1),true,'RhythmCut fits below return row');await page.locator('.universe-return').click();const popupPromise=context.waitForEvent('page');await page.locator('#universe-return-dialog a[href="/apps/"]').click();const popup=await popupPromise;await popup.waitForLoadState();assert.ok(popup.url().endsWith('/apps/'));assert.ok(page.url().endsWith('/rhythmcut/'));await popup.close();await page.getByRole('button',{name:'Keep editing'}).click();
  await page.goto(base+'/craft/light/');await page.locator('.universe-return').waitFor();assert.equal(await page.locator('#lightcraft_canvas').evaluate(el=>{const r=el.getBoundingClientRect();return r.top>=60&&r.bottom<=innerHeight+1;}),true,'Craft canvas fits below return row');
  await page.goto(base+'/craft/');await page.locator('[data-tool="light"]').click();assert.equal(await page.locator('iframe[data-tool-frame]').count(),1);const src=await page.locator('#editor').getAttribute('src');await page.locator('#back').click();assert.equal(await page.locator('[data-tool=light]').evaluate(el=>document.activeElement===el),true);assert.equal(await page.locator('#editor').getAttribute('src'),src);await page.locator('[data-tool="film"]').click();assert.equal(await page.locator('iframe[data-tool-frame]').count(),2);await page.locator('#back').click();await page.locator('[data-tool="light"]').click();assert.equal(await page.locator('iframe[data-tool-frame]').count(),2);
+ // S3 / S4 opt-in player and local persistence acceptance.
+ await page.setViewportSize({width:390,height:844});
+ await page.goto(base+'/music/');
+ assert.equal(await page.locator('[data-music-provider-host] iframe').count(),0,'no provider loaded before click');
+ await page.locator('[data-music-tracks] .music-empty').waitFor();
+ assert.match(await page.locator('[data-music-count]').innerText(),/0 approved preview tracks/);
+ const sampleRate=22050,frames=sampleRate,buffer=Buffer.alloc(44+frames*2);
+ buffer.write('RIFF',0);buffer.writeUInt32LE(buffer.length-8,4);buffer.write('WAVEfmt ',8);
+ buffer.writeUInt32LE(16,16);buffer.writeUInt16LE(1,20);buffer.writeUInt16LE(1,22);
+ buffer.writeUInt32LE(sampleRate,24);buffer.writeUInt32LE(sampleRate*2,28);
+ buffer.writeUInt16LE(2,32);buffer.writeUInt16LE(16,34);buffer.write('data',36);buffer.writeUInt32LE(frames*2,40);
+ for(let i=0;i<frames;i++)buffer.writeInt16LE(Math.round(Math.sin(i*2*Math.PI*440/sampleRate)*3000),44+i*2);
+ await page.locator('[data-music-file]').setInputFiles({name:'private-test.wav',mimeType:'audio/wav',buffer});
+ await page.locator('[data-music-current]').getByText('private-test.wav').waitFor();
+ await page.locator('[data-music-play]').click();
+ await page.waitForFunction(()=>document.querySelector('[data-music-audio]').currentTime>0);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('pj-universe-music-v1')?.includes('private-test.wav')||false),false);
+ await page.locator('[data-music-clear-queue]').click();
+ assert.match(await page.locator('[data-music-queue]').innerText(),/Queue empty/);
+ await page.goto(base+'/continue/');
+ assert.equal(await page.locator('[data-memory-enable]').isChecked(),false);
+ await page.locator('[data-memory-enable]').check();
+ await page.goto(base+'/music/');
+ await page.locator('[data-favorite-current]').click();
+ await page.goto(base+'/continue/');
+ assert.match(await page.locator('[data-memory-favorites]').innerText(),/Music/);
+ assert.match(await page.locator('[data-memory-recents]').innerText(),/Music/);
+ await page.reload();
+ assert.equal(await page.locator('[data-memory-enable]').isChecked(),true);
+ await page.locator('[data-memory-clear-all]').click();
+ assert.match(await page.locator('[data-memory-favorites]').innerText(),/Nothing saved/);
+ assert.match(await page.locator('[data-memory-recents]').innerText(),/History is off/);
+ assert.equal(await page.evaluate(()=>localStorage.getItem('pj-universe-return-v1')),null);
+ await page.goto(base+'/updates/');
+ assert.equal(await page.locator('[data-updates-list] article').count(),3);
+ await page.locator('[data-updates-filter]').selectOption('apps');
+ assert.equal(await page.locator('[data-updates-list] article').count(),1);
  // Scope errors: upstream WASM on this desktop is not a verified compatibility claim.
  const shellErrors=errors.filter(e=>!e.includes('WebAssembly')&&!e.includes('SharedArrayBuffer')&&!e.includes('GPU')&&!e.includes('fetch')&&!e.includes('memory'));
  console.log(JSON.stringify({result:'PASS',viewports:[320,390,430,768,1200,1440],writer:result,observedErrors:errors,shellErrors}));assert.equal(shellErrors.length,0);
