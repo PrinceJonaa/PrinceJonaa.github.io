@@ -56,7 +56,7 @@ function initPalette() {
   function select(index){selected=matches.length?(index+matches.length)%matches.length:0;nodes.forEach((n,i)=>n.setAttribute('aria-selected',String(i===selected)));if(nodes[selected]){input.setAttribute('aria-activedescendant',nodes[selected].id);nodes[selected].scrollIntoView({block:'nearest'});}else input.removeAttribute('aria-activedescendant');}
   function render(){
     matches=searchRecords(publicIndex,input.value);nodes=[];results.replaceChildren();
-    for(const [kind,label] of [['action','Music tasks'],['app','Applications'],['service','Services'],['caseStudy','Project proof'],['resume','Résumé & skills'],['world','Worlds']]){
+    for(const [kind,label] of [['action','Music tasks'],['app','Applications'],['service','Services'],['caseStudy','Project proof'],['resume','Résumé & skills'],['world','Worlds'],['article','Atlas concepts']]){
       const group=matches.filter(r=>r.kind===kind);if(!group.length)continue;
       const wrapper=element('div','search-group');wrapper.setAttribute('role','group');wrapper.setAttribute('aria-label',label);
       const heading=element('div','search-group-label',label);heading.setAttribute('role','presentation');wrapper.append(heading);
