@@ -21,3 +21,7 @@ These 240–320px WebP previews were used for the first GitHub-contained impleme
 
 ## Scope and operations
 No changes to /craft/, /craft/storage/, /rhythmcut/, authentication, subscriptions, or live agent operations. The rest of the Universe v1 remains unchanged.
+
+## S0/S1 responsive asset delivery (October 12, 2026)
+
+The four exact original selections above were recovered and visually matched. Public portrait/neon/street WebP files now use optimized 960px outputs, with 480px variants and responsive `srcset`/`sizes` on Home, About and Music. Original files and EXIF are not committed. `assets/asset-manifest.json` records dimensions, file sizes, rights continuity and variants. This supersedes the preview-only asset limitation above.

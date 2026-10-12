@@ -2,44 +2,136 @@
   "schema": 1,
   "assets": [
     {
+      "assetId": "photo:portrait",
+      "approvedOwner": "Prince Jona",
+      "rightsGrantedForSite": true,
+      "rightsSource": "Existing selection and source attribution in UNIVERSE-v1.1.md",
+      "originalName": "IMG_0078.jpeg",
+      "status": "original source retrieved and visually matched; responsive outputs",
+      "role": "hero",
+      "focalDesktop": [
+        0.5,
+        0.5
+      ],
+      "focalMobile": [
+        0.5,
+        0.5
+      ],
+      "variants": [
+        {
+          "path": "/assets/portraits/portrait-480.webp",
+          "width": 480,
+          "height": 640,
+          "bytes": 20856
+        },
+        {
+          "path": "/assets/portraits/portrait.webp",
+          "width": 960,
+          "height": 1280,
+          "bytes": 63192
+        }
+      ],
+      "preload": "hero only",
+      "metadata": "EXIF omitted from public derivatives"
+    },
+    {
       "assetId": "photo:neon-one",
-      "path": "/assets/portraits/neon-one.webp",
-      "width": 240,
-      "height": 320,
-      "bytes": 2904,
-      "status": "approved existing preview; high-resolution replacement pending",
-      "rightsSource": "UNIVERSE-v1.1.md",
-      "preload": "lazy"
+      "approvedOwner": "Prince Jona",
+      "rightsGrantedForSite": true,
+      "rightsSource": "Existing selection and source attribution in UNIVERSE-v1.1.md",
+      "originalName": "IMG_9758.jpeg",
+      "status": "original source retrieved and visually matched; responsive outputs",
+      "role": "secondary",
+      "focalDesktop": [
+        0.5,
+        0.5
+      ],
+      "focalMobile": [
+        0.5,
+        0.5
+      ],
+      "variants": [
+        {
+          "path": "/assets/portraits/neon-one-480.webp",
+          "width": 480,
+          "height": 640,
+          "bytes": 34662
+        },
+        {
+          "path": "/assets/portraits/neon-one.webp",
+          "width": 960,
+          "height": 1280,
+          "bytes": 100216
+        }
+      ],
+      "preload": "lazy",
+      "metadata": "EXIF omitted from public derivatives"
     },
     {
       "assetId": "photo:neon-two",
-      "path": "/assets/portraits/neon-two.webp",
-      "width": 240,
-      "height": 320,
-      "bytes": 3142,
-      "status": "approved existing preview; high-resolution replacement pending",
-      "rightsSource": "UNIVERSE-v1.1.md",
-      "preload": "lazy"
-    },
-    {
-      "assetId": "photo:portrait",
-      "path": "/assets/portraits/portrait.webp",
-      "width": 320,
-      "height": 427,
-      "bytes": 2944,
-      "status": "approved existing preview; high-resolution replacement pending",
-      "rightsSource": "UNIVERSE-v1.1.md",
-      "preload": "hero only"
+      "approvedOwner": "Prince Jona",
+      "rightsGrantedForSite": true,
+      "rightsSource": "Existing selection and source attribution in UNIVERSE-v1.1.md",
+      "originalName": "IMG_9759.jpeg",
+      "status": "original source retrieved and visually matched; responsive outputs",
+      "role": "secondary",
+      "focalDesktop": [
+        0.5,
+        0.5
+      ],
+      "focalMobile": [
+        0.5,
+        0.5
+      ],
+      "variants": [
+        {
+          "path": "/assets/portraits/neon-two-480.webp",
+          "width": 480,
+          "height": 640,
+          "bytes": 38402
+        },
+        {
+          "path": "/assets/portraits/neon-two.webp",
+          "width": 960,
+          "height": 1280,
+          "bytes": 116510
+        }
+      ],
+      "preload": "lazy",
+      "metadata": "EXIF omitted from public derivatives"
     },
     {
       "assetId": "photo:street",
-      "path": "/assets/portraits/street.webp",
-      "width": 240,
-      "height": 301,
-      "bytes": 2718,
-      "status": "approved existing preview; high-resolution replacement pending",
-      "rightsSource": "UNIVERSE-v1.1.md",
-      "preload": "lazy"
+      "approvedOwner": "Prince Jona",
+      "rightsGrantedForSite": true,
+      "rightsSource": "Existing selection and source attribution in UNIVERSE-v1.1.md",
+      "originalName": "IMG_0022.jpeg",
+      "status": "original source retrieved and visually matched; responsive outputs",
+      "role": "secondary",
+      "focalDesktop": [
+        0.5,
+        0.5
+      ],
+      "focalMobile": [
+        0.5,
+        0.5
+      ],
+      "variants": [
+        {
+          "path": "/assets/portraits/street-480.webp",
+          "width": 480,
+          "height": 602,
+          "bytes": 34154
+        },
+        {
+          "path": "/assets/portraits/street.webp",
+          "width": 960,
+          "height": 1204,
+          "bytes": 80240
+        }
+      ],
+      "preload": "lazy",
+      "metadata": "EXIF omitted from public derivatives"
     }
   ]
 }
