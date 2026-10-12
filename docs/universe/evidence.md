@@ -29,6 +29,6 @@ Physical iPhone/Safari import of owner-cleared long MP3/M4A, actual native Share
 
 ## Asset and public-data rules
 
-`assets/asset-manifest.json` records existing approved preview photos; original-quality versions are pending. New social images contain only public page titles. No uploaded user audio/video, original private Notion text, relational profiles, contact lists, home addresses or client media is added. Public graph stays the established preview until S5 approvals.
+`assets/asset-manifest.json` records existing approved preview photos; 480/960px derivatives now replace the tiny previews. Original photos were recovered by exact filename and visually matched; public outputs omit EXIF. New social images contain only public page titles. No uploaded user audio/video, original private Notion text, relational profiles, contact lists, home addresses or client media is added. Public graph stays the established preview until S5 approvals.
 
 CNAME, case-sensitive `/JonaAudio/`, Craft storage allowlists, editor DB names and original service workers are preserved. Craft hosting links keep the editor tab/frame mounted. RhythmCut hosting navigation opens another tab, including from final/export UI. JonaAudio site navigation awaits its own session writer and refuses a failed save.
