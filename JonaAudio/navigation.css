@@ -113,3 +113,155 @@ html,body{overflow-x:clip}
 @media(max-width:365px){#app .compact-intro .intro-actions .button{font-size:11px;padding:8px}#app .compact-intro h1{font-size:22px}#app .subnav-button{font-size:11px;padding:8px 10px}}
 @media(hover:none){#app .rail-links button:not([aria-current=page]):hover{background:transparent;color:var(--muted)}}
 @media(prefers-reduced-motion:reduce){#app .rail-links button{transition:none}}
+
+/* M1 shared shell, focused widgets and persistent source transport. */
+[hidden]{display:none!important}
+#app .new-area{padding-bottom:calc(var(--player-height,100px) + 24px)}
+#app .source-bar{margin-bottom:16px;display:grid;gap:10px}
+#app .source-bar .song-head{margin-bottom:0}
+#app .source-bar .compare-label{max-width:540px}
+#app .source-select,.workspace-sheet input:not([type=checkbox]),.workspace-sheet select{width:100%;min-width:0;min-height:44px;border:1px solid var(--line);background:var(--inset);border-radius:8px;padding:9px;color:var(--text);font-size:16px}
+#app .compact-intro.has-track h1{font-size:23px}
+#app .compact-intro.has-track .overline,#app .compact-intro.has-track p{display:none}
+#app .widget-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+#app .widget-grid>*{min-width:0;margin:0}
+#app .widget-grid .metric{border:1px solid var(--line);border-radius:12px;background:var(--panel)}
+#app .widget-grid .metric strong{display:block;font-size:clamp(24px,4vw,42px);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+#app .widget-grid .metric small{display:block;white-space:normal}
+#app .quick-actions,#app .tool-shortcuts{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 16px}
+#app .tool-shortcuts{margin:16px 0 0}
+#app .quick-actions button,#app .tool-shortcuts button{min-height:44px}
+#app .analyzer-empty{display:block;margin:0}
+#app .settings-card .button{margin:8px 8px 0 0;min-height:44px}
+#app .settings-mode{font-size:16px}
+#app[data-density=compact] .widget-grid{gap:8px}
+#app[data-density=compact] .widget-grid .panel{padding:12px}
+#app .song-head h2{overflow-wrap:anywhere}
+.player-dock{position:fixed;bottom:0;left:0;right:0;z-index:25;border-top:1px solid var(--line);padding:10px 32px calc(10px + env(safe-area-inset-bottom,0px));background:var(--panel);display:grid;grid-template-columns:minmax(140px,.4fr) minmax(0,1fr);gap:18px;align-items:center}
+.player-dock>button{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:left;min-height:44px}
+.player-dock .transport{margin:0;min-width:0}
+.player-dock .transport input{min-width:0}
+.player-dock .transport #play{min-width:44px;min-height:44px}
+.player-dock.is-empty{opacity:.8}
+.footer{padding-bottom:calc(var(--player-height,100px) + 25px)}
+.workspace-sheet{color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:760px;width:calc(100% - 24px);max-height:85dvh;padding:20px;overflow:auto;overscroll-behavior:contain}
+.workspace-sheet::backdrop{background:rgba(0,0,0,.7)}
+.workspace-sheet h2{margin:0 0 12px;font-size:22px}
+.workspace-sheet>.button{margin:0 0 16px;min-height:44px}
+.workspace-sheet .compare-label{font-size:12px;margin-bottom:12px}
+.workspace-sheet .corrections{margin:0;padding:12px}
+.workspace-sheet .button{min-height:44px;white-space:normal}
+.layout-row{display:grid;grid-template-columns:minmax(120px,1fr) minmax(110px,1fr) auto auto;gap:8px;align-items:center;padding:12px 0;border-top:1px solid var(--line)}
+.layout-row>label{display:flex;align-items:center;gap:8px;font-size:14px;justify-content:space-between}
+.layout-row input[type=checkbox]{width:24px;height:24px;margin:10px}
+.layout-row select{font-size:14px}
+.sheet-actions{display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid var(--line);padding-top:16px;margin-top:12px}
+.copy-fallback{width:100%;min-height:120px;color:var(--text);background:var(--inset);font:inherit;padding:12px}
+.bar-nav a{display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:760px){
+ .app-shell{padding-inline:16px}
+ .bar-nav{display:flex;margin-left:auto;font-size:12px;gap:0}
+ .bar-nav span,.bar-right .local-pill{display:none}
+ .bar-right{margin-left:0}
+ .player-dock{bottom:var(--nav-height,76px);padding:6px 16px;display:block}
+ .player-dock>button{display:block;max-width:100%;width:100%;min-height:30px;padding:0;font-size:12px}
+ .player-dock .transport{display:grid;grid-template-columns:44px auto minmax(0,1fr) auto;gap:6px}
+ .player-dock .transport .rate-label{display:block;grid-column:1/3}
+ .player-dock .transport #rate{display:block;grid-column:3/5;min-height:44px;width:100%;max-width:none;font-size:16px}
+ #app .new-area{padding-bottom:calc(var(--nav-height,76px) + var(--player-height,92px) + 24px)}
+ #app .widget-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ #app .widget-grid>*{grid-column:1/-1!important}
+ #app .widget-grid>.metric{grid-column:span 1!important}
+ #app .widget-grid .metric strong{font-size:clamp(22px,6vw,30px)}
+ #app .widget-grid #wave{height:128px}
+ #app .source-bar .select-mode{display:none}
+ #app .source-bar .song-head h2{font-size:19px}
+ #app input,#app select{font-size:16px}
+ #app .compact-intro{padding:12px 0;margin-bottom:12px}
+ #app .compact-intro .intro-actions .button{min-height:44px}
+ #app .subnav{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));overflow:visible}
+ #app .subnav-button{padding:8px 3px;font-size:12px;min-height:44px}
+ .layout-row{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+ .layout-row>label{grid-column:1/-1}
+ .layout-row>select{grid-column:1/-1}
+ .footer{padding-bottom:calc(var(--nav-height,76px) + var(--player-height,92px) + 25px)}
+}
+@media(max-width:365px){.app-shell{padding-inline:12px}.bar .wordmark{font-size:10px}.bar .mark{font-size:22px}.player-dock{padding-inline:12px}}
+@media(min-width:761px){#app .new-rail{max-height:calc(100dvh - var(--player-height,100px) - 40px);overflow:auto}}
+@media(prefers-reduced-motion:reduce){.workspace-sheet{scroll-behavior:auto}}
+/* M2 progressive analysis and bounded musical controls. */
+#app .quick-controls{margin-top:16px}
+#app .quick-controls .candidates{margin-bottom:14px}
+#app .candidate{color:var(--text);background:var(--inset);min-height:44px;font:inherit;font-size:13px}
+#app .scope-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
+#app .scope-fields input{width:100%;min-height:44px;background:var(--inset);border:1px solid var(--line);border-radius:8px;padding:9px;color:var(--text);font-size:16px}
+#app .track-detail{flex-wrap:wrap}
+#app .track-detail>span:first-child{width:100%;font-size:11px}
+#app .job-action{min-height:44px;padding:8px}
+.diagnostic-text{font:12px ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+@media(max-width:365px){#app .quick-controls .quick-actions>.button{flex:1;white-space:normal}}
+/* M3 note masks, harmonic context and reference audition. */
+#app .tuning-workspace{grid-column:1/-1!important}
+#app .tuning-workspace h4{font-size:14px;margin:18px 0 10px}
+#app .tuning-provenance{color:var(--accent);font-size:14px;font-weight:700;overflow-wrap:anywhere}
+#app .tuning-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+#app .tuning-form select,#app .tuning-form input,#app .tuning-workspace>label select{width:100%;min-width:0;min-height:44px;border:1px solid var(--line);background:var(--inset);border-radius:8px;padding:9px;color:var(--text);font-size:16px}
+#app .note-mask,#app .reference-keyboard{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:12px 0}
+#app .note-toggle{display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line);border-radius:8px;min-height:48px;background:var(--inset);font-size:14px;cursor:pointer}
+#app .note-toggle input{width:20px;height:20px;margin:0;accent-color:var(--accent)}
+#app .note-toggle.included{border-color:var(--accent)}
+#app .reference-key{min-height:64px;border:1px solid var(--line);border-radius:8px;background:var(--inset);color:var(--muted);font:inherit;font-size:14px;cursor:pointer}
+#app .reference-key[data-accidental=false]{background:var(--panel);color:var(--text)}
+#app .reference-key.included{border-color:var(--accent);color:var(--accent)}
+#app .reference-key.sounding{background:var(--accent);color:var(--accentText)}
+#app .tuning-summary{border-left:3px solid var(--accent);padding:8px 12px;background:var(--inset);font-size:13px;overflow-wrap:anywhere}
+#app .tuning-candidate{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin:8px 0}
+#app .tuning-candidate strong{margin-right:auto;font-size:14px}
+#app .tuning-workspace .button{min-height:44px}
+.player-dock.has-reference-tone{grid-template-columns:minmax(120px,.4fr) minmax(0,1fr) auto}
+.player-dock>button:last-child:not([hidden]){border:1px solid var(--line);background:var(--inset);color:var(--text)}
+@media(max-width:760px){#app .tuning-form{grid-template-columns:1fr}#app .note-mask,#app .reference-keyboard{gap:5px}#app .note-toggle{flex-direction:column;gap:4px;padding:6px 0;min-height:54px}#app .tuning-workspace .quick-actions .button{white-space:normal}.player-dock>button:last-child:not([hidden]){margin-top:6px;min-height:44px;border-radius:8px}}
+@media(max-width:365px){#app .note-mask,#app .reference-keyboard{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* M4 sampling is a focused tool; source overview/detail and exact numeric edits. */
+#app .sample-workspace{margin:0 0 16px;padding:16px}
+#app .sample-workspace h4{font-size:15px;margin:20px 0 12px}
+#app .sample-status{color:var(--accent);font-size:13px;overflow-wrap:anywhere}
+#app .sample-form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:14px 0}
+#app .sample-workspace input:not([type=checkbox]),#app .sample-workspace select{min-height:44px;min-width:0;width:100%;font-size:16px;background:var(--inset);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px}
+#app .sample-workspace .quick-actions>select{width:auto;max-width:100%}
+#app .region-wave{position:relative;border:1px solid var(--line);border-radius:10px;margin:10px 0 16px;overflow:hidden;padding-bottom:34px;background:var(--inset)}
+#app .sample-overview,#app .sample-detail{display:block;width:100%;height:128px;touch-action:pan-y}
+#app .sample-detail{height:160px;border:1px solid var(--line);border-radius:10px;touch-action:pan-y}
+#app .region-handle{position:absolute;top:0;bottom:0;min-width:44px;border:0;border-left:2px solid var(--accent);background:transparent;color:var(--accent);font:inherit;font-size:12px;text-align:left;padding:130px 4px 0;touch-action:none}
+#app .out-handle{transform:translateX(-100%);border-left:0;border-right:2px solid var(--accent);text-align:right}
+#app .sample-workspace .button{min-height:44px;white-space:normal}
+#app .sample-candidates{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+#app .sample-candidate{min-width:0;border:1px solid var(--line);border-radius:10px;background:var(--inset);padding:14px}
+#app .sample-candidate>strong{font-size:14px;overflow-wrap:anywhere}
+#app .sample-workspace label:has(input[type=checkbox]){display:flex;align-items:center;gap:12px;min-height:44px;padding:8px}
+#app .sample-workspace input[type=checkbox]{width:22px;height:22px;accent-color:var(--accent)}
+@media(max-width:760px){#app .sample-form,#app .sample-candidates{grid-template-columns:1fr}#app .sample-workspace{padding:12px}#app .sample-workspace .quick-actions{gap:6px}#app .sample-workspace .quick-actions>.button{flex:1}}
+
+/* M5: A/B controls, legible engineer measurements and keyboard focus. */
+#app .compare-widget .quick-actions{align-items:center;margin-bottom:8px}
+#app .compare-widget .compare-label:has(input[type=checkbox]){display:inline-flex;align-items:center;flex-direction:row;gap:10px;min-height:44px;letter-spacing:normal}
+#app .compare-widget input[type=checkbox]{width:20px;height:20px;accent-color:var(--accent)}
+#app .compare-row strong{min-width:0;overflow-wrap:anywhere}
+#app button:focus-visible,#app input:focus-visible,#app select:focus-visible,.workspace-sheet button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:760px){#app .compare-widget .quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#app .compare-widget .quick-actions .compare-label{grid-column:1 / -1}}
+
+/* M5 recovery and accessible controls */
+#app .track-row .job-action{min-height:44px}
+#app .settings-card button{max-width:100%;white-space:normal;text-align:center}
+#app .track-detail{overflow-wrap:anywhere}
+#app .settings-card{min-width:0}
+@media(max-width:760px){#app .settings-card{padding:16px}#app .settings-card .button{margin-right:5px}}
+
+/* M5 accessibility: 200%-zoom flow and keyboard-friendly actions */
+#app .nav-page,#app .settings-card,#app .compare-widget,#app .sample-workspace{min-width:0;max-width:100%}
+#app .compare-row{overflow-wrap:anywhere}
+#app .new-layout{max-width:100%}
+#app .settings-card .button,#app .compare-widget .button{min-height:44px}
+#app .sample-workspace input,#app .sample-workspace select{font-size:16px}
+@media(max-width:520px){#app .compare-row{display:grid;grid-template-columns:minmax(64px,.7fr) repeat(2,minmax(0,1fr));padding:12px 8px}#app .compare-row strong{font-size:12px;overflow-wrap:anywhere}#app .settings-card button{width:auto}}
+@media(prefers-reduced-motion:reduce){#app *,#app *::before,#app *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}

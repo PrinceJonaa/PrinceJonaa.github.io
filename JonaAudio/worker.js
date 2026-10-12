@@ -1,16 +1,19 @@
-import {sampleSections,detectTempo,computeChroma,rankKeys,computeSpectrogram,computeQuality,extractForAnalysis} from './engine.js';
+import {analyzeCapability} from './analysis-worker-core.js';
+import {describeChunk,rankCandidates} from './sample-candidates.js';
+let stream=null;
 self.onmessage=({data})=>{
+ const {jobId,sessionGeneration,trackId,sourceRevision,scopeId,scopeRevision,capability,requestRevision}=data;
+ const envelope={jobId,sessionGeneration,trackId,sourceRevision,scopeId,scopeRevision,capability,requestRevision};
  try{
-  const {id,left,right,sampleRate,mode}=data;
-  const extracted=extractForAnalysis(left,right,sampleRate);
-  self.postMessage({id,phase:'wave',peaks:extracted.peaks},[extracted.peaks.buffer]);
-  const quality=computeQuality(left,right,sampleRate);
-  const {mono}=extracted, rate=extracted.sampleRate;
-  const segments=sampleSections(mono.length/rate,mode);
-  const tempo=detectTempo(mono,rate,segments);
-  const chroma=computeChroma(mono,rate,segments);
-  const keys=rankKeys(chroma).slice(0,5);
-  const spectrogram=computeSpectrogram(mono,rate,segments[0]||{start:0,end:Math.min(8,mono.length/rate)});
-  self.postMessage({id,phase:'complete',result:{tempo,chroma,keys,spectrogram,quality,segments,mode}});
- }catch(error){self.postMessage({id,phase:'error',error:error?.message||'Analysis failed'});}
+  let response;
+  if(data.input.stream){
+   const input=data.input;if(!stream||stream.jobId!==jobId)stream={jobId,features:[]};
+   stream.features.push(...describeChunk(input.samples,input.sampleRate,input.offset,input.bucketFrames,stream.features.at(-1)?.lastRms||0));
+   if(!input.last){self.postMessage({...envelope,type:'progress',phase:'Scanning coarse features',nextChunk:true});return;}
+   response={type:'result',result:{...rankCandidates(stream.features,input.duration,input.settings),features:stream.features},ranges:[{start:0,end:input.duration}]};stream=null;
+  }else{self.postMessage({...envelope,type:'progress',phase:'analyzing '+capability});response=analyzeCapability(capability,data.input);}
+  const transfer=response.result?.peaks instanceof Float32Array?[response.result.peaks.buffer]:Array.isArray(response.result?.channels)?response.result.channels.filter(c=>ArrayBuffer.isView(c)).map(c=>c.buffer):[];
+  if(response.result?.pyramid)for(const level of response.result.pyramid)transfer.push(level.min.buffer,level.max.buffer);
+  self.postMessage({...envelope,...response},transfer);
+ }catch(error){stream=null;self.postMessage({...envelope,type:'error',reason:error?.message||'Analysis failed. Retry this capability.'});}
 };

@@ -69,8 +69,8 @@ export function detectTempo(samples,sampleRate,segments){
  scored.sort((a,b)=>b.score-a.score);perSection.push({start:seg.start,end:seg.end,bpm:scored[0]?.bpm??null,score:scored[0]?.score??0});candidates.push(...scored.slice(0,25));
  }
  const pool=[];for(let bpm=55;bpm<=210;bpm++){let score=0;for(const candidate of candidates){const delta=Math.abs(candidate.bpm-bpm);if(delta<=2)score+=candidate.score*(1-delta/3);}
-  // Human-readable BPM is preferred to slow subdivisions, never hidden as an alternative.
-  if(bpm>=105&&bpm<=175)score*=1.035;pool.push({bpm,score});}
+  // No preferred tempo band; half/double interpretation remains a musician choice.
+  pool.push({bpm,score});}
  pool.sort((a,b)=>b.score-a.score);const choice=pool[0];
  const alternatives=[];for(const candidate of pool){if(!alternatives.some(v=>Math.abs(v.bpm-candidate.bpm)<4))alternatives.push(candidate);if(alternatives.length===5)break;}
  let bpm=choice?.score>0?choice.bpm:null;
@@ -92,12 +92,31 @@ export function computeSpectrogram(samples,sampleRate,segment,columns=180,rows=8
  return {pixels:Array.from(pixels),columns,rows,start:segment.start,end:segment.end};
 }
 export function computeQuality(left,right,sampleRate){
- if(!left?.length)return null;const n=left.length,stereo=right&&right.length===n;let sum=0,peak=0,clip=0,ab=0,aa=0,bb=0;let lead=0,tail=0;const threshold=Math.pow(10,-50/20);
- for(let i=0;i<n;i++){const a=left[i],b=stereo?right[i]:a,x=stereo?(a+b)/2:a;sum+=x*x;peak=Math.max(peak,Math.abs(a),Math.abs(b));if(Math.abs(a)>=.999||Math.abs(b)>=.999)clip++;if(stereo){ab+=a*b;aa+=a*a;bb+=b*b;}}
- while(lead<n&&Math.abs(left[lead])<threshold&&(stereo?Math.abs(right[lead])<threshold:true))lead++;
- while(tail<n-lead&&Math.abs(left[n-1-tail])<threshold&&(stereo?Math.abs(right[n-1-tail])<threshold:true))tail++;
- const rms=Math.sqrt(sum/n),toDb=(v)=>v>0?20*Math.log10(v):null;
- return {rmsDb:toDb(rms),samplePeakDb:toDb(peak),crestDb:peak&&rms?20*Math.log10(peak/rms):null,nearCeilingSamples:clip,stereoCorrelation:stereo&&aa*bb?ab/Math.sqrt(aa*bb):null,leadingSilence:lead/sampleRate,trailingSilence:tail/sampleRate,channels:stereo?2:1,sampleRate,n};
+ if(!left?.length||!(sampleRate>0))return null;
+ const n=left.length,stereo=Boolean(right&&right.length===n);
+ let midSquared=0,energySquared=0,peak=0,nearCeiling=0,ab=0,aa=0,bb=0,lead=0,tail=0;
+ const threshold=Math.pow(10,-50/20);
+ for(let i=0;i<n;i++){
+  const a=Number.isFinite(left[i])?left[i]:0,b=stereo?(Number.isFinite(right[i])?right[i]:0):a;
+  const mid=stereo?(a+b)/2:a;
+  midSquared+=mid*mid;energySquared+=stereo?(a*a+b*b)/2:a*a;
+  peak=Math.max(peak,Math.abs(a),Math.abs(b));
+  if(Math.abs(a)>=.999||(stereo&&Math.abs(b)>=.999))nearCeiling++;
+  if(stereo){ab+=a*b;aa+=a*a;bb+=b*b;}
+ }
+ while(lead<n&&Math.abs(left[lead])<threshold&&(!stereo||Math.abs(right[lead])<threshold))lead++;
+ while(tail<n-lead&&Math.abs(left[n-1-tail])<threshold&&(!stereo||Math.abs(right[n-1-tail])<threshold))tail++;
+ const midRms=Math.sqrt(midSquared/n),energyRms=Math.sqrt(energySquared/n),toDb=v=>v>0?20*Math.log10(v):null;
+ const leftRms=Math.sqrt(stereo?aa/n:energySquared/n),rightRms=stereo?Math.sqrt(bb/n):null;
+ return {rmsDb:toDb(midRms),rmsDefinition:'mono sum (L+R)/2 RMS; mono uses source channel',
+  monoSumRmsDb:toDb(midRms),stereoEnergyRmsDb:toDb(energyRms),
+  leftRmsDb:toDb(leftRms),rightRmsDb:stereo?toDb(rightRms):null,
+  samplePeakDb:toDb(peak),crestDb:peak&&energyRms?20*Math.log10(peak/energyRms):null,
+  crestReference:'sample peak / channel-energy RMS',
+  nearCeilingSamples:nearCeiling,nearCeilingDefinition:'sample frames where any channel reaches |0.999|; review signal, not audible clipping',
+  stereoCorrelation:stereo&&aa>0&&bb>0?Math.max(-1,Math.min(1,ab/Math.sqrt(aa*bb))):null,
+  stereoCorrelationReason:!stereo?'mono source':aa===0||bb===0?'one or both channels silent':null,
+  leadingSilence:lead/sampleRate,trailingSilence:tail/sampleRate,channels:stereo?2:1,sampleRate,n};
 }
 export function analyse(mono,left,right,sampleRate,mode='quick'){
  const duration=mono.length/sampleRate,segments=sampleSections(duration,mode),tempo=detectTempo(mono,sampleRate,segments),chroma=computeChroma(mono,sampleRate,segments),keys=rankKeys(chroma),quality=computeQuality(left,right,sampleRate);

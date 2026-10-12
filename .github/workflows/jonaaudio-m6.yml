@@ -1,0 +1,56 @@
+name: JonaAudio M6 regression
+on:
+  push:
+    branches: [feat/jonaaudio-m1]
+    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml']
+  pull_request:
+    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: All JonaAudio Node regression suites
+        run: node --test JonaAudio/tests/*.test.mjs
+      - name: Parse app and browser test modules
+        run: |
+          for f in JonaAudio/*.js JonaAudio/tests/*.cjs; do node --check "$f" || exit 1; done
+      - name: Check patch whitespace
+        run: git diff --check HEAD~1 HEAD
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser test runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Run local browser smoke
+        run: |
+          python3 -m http.server 8765 --directory . >/tmp/jona-http.log 2>&1 &
+          sleep 2
+          node JonaAudio/tests/m6-browser.cjs
+      - name: Upload browser diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jonaaudio-browser-diagnostics
+          path: |
+            /tmp/jona-http.log
+            JonaAudio/tests/m6-browser-failure.png
+          if-no-files-found: ignore
