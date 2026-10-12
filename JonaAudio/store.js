@@ -14,8 +14,8 @@ export function resolveValues(track, regionId=null) {
   const auto = scope?.result, override = scope?.corrections || {};
   const bpm = override.bpm ?? auto?.tempo?.bpm ?? null;
   const key = override.key ?? auto?.keys?.[0]?.key ?? null;
-  return {bpm, key, bpmSource: override.bpm != null ? 'manual' : bpm != null ? 'estimated' : 'unavailable',
-    keySource: override.key != null ? 'manual' : key != null ? 'estimated' : 'unavailable',
+  return {bpm, key, bpmSource: override.bpm != null ? (['manual','tap','candidate-choice'].includes(override.origins?.bpm)?override.origins.bpm:'manual') : bpm != null ? 'estimated' : 'unavailable',
+    keySource: override.key != null ? (['manual','tap','candidate-choice'].includes(override.origins?.key)?override.origins.key:'manual') : key != null ? 'estimated' : 'unavailable',
     scope: regionId == null ? 'whole track' : 'region', autoBpm: auto?.tempo?.bpm ?? null, autoKey: auto?.keys?.[0]?.key ?? null};
 }
 function persistCorrections(track) {
@@ -28,9 +28,10 @@ export function dispatch(command) {
     case 'add': {
       const t=command.track;
       const c=legacyCorrections[sourceKey(t.file)] || {};
-      t.sourceIdentity=sourceKey(t.file);t.regions=[];t.corrections={};
+      t.sourceIdentity=sourceKey(t.file);t.sourceRevision=1;t.analysis={};t.regions=[];t.corrections={};
       if(Number.isFinite(c.bpm)&&c.bpm>=25&&c.bpm<=400)t.corrections.bpm=c.bpm;
       if(VALID_KEYS.has(c.key))t.corrections.key=c.key;
+      t.corrections.origins=c.origins&&typeof c.origins==='object'?c.origins:{};
       t.playback={position:0,rate:1,zoom:1};t.sourceAvailable=true;t.decisionRevision=0;
       state.tracks.push(t);break;
     }
@@ -43,7 +44,7 @@ export function dispatch(command) {
       const r=command.region;
       if(!r || !Number.isFinite(r.start)||!Number.isFinite(r.end)||r.start<0||r.end<=r.start||r.end>(track.duration??Infinity))return false;
       const current=track.regions.find(v=>v.id===r.id);
-      if(current)Object.assign(current,r);else track.regions.push({...r,trackId:track.id,corrections:r.corrections||{}});
+      if(current){if(current.start!==r.start||current.end!==r.end){current.regionRevision=(current.regionRevision||0)+1;current.result=null;for(const [key,entry] of Object.entries(track.analysis||{}))if(key.startsWith(r.id+':')){entry.requestRevision++;entry.status='idle';entry.reason=null;}}Object.assign(current,r);}else track.regions.push({...r,regionRevision:1,trackId:track.id,corrections:r.corrections||{}});
       break;
     }
     case 'correct':
@@ -52,10 +53,12 @@ export function dispatch(command) {
       const target=command.regionId==null?track:track.regions.find(r=>r.id===command.regionId);
       if(!target)return false;
       const values=command.type==='resetCorrection'?{}:command.values;
-      if(!values || (values.bpm!=null&&(!Number.isFinite(values.bpm)||values.bpm<25||values.bpm>400)))return false;
+      if(!values || (values.bpm!=null&&(!Number.isFinite(values.bpm)||values.bpm<25||values.bpm>400||Math.abs(values.bpm*100-Math.round(values.bpm*100))>1e-6)))return false;
       if(values.key!=null&&!VALID_KEYS.has(values.key))return false;
       const old=resolveValues(track,command.regionId);
-      target.corrections={...values};track.decisionRevision++;
+      const origins={...target.corrections?.origins};
+      for(const field of command.fields||['bpm','key'])if(values[field]!=null)origins[field]=['manual','tap','candidate-choice'].includes(command.origin)?command.origin:'manual';
+      target.corrections={...values,origins:command.type==='resetCorrection'?{}:origins};track.decisionRevision++;
       if(old.bpm!==resolveValues(track,command.regionId).bpm)target.gridStale=true;
       const saved=target!==track||persistCorrections(track);
       emit(command.type);return {saved};

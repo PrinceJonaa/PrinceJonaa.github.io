@@ -1,5 +1,6 @@
 import {createRouter} from './router.js';
 import {createLayouts, WIDGETS} from './layouts.js';
+import {createTapTempo,tempoMultiple,summaryText,createMetronome} from './musical-controls.js';
 const q=(s,r=document)=>r.querySelector(s);
 const node=(tag,cls,text)=>{const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e;};
 const button=(text,fn,cls='button small')=>{const b=node('button',cls,text);b.type='button';if(fn)b.onclick=fn;return b;};
@@ -15,13 +16,32 @@ const songHead=q('.song-head'),metrics=q('.metrics'),wave=q('.transport-panel'),
 const quickWorkspace=node('div','widget-grid'),studioWorkspace=node('div','widget-grid');
 const empty=node('section','analyzer-empty');empty.innerHTML='<h3>Start with a track.</h3><p>Choose a song to find its key and tempo.</p><label for="files" class="button primary">Choose audio</label>';
 const quickActions=node('div','quick-actions');
-quickActions.append(button('Copy key & BPM',copyValues,'button primary'),button('Correct an estimate',()=>router.go('quick?corrections')));
+quickActions.append(button('Copy key & BPM',copyValues,'button primary'),button('Correct an estimate',()=>router.go('quick?corrections')),button('Share setup',shareValues));
 const shortcuts=node('nav','tool-shortcuts');shortcuts.setAttribute('aria-label','Open a studio tool');
 for(const [id,label] of [['tune','Tune'],['sample','Sample'],['engineer','Engineer']])shortcuts.append(button(label,()=>router.go('studio/'+id)));
-quick.append(empty,quickActions,quickWorkspace,shortcuts);
+const controls=node('section','panel quick-controls');controls.append(node('h3','','Tempo & analysis'));
+const progress=node('p','muted');progress.setAttribute('role','status');const rangeText=node('p','muted'),quickCandidates=node('div','candidates');quickCandidates.setAttribute('aria-label','Choose an alternate reading');
+const tap=createTapTempo(),tapButton=button('Tap tempo',()=>{const result=tap.tap(performance.now());tapButton.textContent=result.message+' ('+result.taps+' taps)';if(result.bpm){const saved=bridge.setOverride('bpm',result.bpm,'tap');if(saved?.saved===false)status('Tapped BPM is available in this tab but could not be saved.');}});
+const half=button('½ tempo',()=>bridge.setOverride('bpm',tempoMultiple(bridge.currentValues().bpm,.5),'candidate-choice')),double=button('2× tempo',()=>bridge.setOverride('bpm',tempoMultiple(bridge.currentValues().bpm,2),'candidate-choice'));
+const metroButton=button('Start metronome',async()=>{if(metronome.running)metronome.stop();else if(!await metronome.start({bpm:bridge.currentValues().bpm,phaseMs:Number(phase.value),count:Number(count.value)}))status('Metronome could not start. Tap again or choose a BPM.');});
+const phase=node('input','');phase.type='number';phase.min='-1000';phase.max='1000';phase.step='10';phase.value='0';phase.setAttribute('aria-label','Metronome phase offset in milliseconds');
+const count=node('input','');count.type='number';count.min='1';count.max='12';count.step='1';count.value='4';count.setAttribute('aria-label','Metronome beats per count');
+const metronome=createMetronome({onState:running=>{metroButton.textContent=running?'Stop metronome ('+bridge.currentValues().bpm+' BPM)':'Start metronome';phase.disabled=running;count.disabled=running;}});bridge.transport.registerCompanion(metronome.stop);
+for(const field of [phase,count])field.onchange=()=>metronome.stop();
+document.addEventListener('visibilitychange',()=>{if(document.hidden)metronome.stop();});
+const musicalActions=node('div','quick-actions');musicalActions.append(tapButton,button('Reset taps',()=>{tap.reset();tapButton.textContent='Tap tempo';}),half,double,metroButton);
+const metroFields=node('div','scope-fields');metroFields.append(labelControl('Phase offset (ms)',phase),labelControl('Beats per count',count));
+const start=node('input',''),end=node('input','');for(const input of [start,end]){input.type='number';input.min='0';input.step='.001';}start.value='0';start.setAttribute('aria-label','Analysis start seconds');end.setAttribute('aria-label','Analysis end seconds');
+const regionFields=node('div','scope-fields');regionFields.append(labelControl('Start seconds',start),labelControl('End seconds',end));
+const scopeActions=node('div','quick-actions');scopeActions.append(button('Analyze this part',()=>{if(!bridge.setScope(Number(start.value),Number(end.value)))return status('Choose a start and end within this source.');bridge.requestAnalysis(['tempo','key']);}),button('Whole track',()=>bridge.setScope(null)));
+const analysisActions=node('div','quick-actions');analysisActions.append(button('Quick analysis',()=>bridge.requestAnalysis(['tempo','key','waveform'],{mode:'quick',force:true})),button('Deep analysis',()=>bridge.requestAnalysis(['tempo','key'],{mode:'verify',force:true})),button('Cancel analysis',()=>bridge.cancel(bridge.selectedId())));
+controls.append(progress,rangeText,quickCandidates,musicalActions,metroFields,node('p','muted','Metronome phase is adjustable; an estimated beat does not establish a downbeat.'),regionFields,scopeActions,analysisActions);
+quick.append(empty,quickActions,quickWorkspace,controls,shortcuts);
+function labelControl(text,control){const l=node('label','compare-label',text);l.append(control);return l;}
+
 const toolnav=node('nav','subnav');toolnav.setAttribute('aria-label','Studio tool');
 for(const [id,label] of [['tune','Tune'],['sample','Sample'],['engineer','Engineer'],['compare','Compare']]){const b=button(label,()=>router.go('studio/'+id),'subnav-button');b.dataset.tool=id;toolnav.append(b);}
-const toolIntro=node('p','muted tool-intro');studio.append(toolnav,toolIntro,studioWorkspace);
+const toolIntro=node('p','muted tool-intro'),toolActions=node('div','quick-actions');studio.append(toolnav,toolIntro,toolActions,studioWorkspace);
 const heading=(title,body)=>{const h=node('header','page-heading');h.append(node('h2','',title),node('p','',body));return h;};
 libraryPage.append(heading('Track library','Find, select or add a song.'),drop,library);
 const compare=node('section','panel compare-widget');compare.append(node('h3','','Compare tracks'));
@@ -43,8 +63,9 @@ const cards=node('div','settings-cards');settings.append(cards);
 function card(title,body){const c=node('section','panel settings-card');c.append(node('h3','',title),node('p','',body));cards.append(c);return c;}
 const layoutCard=card('Workspace layout','Choose a preset or save your own. Layout changes preserve your song and edits.');
 const presetSelect=node('select','settings-mode');presetSelect.setAttribute('aria-label','Workspace preset');layoutCard.append(presetSelect,button('Edit workspace',openLayout));
-const depth=card('Analysis depth','Quick uses sampled sections. Deep analysis uses longer sections. The key/BPM-first pipeline arrives in M2.');
-const depthSelect=node('select','settings-mode');depthSelect.setAttribute('aria-label','Default analysis depth');depthSelect.innerHTML='<option value="quick">Quick</option><option value="verify">Deep analysis</option>';depthSelect.value=mode.value;depth.append(depthSelect);
+const depth=card('Analysis default','Applies to new requests. Quick runs bounded tempo/key windows; Deep uses longer windows. Hidden level and spectrum tools stay idle.');
+const depthSelect=node('select','settings-mode');depthSelect.setAttribute('aria-label','Default analysis depth');depthSelect.innerHTML='<option value="quick">Quick</option><option value="verify">Deep analysis</option>';depthSelect.value=mode.value;depth.append(depthSelect,button('Reanalyze all tracks',()=>bridge.requestAll()));
+const diagnosticCard=card('Local diagnostics','Configured budgets and job traces; no raw audio or filenames. Native/browser memory overhead is unknown.');diagnosticCard.append(button('View diagnostics',()=>{const text=node('pre','diagnostic-text',JSON.stringify(bridge.diagnostics(),null,2));openSheet('Local analysis diagnostics',text);}));
 const appearance=card('Appearance','Choose a light or dark workspace.');appearance.append(button('Toggle light / dark',()=>theme.click()));
 card('Privacy','Audio decoding and analysis happen in this browser. No audio uploads. Sources remain in memory; corrections and layouts are saved locally.');
 card('Clear session','Export your results in Library first. Saved layouts and manual corrections remain available.').append(clear);
@@ -75,6 +96,7 @@ function renderRoute(dest,previous){
   for(const b of toolnav.children)b.setAttribute('aria-current',b.dataset.tool===dest.tool?'page':'false');
   const descriptions={tune:'Use the shared key reference and inspect alternative readings.',sample:'Audition the source waveform. Region editing and WAV export arrive in M4.',engineer:'Inspect the existing level and spectrum measurements.',compare:'Compare effective key, tempo and available measurements.'};
   toolIntro.textContent=descriptions[dest.tool]||'';
+  toolActions.replaceChildren();if(dest.tool==='engineer'){toolActions.append(button('Analyze levels',()=>bridge.requestAnalysis(['levels'])),button('Analyze spectrum',()=>bridge.requestAnalysis(['spectrum'])),button('Cancel analysis',()=>bridge.cancel(bridge.selectedId())));}else if(dest.tool==='tune'){toolActions.append(button('Analyze key',()=>bridge.requestAnalysis(['key'])),button('Correct reference',()=>router.go('quick?corrections')));}
   applyWidgets();refresh();
   requestAnimationFrame(()=>{bridge.redraw();if(previous?.hash!==dest.hash)window.scrollTo(0,scrolls.get(dest.hash)||0);});
   if(dest.sheet==='corrections')openSheet('Correct an estimate',corrections,{historyEntry:false});
@@ -103,11 +125,11 @@ function refresh(){
   const all=bridge.list(),current=all.find(t=>t.id===bridge.selectedId());
   q('#rail-count').textContent=all.length;q('#rail-name').textContent=current?.name||'No track selected';q('#rail-state').textContent=current?.state||'Add audio to begin';
   playerTitle.textContent=current?.name||'No track selected';dock.classList.toggle('is-empty',!current);
-  empty.hidden=!!current;quickWorkspace.hidden=!current;quickActions.hidden=!current;shortcuts.hidden=!current;
+  empty.hidden=!!current;quickWorkspace.hidden=!current;quickActions.hidden=!current;shortcuts.hidden=!current;controls.hidden=!current;toolActions.hidden=!current;refreshMusical(current);
   intro.classList.toggle('has-track',!!current);
   const old=trackSelect.value;trackSelect.replaceChildren();if(!all.length)trackSelect.append(node('option','','No track selected'));
   for(const t of all){const o=node('option','',t.name);o.value=String(t.id);trackSelect.append(o);}trackSelect.value=String(current?.id||old);trackSelect.disabled=!all.length;
-  tuningText.textContent=current?`${current.effective.key||'No key chosen'} · ${current.effective.keySource} · whole track`:'Choose a track; manual key corrections work before analysis.';
+  tuningText.textContent=current?`${current.activeEffective.key||'No key chosen'} · ${current.activeEffective.keySource} · ${current.activeEffective.scope}`:'Choose a track; manual key corrections work before analysis.';
   stereoText.textContent=Number.isFinite(current?.result?.quality?.stereoCorrelation)?'Correlation: '+current.result.quality.stereoCorrelation.toFixed(2):'No stereo measurement available.';
   renderCompare();
 }
@@ -123,7 +145,22 @@ function renderCompare(){
   for(const [id,title] of [['header','Metric'],['tempo','Tempo'],['key','Key'],['duration','Length'],['rmsDb','RMS dBFS'],['samplePeakDb','Sample peak dBFS'],['crestDb','Crest'],['stereoCorrelation','Stereo correlation']]){const row=node('div','compare-row'+(id==='header'?' is-header':''));row.append(node('span','',title),node('strong','',id==='header'?a.name:measure(id,a)),node('strong','',id==='header'?b.name:measure(id,b)));table.append(row);}compareResult.append(table);
 }
 function format(seconds){return Number.isFinite(seconds)?Math.floor(seconds/60)+':'+String(Math.floor(seconds%60)).padStart(2,'0'):'—';}
-async function copyValues(){const t=bridge.list().find(t=>t.id===bridge.selectedId());if(!t)return;const v=t.effective,text=`${t.name} — ${v.bpm??'unavailable'} BPM — ${v.key??'key unavailable'} — BPM source: ${v.bpmSource}; key source: ${v.keySource} — scope: ${v.scope}`;try {await navigator.clipboard.writeText(text);status('Copied key and BPM.');}catch {const field=node('textarea','copy-fallback');field.value=text;field.readOnly=true;field.setAttribute('aria-label','Select and copy key and BPM');openSheet('Copy key & BPM',field);field.focus();field.select();}}
+async function copyValues(){const t=bridge.list().find(t=>t.id===bridge.selectedId());if(!t)return;const text=summaryText(t,bridge.currentValues());try {await navigator.clipboard.writeText(text);status('Copied key and BPM.');}catch {const field=node('textarea','copy-fallback');field.value=text;field.readOnly=true;field.setAttribute('aria-label','Select and copy key and BPM');openSheet('Copy key & BPM',field);field.focus();field.select();}}
+async function shareValues(){const t=bridge.list().find(t=>t.id===bridge.selectedId());if(!t)return;const text=summaryText(t,bridge.currentValues());if(!navigator.share)return copyValues();try{await navigator.share({title:'JonaAudio setup',text});}catch(error){if(error.name!=='AbortError')await copyValues();}}
+let lastMusicalTrack=null;
+function refreshMusical(current){
+ if(!current)return;const values=bridge.currentValues(),prefix=(current.analysisScopeId||'track')+':',analysis=current.analysis||{},tempo=analysis[prefix+'tempo'],key=analysis[prefix+'key'];
+ if(lastMusicalTrack!==current.id){tap.reset();tapButton.textContent='Tap tempo';lastMusicalTrack=current.id;start.value=current.scopeRange?.start||0;end.value=current.scopeRange?.end||current.duration||'';}
+ if(!end.value&&current.duration)end.value=current.duration;
+ const wording=(entry)=>!entry?'not requested':entry.status==='ready'?'ready':entry.status==='unavailable'?entry.reason:entry.phase||entry.status;
+ progress.textContent='Tempo: '+wording(tempo)+' · Key: '+wording(key);
+ const ranges=[...(tempo?.ranges||[]),...(key?.ranges||[])],unique=[...new Map(ranges.map(r=>[r.start+':'+r.end,r])).values()];
+ rangeText.textContent='Scope: '+values.scope+(unique.length?' · Sampled '+unique.map(r=>r.start.toFixed(1)+'–'+r.end.toFixed(1)+' s').join(', '):' · Ranges appear as analysis completes');
+ quickCandidates.replaceChildren();const result=current.scopeResult;
+ for(const c of [...(result?.tempo?.alternatives||[]).slice(0,3).map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM'})),...(result?.keys||[]).slice(0,3).map(x=>({field:'key',value:x.key,text:x.key}))])quickCandidates.append(button(c.text,()=>bridge.setOverride(c.field,c.value,'candidate-choice'),'candidate'));
+ for(const [b,f] of [[half,.5],[double,2]]){const value=tempoMultiple(values.bpm,f);b.disabled=value==null;b.title=value==null?'Choose a tempo; the result must stay between 25 and 400 BPM.':'Use '+value+' BPM';b.textContent=(f===.5?'½':'2×')+' tempo'+(value==null?'':' · '+value);}
+ metroButton.disabled=!Number.isFinite(values.bpm);phase.disabled=metronome.running;count.disabled=metronome.running;
+}
 function status(text){toast.textContent=text;toast.hidden=!text;}
 function openLayout(){
   draft=layouts.current();const content=node('div','layout-editor');

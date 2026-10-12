@@ -69,8 +69,8 @@ export function detectTempo(samples,sampleRate,segments){
  scored.sort((a,b)=>b.score-a.score);perSection.push({start:seg.start,end:seg.end,bpm:scored[0]?.bpm??null,score:scored[0]?.score??0});candidates.push(...scored.slice(0,25));
  }
  const pool=[];for(let bpm=55;bpm<=210;bpm++){let score=0;for(const candidate of candidates){const delta=Math.abs(candidate.bpm-bpm);if(delta<=2)score+=candidate.score*(1-delta/3);}
-  // Human-readable BPM is preferred to slow subdivisions, never hidden as an alternative.
-  if(bpm>=105&&bpm<=175)score*=1.035;pool.push({bpm,score});}
+  // No preferred tempo band; half/double interpretation remains a musician choice.
+  pool.push({bpm,score});}
  pool.sort((a,b)=>b.score-a.score);const choice=pool[0];
  const alternatives=[];for(const candidate of pool){if(!alternatives.some(v=>Math.abs(v.bpm-candidate.bpm)<4))alternatives.push(candidate);if(alternatives.length===5)break;}
  let bpm=choice?.score>0?choice.bpm:null;

@@ -189,3 +189,14 @@ html,body{overflow-x:clip}
 @media(max-width:365px){.app-shell{padding-inline:12px}.bar .wordmark{font-size:10px}.bar .mark{font-size:22px}.player-dock{padding-inline:12px}}
 @media(min-width:761px){#app .new-rail{max-height:calc(100dvh - var(--player-height,100px) - 40px);overflow:auto}}
 @media(prefers-reduced-motion:reduce){.workspace-sheet{scroll-behavior:auto}}
+/* M2 progressive analysis and bounded musical controls. */
+#app .quick-controls{margin-top:16px}
+#app .quick-controls .candidates{margin-bottom:14px}
+#app .candidate{color:var(--text);background:var(--inset);min-height:44px;font:inherit;font-size:13px}
+#app .scope-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:12px 0}
+#app .scope-fields input{width:100%;min-height:44px;background:var(--inset);border:1px solid var(--line);border-radius:8px;padding:9px;color:var(--text);font-size:16px}
+#app .track-detail{flex-wrap:wrap}
+#app .track-detail>span:first-child{width:100%;font-size:11px}
+#app .job-action{min-height:44px;padding:8px}
+.diagnostic-text{font:12px ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+@media(max-width:365px){#app .quick-controls .quick-actions>.button{flex:1;white-space:normal}}
