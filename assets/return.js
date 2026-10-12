@@ -74,6 +74,7 @@ function render(){
  });
 }
 function init(){
+ if(!document.querySelector('link[href="/assets/return.css"]')){const sheet=document.createElement('link');sheet.rel='stylesheet';sheet.href='/assets/return.css';document.head.append(sheet);}
  const current=byPath.get(safePath(location.pathname));
  if(memory.historyEnabled&&current)record(current.publicId);
  document.addEventListener('click',event=>{
