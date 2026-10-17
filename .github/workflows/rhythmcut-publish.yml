@@ -42,6 +42,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          mode="$(node -e "try{console.log(require('./rhythmcut/release.json').publicationMode||'upstream')}catch{console.log('upstream')}")"
+          if [[ "$mode" == 'pinned' ]]; then
+            # A reviewed static release can come from a private source repo.
+            # Keep that release without requesting broader GitHub credentials.
+            node -e "const r=require('./rhythmcut/release.json');if(r.sourceRef!==process.env.RHYTHMCUT_SOURCE_REF||!/^[a-f0-9]{40}$/.test(r.commit))process.exit(1);console.log('Keeping pinned '+r.edition+' release '+r.commit)"
+            test -s rhythmcut/index.html
+            test -s rhythmcut/coi-serviceworker.js
+            test -s rhythmcut/fonts/BarlowCondensed-SemiBold.ttf
+            echo 'needs_build=false' >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
           source_sha="$(git ls-remote https://github.com/PrinceJonaa/rhythmcut.git "refs/heads/$RHYTHMCUT_SOURCE_REF" | cut -f1)"
           test "${#source_sha}" -eq 40
           published_sha="$(node -e "try{console.log(require('./rhythmcut/release.json').commit||'')}catch{console.log('')}")"
