@@ -16,6 +16,12 @@ permissions:
   contents: write
   pages: write
 
+env:
+  RHYTHMCUT_SOURCE_REF: codex/timeline-studio
+  VITE_API_ORIGIN: https://rhythmcut-timeline-studio.vercel.app
+  VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
+  VITE_SENTRY_ENVIRONMENT: production
+
 concurrency:
   group: rhythmcut-public-publish
   cancel-in-progress: false
@@ -36,7 +42,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          source_sha="$(git ls-remote https://github.com/PrinceJonaa/rhythmcut.git refs/heads/main | cut -f1)"
+          source_sha="$(git ls-remote https://github.com/PrinceJonaa/rhythmcut.git "refs/heads/$RHYTHMCUT_SOURCE_REF" | cut -f1)"
           test "${#source_sha}" -eq 40
           published_sha="$(node -e "try{console.log(require('./rhythmcut/release.json').commit||'')}catch{console.log('')}")"
           echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
@@ -53,7 +59,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          git clone --depth 1 --branch main https://github.com/PrinceJonaa/rhythmcut.git "$RUNNER_TEMP/rhythmcut-source"
+          git clone --depth 1 --branch "$RHYTHMCUT_SOURCE_REF" https://github.com/PrinceJonaa/rhythmcut.git "$RUNNER_TEMP/rhythmcut-source"
           git -C "$RUNNER_TEMP/rhythmcut-source" rev-parse HEAD > "$RUNNER_TEMP/rhythmcut-source-sha"
 
       - uses: actions/setup-node@v4
@@ -73,7 +79,7 @@ jobs:
           npm run typecheck
           npm test
 
-      - name: Build complete offline-capable RhythmCut
+      - name: Build Timeline Studio web assets
         if: steps.upstream.outputs.needs_build == 'true'
         shell: bash
         working-directory: ${{ runner.temp }}/rhythmcut-source
@@ -84,9 +90,8 @@ jobs:
           test -s dist/index.html
           test -s dist/coi-serviceworker.js
           test -s dist/vision/wasm/vision_wasm_module_internal.wasm
-          test -s dist/vision/face_landmarker.task
-          test -s dist/vision/pose_landmarker_lite.task
-          test -s dist/onnx/ort-wasm-simd-threaded.wasm
+          test -s dist/vision/blaze_face_short_range.tflite
+          test -s dist/fonts/BarlowCondensed-SemiBold.ttf
           test -s dist/site.webmanifest
           du -sh dist
 
@@ -118,6 +123,7 @@ jobs:
             'app':'RhythmCut',
             'version':version,
             'source':'https://github.com/PrinceJonaa/rhythmcut',
+            'sourceRef':os.environ['RHYTHMCUT_SOURCE_REF'],
             'commit':commit,
             'path':'/rhythmcut/',
             'builtAt':datetime.now(timezone.utc).isoformat(timespec='seconds'),
