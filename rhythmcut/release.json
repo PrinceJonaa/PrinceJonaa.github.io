@@ -5,9 +5,9 @@
   "source": "https://github.com/PrinceJonaa/rhythmcut",
   "sourceRef": "codex/timeline-studio",
   "publicationMode": "pinned",
-  "commit": "b4380c82d48511435a19156d280e538f90bd98d9",
+  "commit": "9dccfb6073b666f5e3366822ce8d78438a60212f",
   "path": "/rhythmcut/",
-  "builtAt": "2026-10-17T18:56:34.1824961Z",
-  "testing": "72 unit tests, typecheck and production build passed; live browser checks in progress",
-  "publisher": "Timeline Studio release"
+  "builtAt": "2026-10-17T19:15:41.691140+00:00",
+  "testing": "76 unit tests, typecheck, build and 8 Chromium/WebKit Home checks passed; physical-device behavior unverified",
+  "publisher": "Omni home-background release"
 }
