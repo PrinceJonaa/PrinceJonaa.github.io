@@ -17,7 +17,7 @@ permissions:
   pages: write
 
 env:
-  RHYTHMCUT_SOURCE_REF: codex/timeline-studio
+  RHYTHMCUT_SOURCE_REF: codex/unified-timeline-engine
   VITE_API_ORIGIN: https://rhythmcut-timeline-studio.vercel.app
   VITE_SENTRY_DSN: ${{ vars.VITE_SENTRY_DSN }}
   VITE_SENTRY_ENVIRONMENT: production

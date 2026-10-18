@@ -1,0 +1,2 @@
+# Generated worker contains embedded codec bytes; preserve the exact build payload.
+assets/export.worker-*.js binary

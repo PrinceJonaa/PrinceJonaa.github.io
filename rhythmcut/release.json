@@ -1,13 +1,24 @@
 {
   "app": "RhythmCut",
-  "edition": "Timeline Studio",
-  "version": "0.3.0",
+  "edition": "Unified Timeline Studio",
+  "version": "0.4.0",
   "source": "https://github.com/PrinceJonaa/rhythmcut",
-  "sourceRef": "codex/timeline-studio",
+  "sourceRef": "codex/unified-timeline-engine",
   "publicationMode": "pinned",
-  "commit": "865107edcf5fb7c8ccebce3c256c22e7dcff5325",
+  "commit": "8fe9342858acc160ee9f1ecbc96d2bb8e7f8a1dc",
   "path": "/rhythmcut/",
-  "builtAt": "2026-10-17T19:59:39.658347+00:00",
-  "testing": "Typecheck, build and eight Chromium/WebKit Home checks passed, including automatic start and removal on music import",
-  "publisher": "Home autoplay follow-up"
+  "builtAt": "2026-10-18T03:22:03.375Z",
+  "verifiedChecks": [
+    "Node 22 typecheck and unit tests",
+    "Timeline editing and seed history",
+    "variable Shuffle and Keep Timing",
+    "section replacement and storage",
+    "native and compatibility decoded exports",
+    "face and pose worker inference and model failure",
+    "scoped installed-worker update"
+  ],
+  "limitations": [
+    "Physical iPhone and Android performance not certified",
+    "Optional scene and music semantic-model accuracy not established"
+  ]
 }
