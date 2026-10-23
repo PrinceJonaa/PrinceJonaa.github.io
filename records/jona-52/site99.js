@@ -355,7 +355,7 @@ function render(){
  else if(route==='access')renderAccess();
  else if(route==='terminal-echo')renderTerminalEcho();
  else if(route==='veil-nil')renderVeil();
- else if(route==='world-before'||/^world-(sealed|internet|cabinet|noosphere|foundation|terminal|firstcentury|ages|finalyear|reversal|secondapproach|receipt)$/.test(route))renderWorldBefore();
+ else if(route==='world-before'||/^world-(sealed|internet|cabinet|noosphere|foundation|mechanisms|terminal|firstcentury|ages|finalyear|reversal|secondapproach|receipt)$/.test(route))renderWorldBefore();
  else if(route==='continuity'||route.startsWith('continuity-'))renderRestoration(route.startsWith('continuity-')?route.slice(11):null);
  else if(route==='discussion'||route.startsWith('thread-'))renderDiscussion(route.startsWith('thread-')?route.slice(7):null);
  else if(route.startsWith('source'))renderSource();
@@ -370,7 +370,7 @@ function render(){
  $('tag-link').href='#tags';
  $('page-identity').textContent=isRev?'SCP-JONA / J/'+ri:'SITE-99 / '+route.toUpperCase();
  syncClearance();
- if(/^world-(sealed|internet|cabinet|noosphere|foundation|terminal|firstcentury|ages|finalyear|reversal|secondapproach|receipt)$/.test(route)){var target=document.getElementById(route);if(target&&typeof target.scrollIntoView==='function')target.scrollIntoView({block:'start'})}
+ if(/^world-(sealed|internet|cabinet|noosphere|foundation|mechanisms|terminal|firstcentury|ages|finalyear|reversal|secondapproach|receipt)$/.test(route)){var target=document.getElementById(route);if(target&&typeof target.scrollIntoView==='function')target.scrollIntoView({block:'start'})}
  else if(location.hash){window.scrollTo({top:0,behavior:'instant'})}
 }
 document.addEventListener('click',function(e){
