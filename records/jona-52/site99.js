@@ -101,6 +101,8 @@ function renderVeil(){
  });
 }
 
+function markRevisionSeven(){try{sessionStorage.setItem('site99:sealed-last-revision','1')}catch(e){}}
+function hadRevisionSeven(){try{return sessionStorage.getItem('site99:sealed-last-revision')==='1'}catch(e){return false}}
 function renderRevision(i){
  setTitle('SCP-JONA');
  setMeta('REVISION J/'+i+'  ·  '+classes[i].toUpperCase()+'  ·  SITE-99 / OFFSITE');
@@ -109,6 +111,8 @@ function renderRevision(i){
  if(locked){body.innerHTML=gatedHtml(requirements[i],'SCP-JONA / Revision J/'+i)+tagbar(['scp','site-99','restricted']);audit('RETRIEVAL REFUSED // J/'+i+' // LEVEL '+requirements[i]);return}
  var html=data.versions[String(i)]||'<p>FILE MISSING</p>';
  html=html.replace(/^<h1>.*?<\/h1>\s*/s,'');
+ if(i===7)markRevisionSeven();
+ if(i===0&&hadRevisionSeven()){html+='<p class="archive-note"><strong>RAISA AMENDMENT / 02:22:</strong> The original document was closed before this amendment was entered. This remains the original document.</p>'}
  if(i===8){markVeilWitness('copy');if(veilEligible()){html=html.replace('<strong>END OF FILE?</strong>','<strong><a href="#veil-nil" class="veil-last-door">END OF FILE?</a></strong>')}}
  // The index page is intentionally the first readable record, not a level-2 briefing.
  var match=['position','witness','witness','door','authority','feedback','receiver','feedback','receiver'][i];
