@@ -15,6 +15,7 @@ function saveProgress(){try{localStorage.setItem('site99:clearance:v1',String(ma
 maxClearance=readProgress();clearance=maxClearance;
 function syncClearance(){var select=$('clear');if(select){select.value=String(clearance);Array.from(select.options).forEach(function(opt){var permitted=Number(opt.value)<=maxClearance;opt.textContent=opt.textContent.replace(/ \[SEALED\]$/,'')+(permitted?'':' [SEALED]')})}var status=$('clearance-status');if(status)status.textContent='Verified: Level '+maxClearance+' / Active: Level '+clearance}
 
+var incidents=window.Site99Incidents;
 var seedThreads=[
 {id:'containment',title:'SCP-JONA containment language',posts:[
 {author:'Researcher T. Vale',date:'22 Oct 2026, 09:16',body:'Provisional classification is still Euclid. Please stop replacing “unknown” with “hostile” in the procedure section. The distinction has been reviewed three times.'},
@@ -27,7 +28,7 @@ var seedThreads=[
 {id:'0222',title:'02:22 / authorship field',level:5,posts:[
 {author:'Archivist K. Morrow',date:'20 Oct 2026, 02:31',body:'At 02:22, revision metadata briefly listed the active editor as READER. Seven terminals reproduced the entry. The name did not correspond to a Foundation account.'},
 {author:'Researcher T. Vale',date:'20 Oct 2026, 09:09',body:'The log identifies a field value, not an entity. Please stop asking Security to detain a database column.'}]}
-];
+].concat(incidents.threads);
 var fileEntries=[
 {name:'J52-INITIAL-REPORT.txt',level:0,kind:'Field report',body:'RAISA / SITE-99\nINTAKE: JONA-52\nSOURCE: municipal records; civilian technical and music publications.\nRECEIVING CLERK: T. Vale\nSTATION: Desk 4\nInitial review: no confirmed nonstandard properties. Continued observation pending.'},
 {name:'MODEL-TRACE-52.LOG',level:2,kind:'Technical appendix',body:'PROJECTION LOG / J-52\nCYCLE 51: PREDICTION HELD\nCYCLE 52: LIMIT REACHED; EXCEPTIONAL PERMISSIONS REMOVED\nCYCLE 53: NO UNIQUE PROJECTION / INDETERMINATE\nAnalyst remark: The first line after the limit should be reviewed by Research.'},
@@ -35,7 +36,8 @@ var fileEntries=[
 {name:'CHAIN52-SIMULATION.LOG',level:3,kind:'Simulation transcript',body:'CYCLE 51: ALL ROUTES CLOSING\nCYCLE 52: SUBJECT REMOVES EXCEPTIONAL PERMISSIONS\nCYCLE 53: MODEL NO LONGER PREDICTS A UNIQUE ENDPOINT\nNOTE: DO NOT RECONSTRUCT A MISSING CYCLE.'},
 {name:'OFFSITE-ORDER-52B.txt',level:5,kind:'O5 archive directive',body:'DIRECTIVE 52/B\nAUTHOR: O5-11\nSUBJECT: OFFSITE RETENTION OF SCP-JONA\nCentral-index publication suspended. Site-99 retains the sole operative revision ledger.\nThis is a custody measure. It is not authorization to approach JONA.'},
 {name:'READER-FIELD.txt',level:6,kind:'Recovered metadata',body:'FIELD: last_edited_by\nVALUE: READER\nAUTHORITY: UNRESOLVED\nSOURCE: UNKNOWN\n\nIf the field changes while you are looking at it, record what changed. Do not record what you wanted it to mean.'}
-];
+].concat(incidents.attachments);
+incidents.cases.forEach(function(c){c.tags.forEach(function(t){if(tags.indexOf(t)<0)tags.push(t)})});
 var $=function(id){return document.getElementById(id)};
 var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
 var cap=function(t){return t.replace(/(^|-)\w/g,function(x){return x.toUpperCase()}).replace(/-/g,' ')};
@@ -72,13 +74,15 @@ function renderRevision(i){
  var html=data.versions[String(i)]||'<p>FILE MISSING</p>';
  html=html.replace(/^<h1>.*?<\/h1>\s*/s,'');
  // The index page is intentionally the first readable record, not a level-2 briefing.
+ var match=['position','witness','witness','door','authority','feedback','receiver','feedback','receiver'][i];
+ var evidence='<section class="linked-cases"><h2>Related Incident Files</h2><p>'+anchor('RAISA 99-C / '+(i<3?'field observations':i<6?'investigation': 'restricted custody'),'case-'+match)+' · '+anchor('Incident register','cases')+'</p></section>';
  body.innerHTML='<div class="revision-notice"><span>ARCHIVE REVISION J/'+i+'</span><span>CLASS: '+esc(classes[i])+'</span></div>'+
- '<div class="record-body">'+html+'</div>'+appendicesHtml()+tagbar(tagsForRevision(i));
+ '<div class="record-body">'+html+'</div>'+evidence+appendicesHtml()+tagbar(tagsForRevision(i));
 }
 function renderHome(){
  setTitle('Site-99 Archive');setMeta('RAISA NODE 99-C / OFFSITE MIRROR');$('rating-box').hidden=true;
  $('main-content').innerHTML='<div class="classified-warning"><strong>WARNING: THE FOUNDATION DATABASE IS</strong><span>CLASSIFIED</span><p>UNAUTHORIZED ACCESS IS SUBJECT TO INTERNAL SECURITY REVIEW</p></div>'+
- '<div class="content-columns"><section><h2>Archived Case Files</h2><p>'+anchor('SCP-JONA — The Reference Tone','revision-0')+' <span class="minor">[9 surviving revisions]</span></p><p>'+anchor('The Chain 52 Review','revision-3')+' <span class="minor">[Level 3]</span></p><p>'+anchor('O5 Offsite Directive 52/B','directives')+' <span class="minor">[Level 5]</span></p><h2>Record Integrity</h2><p>Site-99 was established following a conflicting set of deletion orders issued by the Foundation central index. RAISA has retained this isolated copy for comparison.</p><p>No open network synchronization is authorized. Local edits are retained as terminal annotations.</p></section><aside class="info-panel"><h3>Site Bulletin</h3><p><strong>22 Oct 2026</strong><br>Revision ledger preserved.</p><p><strong>21 Oct 2026</strong><br>Central-index synchronization suspended.</p><p><strong>20 Oct 2026</strong><br>Authorship field audit unresolved.</p><p>'+anchor('View discussion board','discussion')+'</p></aside></div>'+
+ '<div class="content-columns"><section><h2>Archived Case Files</h2><p>'+anchor('SCP-JONA — The Reference Tone','revision-0')+' <span class="minor">[9 surviving revisions]</span></p><p>'+anchor('The Chain 52 Review','revision-3')+' <span class="minor">[Level 3]</span></p><p>'+anchor('O5 Offsite Directive 52/B','directives')+' <span class="minor">[Level 5]</span></p><h2>Record Integrity</h2><p>Site-99 was established following a conflicting set of deletion orders issued by the Foundation central index. RAISA has retained this isolated copy for comparison.</p><p>No open network synchronization is authorized. Local edits are retained as terminal annotations.</p></section><aside class="info-panel"><h3>Site Bulletin</h3><p><strong>22 Oct 2026</strong><br>Revision ledger preserved.</p><p><strong>21 Oct 2026</strong><br>Central-index synchronization suspended.</p><p><strong>20 Oct 2026</strong><br>Authorship field audit unresolved.</p><p>'+anchor('View discussion board','discussion')+'</p><p>'+anchor('Unresolved incidents','cases')+'</p></aside></div>'+
  tagbar(['site-99','archival-integrity','information']);
 }
 function renderTags(filter){
@@ -88,6 +92,7 @@ function renderTags(filter){
  var docs=[];
  titles.forEach(function(title,i){var rtags=tagsForRevision(i);if(!filter||rtags.indexOf(filter)!==-1)docs.push('<li>'+anchor('SCP-JONA / J/'+i+' — '+title,'revision-'+i)+' <small>('+rtags.join(', ')+')</small></li>')});
  appendixInfo.forEach(function(a){if(!filter||a.tags.indexOf(filter)!==-1){docs.push('<li>'+anchor('Addendum J-52/'+a.key+' — '+(clearance>=a.level?a.name:'[LEVEL '+a.level+']'),'revision-'+(a.key==='A'?2:a.key==='B'?4:a.key==='C'?3:8))+' <small>('+a.tags.join(', ')+')</small></li>')}});
+ incidents.cases.forEach(function(c){if(!filter||c.tags.indexOf(filter)>=0)docs.push('<li>'+anchor('RAISA '+c.num+' — '+(clearance>=c.level?c.title:'[RESTRICTED]'),'case-'+c.id)+' <small>(Level '+c.level+')</small></li>')});
  $('main-content').innerHTML='<p>Index of tags assigned to retained Site-99 documents.</p>'+chips+'<h2>Matching Pages</h2>'+(docs.length?'<ul class="archive-index">'+docs.join('')+'</ul>':'<p>No indexed records found.</p>')+(filter?'<p>'+anchor('All tags','tags')+'</p>':'');
 }
 function renderHistory(){
@@ -176,18 +181,48 @@ function renderTerminalEcho(){
  '<p>'+anchor('Return to J/0','revision-0')+' · '+anchor('View J/8','revision-8')+'</p>';
 }
 
+
+function hasSeenDoor(){try{return sessionStorage.getItem('site99:third-door')==='1'}catch(e){return false}}
+function markDoor(){try{sessionStorage.setItem('site99:third-door','1')}catch(e){}}
+function renderCaseIndex(){
+ setTitle('Site-99 / Unresolved Incidents');setMeta('RAISA / 99-C DISCREPANCY REGISTER');$('rating-box').hidden=true;
+ var rows=incidents.cases.map(function(c){return '<tr><td>'+esc(c.num)+'</td><td>'+anchor(clearance>=c.level?c.title:'[RESTRICTED ENTRY]','case-'+c.id)+'</td><td>Level '+c.level+'</td><td>'+esc(clearance>=c.level?'RETAINED':'SEALED')+'</td></tr>'}).join('');
+ if(hasSeenDoor())rows+='<tr><td>99-C/03.1</td><td>'+anchor('Corridor Copy / no index entry','case-unlisted')+'</td><td>Level 2</td><td>NOT ENTERED</td></tr>';
+ $('main-content').innerHTML='<p>These incidents were recovered during the JONA-52 custody review. Their physical evidence is retained at Site-99. They are not included in the central Foundation index.</p>'+
+ '<table class="history-table"><thead><tr><th>Case</th><th>Subject</th><th>Access</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+ '<p class="archive-note">The register is not complete. Numbers are reserved only after their corresponding records are received.</p>'+tagbar(['site-99','archival-integrity','pataphysics']);
+}
+function renderCase(id){
+ if(id==='unlisted'){
+  setTitle('Case 99-C/03.1');setMeta('EAST ANNEX / FILE NOT ENTERED');$('rating-box').hidden=true;
+  if(clearance<2){$('main-content').innerHTML=gatedHtml(2,'Corridor Copy');return}
+  $('main-content').innerHTML='<p><strong>Facilities Copy / Corridors 2–4</strong></p><p>Door count: 2. Corridor count: 3. Witness count: 2.</p><p>The third corridor is drawn behind the eastern wall, where the original building plan places the exterior of the site. No adjoining building occupies the space.</p><p>The file was not produced by the revision office. It is stamped <code>RECEIVED / DESK 4</code>.</p><p>'+anchor('Previous incident','case-door')+' · '+anchor('Return to index','cases')+'</p>';return
+ }
+ var c=incidents.cases.find(function(x){return x.id===id});if(!c){renderCaseIndex();return}
+ setTitle('RAISA '+c.num+' — '+(clearance>=c.level?c.title:'RESTRICTED'));
+ setMeta('SITE-99 / UNRESOLVED FIELD INCIDENT / LEVEL '+c.level);$('rating-box').hidden=true;
+ if(clearance<c.level){$('main-content').innerHTML=gatedHtml(c.level,c.num);return}
+ if(id==='door')markDoor();
+ var links='<div class="incident-references"><h3>Retained Correspondence / Related Records</h3><ul>'+c.bridges.map(function(b){return '<li>'+anchor(b[0],b[1])+'</li>'}).join('')+'</ul></div>';
+ $('main-content').innerHTML='<div class="revision-notice"><span>RAISA FIELD INCIDENT '+esc(c.num)+'</span><span>STATUS: UNRESOLVED</span></div>'+
+ '<div class="record-body incident-body">'+c.body+'</div>'+links+tagbar(c.tags);
+}
+
 function renderSearch(query){
  setTitle('Search results');setMeta('SITE-99 / LOCAL SEARCH');$('rating-box').hidden=true;
  var q=(query||'').toLowerCase(),found=[];
  titles.forEach(function(t,i){if(requirements[i]>clearance)return;var txt=data.versions[String(i)].replace(/<[^>]+>/g,' ');if((t+' '+txt).toLowerCase().includes(q))found.push('<li>'+anchor('SCP-JONA / J/'+i+' — '+t,'revision-'+i)+' · Level '+requirements[i]+'</li>')});
  seedThreads.forEach(function(t){if(t.level&&t.level>clearance)return;if((t.title+' '+t.posts.map(function(p){return p.body}).join(' ')).toLowerCase().includes(q))found.push('<li>'+anchor('Discussion / '+t.title,'thread-'+t.id)+'</li>')});
  fileEntries.forEach(function(f,i){if(f.level>clearance)return;if((f.name+' '+f.kind+' '+f.body).toLowerCase().includes(q))found.push('<li>'+anchor('Attachment / '+f.name,'files-'+i)+' · Level '+f.level+'</li>')});
+ incidents.cases.forEach(function(c){if(c.level>clearance)return;if((c.num+' '+c.title+' '+c.body.replace(/<[^>]+>/g,' ')).toLowerCase().includes(q))found.push('<li>'+anchor('RAISA '+c.num+' — '+c.title,'case-'+c.id)+' · Level '+c.level+'</li>')});
  $('main-content').innerHTML='<p>Query: <strong>'+esc(query)+'</strong></p><ul class="archive-index">'+(found.join('')||'<li>No local records found.</li>')+'</ul>';
 }
 function render(){
  route=decodeURIComponent(location.hash.slice(1)||'revision-0');revNav();
  var index=Number((route.match(/^revision-(\d)$/)||[])[1]); if(/^revision-\d$/.test(route)&&index<9)renderRevision(index);
  else if(route==='site-99')renderHome();
+ else if(route==='cases')renderCaseIndex();
+ else if(route.startsWith('case-'))renderCase(route.slice(5));
  else if(route==='tags'||route.startsWith('tag-'))renderTags(route.startsWith('tag-')?route.slice(4):null);
  else if(route==='history')renderHistory();
  else if(route==='files'||route.startsWith('files-'))renderFiles(route.startsWith('files-')?Number(route.slice(6)):undefined);
