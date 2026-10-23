@@ -92,7 +92,7 @@ function renderVeil(){
  '<div class="veil-controls"><select id="veil-judgment" required><option value="">— No assessment entered —</option><option value="intact">Veil intact</option><option value="broken">Veil breached</option><option value="unknown">Unable to determine</option></select>'+
  '<button type="submit" class="site-btn">File assessment</button></div></form>'+
  '<div id="veil-result" aria-live="polite">'+veilOutcome(decision)+'</div>';
- $('main-content').innerHTML=veilFile.html.replace('<div id="veil-interaction"></div>','<div id="veil-interaction">'+field+'</div>');
+ $('main-content').innerHTML=veilFile.html.replace('<div id="veil-interaction"></div>','<div id="veil-interaction">'+field+'</div>')+(seenWorldBefore()?worldBefore.lateVeil:'');
  $('veil-judgment').value=decision||'';
  $('veil-form').addEventListener('submit',function(e){
   e.preventDefault();
@@ -186,7 +186,7 @@ function renderRevision(i){
  if(i===7){markRevisionSeven();if(clearance>=5)html+='<p class="archive-note">UNRECONCILED TRANSFER: '+anchor('52-R/0 / duplicate custody receipt','continuity')+'. Entered without original reference.</p>'}
  if(i===0&&hadRevisionSeven()){html+='<p class="archive-note"><strong>RAISA AMENDMENT / 02:22:</strong> The original document was closed before this amendment was entered. This remains the original document.</p>'}
  html+=restorationLeaf(restorationLeaves.versions,String(i));
- if(i===0&&seenWorldBefore())html+=worldBefore.revisionAfter;
+ if(seenWorldBefore()){if(i===0)html+=worldBefore.revisionAfter;if(worldBefore.lateRevisions[String(i)])html+=worldBefore.lateRevisions[String(i)]}
  if(i===8){markVeilWitness('copy');if(veilEligible()){html=html.replace('<strong>END OF FILE?</strong>','<strong><a href="#veil-nil" class="veil-last-door">END OF FILE?</a></strong>')}}
  // The index page is intentionally the first readable record, not a level-2 briefing.
  var match=['position','witness','witness','door','authority','feedback','receiver','feedback','receiver'][i];
@@ -299,6 +299,7 @@ function renderTerminalEcho(){
 
  '<p class="archive-note">RAISA correction: The final punctuation in the reader copy has not been authenticated. The original ends where a decision was expected.</p>'+ 
  (veilEligible()&&veilChoice()?'<article class="forum-post"><div class="post-author"><strong>RAISA-99</strong><span>Return receipt</span></div><div class="post-body"><div class="post-date">99-C/NIL / receipt filed after closure</div><p>The Veil assessment has been entered. The receiving system stored it under OBSERVER, not NORMALCY. The archive cannot identify the rule that moved it.</p></div></article>':'')+
+ (seenWorldBefore()?worldBefore.lateEcho:'')+
  '<p>'+anchor('Return to J/0','revision-0')+' · '+anchor('View J/8','revision-8')+'</p>'; 
 }
 
@@ -327,7 +328,7 @@ function renderCase(id){
  if(id==='receiver')markVeilWitness('return');
  var links='<div class="incident-references"><h3>Retained Correspondence / Related Records</h3><ul>'+c.bridges.map(function(b){return '<li>'+anchor(b[0],b[1])+'</li>'}).join('')+'</ul></div>';
  $('main-content').innerHTML='<div class="revision-notice"><span>RAISA FIELD INCIDENT '+esc(c.num)+'</span><span>STATUS: UNRESOLVED</span></div>'+
- '<div class="record-body incident-body">'+c.body+restorationLeaf(restorationLeaves.cases,id)+'</div>'+links+tagbar(c.tags);
+ '<div class="record-body incident-body">'+c.body+restorationLeaf(restorationLeaves.cases,id)+(seenWorldBefore()&&worldBefore.lateCases[id]?worldBefore.lateCases[id]:'')+'</div>'+links+tagbar(c.tags);
 }
 
 function renderSearch(query){
