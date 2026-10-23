@@ -197,12 +197,28 @@ function renderRevision(i){
 }
 function renderCrossDepartment(){
  setTitle('Cross-site file 52-B');setMeta('RAISA / MULTI-DEPARTMENT CUSTODY DISCREPANCY');$('rating-box').hidden=true;
- $('main-content').innerHTML=window.Site99CrossDepartment.html();window.Site99CrossDepartment.mount();
+ window.Site99Evidence.observe('transfer-52b');
+ var linked=window.Site99Evidence.found().some(function(f){return f.id==='identity-loop'||f.id==='interdepartmental-hold'});
+ var addendum=linked?'<aside class="ev-cross-addendum"><div class="ev-kicker">SUPPLEMENTAL CUSTODY NOTE / PERSONNEL RECORD</div><h3>The authorizing credential</h3><p>The signing identity belongs to an employee whose appointment was authorized by that same credential. The custody discrepancy can no longer be attributed solely to the two facility clocks.</p><p>'+anchor('Read the personnel authorization','hr-appointment')+' · '+anchor('Inspect the Security gateway','security-gateway')+' · '+anchor('Review the private evidence notebook','notebook')+'</p><small>Supplement recorded as a separate addendum. Earlier copies remain preserved.</small></aside>':'';
+ $('main-content').innerHTML=window.Site99CrossDepartment.html()+addendum;window.Site99CrossDepartment.mount();
+}
+function renderEvidenceRecord(id){
+ var f=window.Site99Evidence.data.find(id);
+ setTitle(f?f.title:'Unindexed record');setMeta('RAISA / CROSS-DEPARTMENT EVIDENCE');$('rating-box').hidden=true;
+ $('main-content').innerHTML=window.Site99Evidence.renderRecord(id);
+}
+function renderNotebook(){
+ setTitle('My Investigation');setMeta('LOCAL READER WORKSPACE / NOT A FOUNDATION SYSTEM');$('rating-box').hidden=true;
+ $('main-content').innerHTML=window.Site99Evidence.renderNotebook();
+}
+function renderDepartmentView(r){
+ var hr=r.startsWith('hr');setTitle(hr?'Personnel Services':'Security Operations');setMeta(hr?'INTERNAL PERSONNEL DATABASE / SITE-99':'SITE-99 / SECURITY OPERATIONS NODE');$('rating-box').hidden=true;
+ $('main-content').innerHTML=window.Site99PersonnelSecurity.html(r);
 }
 function renderHome(){
  setTitle('Site-99 Archive');setMeta('RAISA NODE 99-C / OFFSITE MIRROR');$('rating-box').hidden=true;
  $('main-content').innerHTML='<div class="classified-warning"><strong>WARNING: THE FOUNDATION DATABASE IS</strong><span>CLASSIFIED</span><p>UNAUTHORIZED ACCESS IS SUBJECT TO INTERNAL SECURITY REVIEW</p></div>'+
- '<div class="content-columns"><section><h2>Archived Case Files</h2><p>'+anchor('Transfer 52-B / Interdepartmental Discrepancy','xdept')+' <span class="minor">[newly retained]</span></p><p>'+anchor('SCP-JONA — The Reference Tone','revision-0')+' <span class="minor">[9 surviving revisions]</span></p><p>'+anchor('The Chain 52 Review','revision-3')+' <span class="minor">[Level 3]</span></p><p>'+anchor('O5 Offsite Directive 52/B','directives')+' <span class="minor">[Level 5]</span></p><h2>Record Integrity</h2><p>Site-99 was established following a conflicting set of deletion orders issued by the Foundation central index. RAISA has retained this isolated copy for comparison.</p><p>No open network synchronization is authorized. Local edits are retained as terminal annotations.</p></section><aside class="info-panel"><h3>Site Bulletin</h3><p><strong>22 Oct 2026</strong><br>Revision ledger preserved.</p><p><strong>21 Oct 2026</strong><br>Central-index synchronization suspended.</p><p><strong>20 Oct 2026</strong><br>Authorship field audit unresolved.</p><p>'+anchor('View discussion board','discussion')+'</p><p>'+anchor('Unresolved incidents','cases')+'</p></aside></div>'+
+ '<div class="content-columns"><section><h2>Archived Case Files</h2><p>'+anchor('Personnel Services / Site-99 directory','hr')+' <span class="minor">[internal workstation]</span></p><p>'+anchor('Security Operations / credential review','security')+' <span class="minor">[forensic node]</span></p><p>'+anchor('Transfer 52-B / Interdepartmental Discrepancy','xdept')+' <span class="minor">[newly retained]</span></p><p>'+anchor('SCP-JONA — The Reference Tone','revision-0')+' <span class="minor">[9 surviving revisions]</span></p><p>'+anchor('The Chain 52 Review','revision-3')+' <span class="minor">[Level 3]</span></p><p>'+anchor('O5 Offsite Directive 52/B','directives')+' <span class="minor">[Level 5]</span></p><h2>Record Integrity</h2><p>Site-99 was established following a conflicting set of deletion orders issued by the Foundation central index. RAISA has retained this isolated copy for comparison.</p><p>No open network synchronization is authorized. Local edits are retained as terminal annotations.</p></section><aside class="info-panel"><h3>Site Bulletin</h3><p><strong>22 Oct 2026</strong><br>Revision ledger preserved.</p><p><strong>21 Oct 2026</strong><br>Central-index synchronization suspended.</p><p><strong>20 Oct 2026</strong><br>Authorship field audit unresolved.</p><p>'+anchor('View discussion board','discussion')+'</p><p>'+anchor('Unresolved incidents','cases')+'</p></aside></div>'+
  tagbar(['site-99','archival-integrity','information']);
 }
 function renderTags(filter){
@@ -229,7 +245,7 @@ function renderFiles(selected){
 }
 function renderPersonnel(){
  setTitle('Site-99 Personnel Registry');setMeta('INTERNAL DIRECTORY');$('rating-box').hidden=true;
- $('main-content').innerHTML='<table class="history-table"><thead><tr><th>Personnel</th><th>Assignment</th><th>Note</th></tr></thead><tbody><tr><td>Researcher T. Vale</td><td>Case JONA-52</td><td>Active</td></tr><tr><td>Archivist K. Morrow</td><td>Revision custody</td><td>Active</td></tr><tr><td>Dr. A. Renn</td><td>Ethics review</td><td>Consulting</td></tr><tr><td>O5-11</td><td>Offsite directive</td><td>Level 5</td></tr></tbody></table><p>'+anchor('Open discussion archive','discussion')+'</p>';
+ $('main-content').innerHTML='<p>Site-99 now retains a searchable personnel-service mirror: '+anchor('Open the Personnel Administration workstation','hr')+'. The historical register below is still held as a separate archival copy.</p><table class="history-table"><thead><tr><th>Personnel</th><th>Assignment</th><th>Note</th></tr></thead><tbody><tr><td>Researcher T. Vale</td><td>Case JONA-52</td><td>Active</td></tr><tr><td>Archivist K. Morrow</td><td>Revision custody</td><td>Active</td></tr><tr><td>Dr. A. Renn</td><td>Ethics review</td><td>Consulting</td></tr><tr><td>O5-11</td><td>Offsite directive</td><td>Level 5</td></tr></tbody></table><p>'+anchor('Open discussion archive','discussion')+'</p>';
 }
 function renderDirectives(){
  setTitle('O5 Directive 52/B');setMeta('OVERSEER COMMAND / LEVEL 5');$('rating-box').hidden=true;
@@ -340,6 +356,7 @@ function renderSearch(query){
  setTitle('Search results');setMeta('SITE-99 / LOCAL SEARCH');$('rating-box').hidden=true;
  var q=(query||'').toLowerCase(),found=[];
  titles.forEach(function(t,i){if(requirements[i]>clearance)return;var txt=data.versions[String(i)].replace(/<[^>]+>/g,' ');if((t+' '+txt).toLowerCase().includes(q))found.push('<li>'+anchor('SCP-JONA / J/'+i+' — '+t,'revision-'+i)+' · Level '+requirements[i]+'</li>')});
+ window.Site99Evidence.data.records.filter(function(r){return window.Site99Evidence.isSeen(r.id)}).forEach(function(r){if((r.title+' '+r.id+' '+r.summary).toLowerCase().includes(q))found.push('<li>'+window.Site99Evidence.evidenceLink(r.id)+' · '+esc(r.department)+'</li>')});
  seedThreads.forEach(function(t){if(t.level&&t.level>clearance)return;if((t.title+' '+t.posts.map(function(p){return p.body}).join(' ')).toLowerCase().includes(q))found.push('<li>'+anchor('Discussion / '+t.title,'thread-'+t.id)+'</li>')});
  fileEntries.forEach(function(f,i){if(f.level>clearance)return;if((f.name+' '+f.kind+' '+f.body).toLowerCase().includes(q))found.push('<li>'+anchor('Attachment / '+f.name,'files-'+i)+' · Level '+f.level+'</li>')});
  incidents.cases.forEach(function(c){if(c.level>clearance)return;if((c.num+' '+c.title+' '+c.body.replace(/<[^>]+>/g,' ')).toLowerCase().includes(q))found.push('<li>'+anchor('RAISA '+c.num+' — '+c.title,'case-'+c.id)+' · Level '+c.level+'</li>')});
@@ -350,6 +367,10 @@ function render(){
  var index=Number((route.match(/^revision-(\d)$/)||[])[1]); if(/^revision-\d$/.test(route)&&index<9)renderRevision(index);
  else if(route==='site-99')renderHome();
  else if(route==='xdept')renderCrossDepartment();
+ else if(route==='notebook')renderNotebook();
+ else if(route.startsWith('evidence-'))renderEvidenceRecord(route.slice(9));
+ else if(route==='hr'||/^hr-(sloane|appointment|organization|payroll)$/.test(route))renderDepartmentView(route);
+ else if(route==='security'||/^security-(badge|camera|gateway|policy|interview)$/.test(route))renderDepartmentView(route);
  else if(route==='cases')renderCaseIndex();
  else if(route.startsWith('case-'))renderCase(route.slice(5));
  else if(route==='tags'||route.startsWith('tag-'))renderTags(route.startsWith('tag-')?route.slice(4):null);
@@ -395,5 +416,6 @@ $('clear').addEventListener('change',function(e){var target=Number(e.target.valu
 $('site-search').addEventListener('submit',function(e){e.preventDefault();var term=$('search-field').value.trim();if(term)setHash('search-'+encodeURIComponent(term))});
 $('rating-count').textContent='+52';
 window.addEventListener('hashchange',render);
+window.Site99Evidence.wire();window.Site99PersonnelSecurity.wire();
 render();
 })();
