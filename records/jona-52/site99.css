@@ -206,3 +206,21 @@ footer small{display:block}
 .veil-last-leaf{border-top:1px solid #999;margin:30px 0 25px;padding:13px 0 0}
 .veil-last-leaf p:last-child{border-bottom:1px solid #ccc;padding-bottom:13px}
 @media(max-width:650px){.veil-dossier blockquote{margin:14px 4px}.veil-ledger{font-size:10px}.veil-form{padding:11px}.veil-controls{align-items:stretch;flex-direction:column}.veil-controls select,.veil-controls .site-btn{align-self:stretch}}
+
+
+/* 52-R: recovered paper records, no visual interference or synthetic HUD. */
+.restoration-body{font-size:14px;line-height:1.66;max-width:100%}
+.restoration-body>h1{color:#8b0000;font-size:19px;line-height:1.3;letter-spacing:.035em;border-bottom:2px solid #888;padding-bottom:9px}
+.restoration-body>h2{font-size:16px;color:#333;border-bottom:1px solid #bbb;padding-bottom:5px;margin-top:27px}
+.restoration-body p{margin:13px 0}
+.restoration-body blockquote{background:#f8f7f4;border-left:3px solid #777;margin:19px 17px;padding:12px 16px}
+.restoration-body pre{font-size:12px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere;padding:13px 16px;background:#f2f2f0;border:1px solid #ccc}
+.restoration-body table{display:block;max-width:100%;overflow-x:auto;border-collapse:collapse;margin:15px 0;font-size:12px}
+.restoration-body td,.restoration-body th{border:1px solid #bbb;padding:8px 11px;vertical-align:top;text-align:left;min-width:100px}
+.restoration-body th{background:#eee}
+.restore-leaf{border-top:1px solid #bbb;margin:29px 0 17px;padding:18px 13px 12px;background:#fdfcf8;box-shadow:0 1px 2px #ddd;font-size:13px}
+.restore-leaf h2{font-size:15px;margin:10px 0}
+.restore-leaf p{margin:11px 0}
+.restore-stamp{display:inline-block;margin:0 0 10px!important;border:1px solid #9a5b5b;padding:3px 7px;letter-spacing:.04em;font:700 11px/1.4 monospace;color:#822b2b;transform:rotate(-.4deg)}
+.restoration-table td:last-child{font-family:monospace;font-size:11px}
+@media(max-width:650px){.restoration-body{font-size:13px}.restoration-body table{font-size:11px}.restoration-body blockquote{margin:15px 1px}.restore-leaf{margin-left:0;margin-right:0;padding:13px 9px}.restore-stamp{font-size:10px}}
