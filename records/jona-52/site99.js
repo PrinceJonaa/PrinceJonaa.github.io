@@ -103,6 +103,56 @@ function renderVeil(){
 
 function markRevisionSeven(){try{sessionStorage.setItem('site99:sealed-last-revision','1')}catch(e){}}
 function hadRevisionSeven(){try{return sessionStorage.getItem('site99:sealed-last-revision')==='1'}catch(e){return false}}
+
+/* The surviving continuity packet is staged by actual reads, not by URL alone. */
+var restoration=window.Site99Restoration,restorationLeaves=window.Site99RestorationLeaves;
+var restorationStages=['ledger','relay','overseers','flash','second','palimpsest'];
+var restorePrefix='site99:52r:';
+function seenRestoration(k){try{return sessionStorage.getItem(restorePrefix+k)==='1'}catch(e){return false}}
+function markRestoration(k){try{sessionStorage.setItem(restorePrefix+k,'1')}catch(e){}}
+function permittedRestoration(id){
+ if(clearance<5||!hadRevisionSeven())return false;
+ if(id==='ledger')return true;
+ if(id==='relay')return seenRestoration('ledger');
+ if(id==='overseers')return clearance>=6&&seenRestoration('relay');
+ if(id==='flash')return clearance>=6&&seenRestoration('overseers');
+ if(id==='second')return clearance>=6&&seenRestoration('flash');
+ if(id==='palimpsest')return clearance>=6&&seenRestoration('second');
+ return false;
+}
+function restorationLeaf(container,id){
+ var value=container[id];return value&&seenRestoration(value.requires)?value.html:'';
+}
+function renderRestoration(id){
+ setTitle('Site-99 / File 52-R');setMeta('O5 / RAISA / UNRECONCILED TRANSFER');$('rating-box').hidden=true;
+ if(clearance<5){$('main-content').innerHTML=gatedHtml(5,'Special Archives / Transfer 52-R');return}
+ if(!hadRevisionSeven()){
+  $('main-content').innerHTML='<p class="archive-note">No retained transfer slip is attached to this revision.</p><p>'+anchor('Return to revision register','revision-0')+'</p>';return
+ }
+ var pages=restoration.pages;
+ if(id){
+  var page=pages.find(function(p){return p.id===id});
+  if(!page||!permittedRestoration(id)){
+   $('main-content').innerHTML='<p class="archive-note">RAISA reply / RECORD NOT RETAINED IN THIS COPY</p><p>The selected transfer identifier has no readable entry in the current registry.</p><p>'+anchor('Return to transfer register','continuity')+'</p>';return
+  }
+  markRestoration(id);audit('52-R TRANSFER READ // '+id.toUpperCase());
+  var following=restorationStages[restorationStages.indexOf(id)+1];
+  var next=following&&permittedRestoration(following)?'<p class="archive-note">An additional original has been located: '+anchor('Inspect attached custody copy','continuity-'+following)+'</p>':'';
+  var back='<p class="archive-note">'+anchor('Transfer register 52-R','continuity')+' · '+anchor('SCP-JONA / J/7','revision-7')+'</p>';
+  $('main-content').innerHTML='<div class="revision-notice"><span>OVERSEAS ARCHIVE 52-R / '+esc(id.toUpperCase())+'</span><span>LEVEL '+page.level+'</span></div><article class="record-body restoration-body">'+page.body+'</article>'+next+back;
+  return
+ }
+ var rows=pages.map(function(p){
+   var permitted=permittedRestoration(p.id);
+   var visible=permitted||seenRestoration(p.id);
+   return '<tr><td>'+esc(p.id==='ledger'?'52-R/0':p.id==='relay'?'52-R/1':'52-R/'+(restorationStages.indexOf(p.id)+1))+'</td><td>'+(visible?anchor(p.title,'continuity-'+p.id):'[ORIGINAL NOT RETAINED]')+'</td><td>Level '+p.level+'</td><td>'+(seenRestoration(p.id)?'READ':permitted?'RECEIVED':'PENDING')+'</td></tr>';
+ }).join('');
+ $('main-content').innerHTML='<p>These records were recovered after the JONA-52 archive disposal. The central index maintains that no earlier case sequence was destroyed.</p>'+
+ '<table class="history-table restoration-table"><thead><tr><th>File</th><th>Document</th><th>Access</th><th>Retention</th></tr></thead><tbody>'+rows+'</tbody></table>'+
+ '<p class="archive-note">The register reflects documents physically received by RAISA. It does not establish the order in which the events described occurred.</p>'+
+ '<p>'+anchor('Return to the last revision','revision-7')+'</p>';
+}
+
 function renderRevision(i){
  setTitle('SCP-JONA');
  setMeta('REVISION J/'+i+'  ·  '+classes[i].toUpperCase()+'  ·  SITE-99 / OFFSITE');
@@ -111,8 +161,9 @@ function renderRevision(i){
  if(locked){body.innerHTML=gatedHtml(requirements[i],'SCP-JONA / Revision J/'+i)+tagbar(['scp','site-99','restricted']);audit('RETRIEVAL REFUSED // J/'+i+' // LEVEL '+requirements[i]);return}
  var html=data.versions[String(i)]||'<p>FILE MISSING</p>';
  html=html.replace(/^<h1>.*?<\/h1>\s*/s,'');
- if(i===7)markRevisionSeven();
+ if(i===7){markRevisionSeven();if(clearance>=5)html+='<p class="archive-note">UNRECONCILED TRANSFER: '+anchor('52-R/0 / duplicate custody receipt','continuity')+'. Entered without original reference.</p>'}
  if(i===0&&hadRevisionSeven()){html+='<p class="archive-note"><strong>RAISA AMENDMENT / 02:22:</strong> The original document was closed before this amendment was entered. This remains the original document.</p>'}
+ html+=restorationLeaf(restorationLeaves.versions,String(i));
  if(i===8){markVeilWitness('copy');if(veilEligible()){html=html.replace('<strong>END OF FILE?</strong>','<strong><a href="#veil-nil" class="veil-last-door">END OF FILE?</a></strong>')}}
  // The index page is intentionally the first readable record, not a level-2 briefing.
  var match=['position','witness','witness','door','authority','feedback','receiver','feedback','receiver'][i];
@@ -250,7 +301,7 @@ function renderCase(id){
  if(id==='receiver')markVeilWitness('return');
  var links='<div class="incident-references"><h3>Retained Correspondence / Related Records</h3><ul>'+c.bridges.map(function(b){return '<li>'+anchor(b[0],b[1])+'</li>'}).join('')+'</ul></div>';
  $('main-content').innerHTML='<div class="revision-notice"><span>RAISA FIELD INCIDENT '+esc(c.num)+'</span><span>STATUS: UNRESOLVED</span></div>'+
- '<div class="record-body incident-body">'+c.body+'</div>'+links+tagbar(c.tags);
+ '<div class="record-body incident-body">'+c.body+restorationLeaf(restorationLeaves.cases,id)+'</div>'+links+tagbar(c.tags);
 }
 
 function renderSearch(query){
@@ -276,6 +327,7 @@ function render(){
  else if(route==='access')renderAccess();
  else if(route==='terminal-echo')renderTerminalEcho();
  else if(route==='veil-nil')renderVeil();
+ else if(route==='continuity'||route.startsWith('continuity-'))renderRestoration(route.startsWith('continuity-')?route.slice(11):null);
  else if(route==='discussion'||route.startsWith('thread-'))renderDiscussion(route.startsWith('thread-')?route.slice(7):null);
  else if(route.startsWith('source'))renderSource();
  else if(route.startsWith('search-'))renderSearch(route.slice(7));
@@ -300,7 +352,7 @@ document.addEventListener('click',function(e){
  if(action==='vote'){var dir=Number(btn.dataset.dir);localRating=Math.max(-1,Math.min(1,localRating+dir));$('rating-count').textContent=(52+localRating>=0?'+':'')+(52+localRating);audit('LOCAL RATING REGISTER UPDATED');}
  if(action==='notice-close'){$('notice-dialog').close()}
  if(action==='hint'){e.preventDefault();hintRevealed=Math.min(2,hintRevealed+1);renderAccess();}
- if(action==='reset-clearance'){e.preventDefault();maxClearance=0;clearance=0;hintRevealed=0;credentialMessage='';saveProgress();try{sessionStorage.removeItem(veilWitnessKey);sessionStorage.removeItem('site99:sealed-last-revision');localStorage.removeItem(veilChoiceKey)}catch(e){}audit('LOCAL CREDENTIAL PROFILE ERASED');revNav();syncClearance();renderAccess();}
+ if(action==='reset-clearance'){e.preventDefault();maxClearance=0;clearance=0;hintRevealed=0;credentialMessage='';saveProgress();try{sessionStorage.removeItem(veilWitnessKey);sessionStorage.removeItem('site99:sealed-last-revision');restorationStages.forEach(function(k){sessionStorage.removeItem(restorePrefix+k)});localStorage.removeItem(veilChoiceKey)}catch(e){}audit('LOCAL CREDENTIAL PROFILE ERASED');revNav();syncClearance();renderAccess();}
 });
 function showNotice(message){$('notice-message').textContent=message;$('notice-dialog').showModal()}
 syncClearance();
