@@ -163,3 +163,21 @@ footer small{display:block}
 .link-action{color:#97000c;border:0;background:transparent;padding:0;text-decoration:underline;cursor:pointer;font:inherit}
 .terminal-module .sidebar-note{margin-top:3px;margin-bottom:7px}
 @media(max-width:650px){.clearance-ledger{grid-template-columns:1fr}.credential-case{padding:13px}.credential-entry{flex-direction:column}.credential-entry .site-btn{align-self:flex-start}.clearance-ledger li{padding:6px 8px}}
+
+
+/* Site-99 retained field evidence: paper-and-ink presentation, no HUD effects. */
+.incident-body{line-height:1.58}
+.incident-body>p:first-child{margin-top:15px}
+.incident-body blockquote{border-left:3px solid #8e8e8e;background:#f5f5f5;color:#333;padding:12px 16px;margin:18px 24px;font-style:normal}
+.incident-body pre{background:#f0f0f0;border:1px solid #ccc;padding:12px 14px;overflow:auto;font:12px/1.55 Consolas,monospace;white-space:pre-wrap;word-break:break-word}
+.incident-body table{border-collapse:collapse;max-width:100%;display:block;overflow:auto;font-size:12px;margin:14px 0}
+.incident-body th,.incident-body td{border:1px solid #bbb;padding:8px 10px;text-align:left;vertical-align:top;min-width:85px}
+.incident-body th{background:#eee;color:#333}
+.incident-references{border-top:1px solid #aaa;padding-top:4px;margin:24px 0 10px}
+.incident-references h3{margin:10px 0;color:#660000}
+.incident-references ul{columns:2;margin-top:8px}
+.incident-references li{break-inside:avoid}
+.linked-cases{border-top:1px solid #ddd;margin:23px 0 14px;padding:5px 0}
+.linked-cases h2{font-size:15px!important;margin:8px 0 7px!important}
+.linked-cases p{margin:5px 0!important}
+@media(max-width:650px){.incident-body blockquote{margin:12px 3px}.incident-references ul{columns:1}.incident-body pre{font-size:11px}}
