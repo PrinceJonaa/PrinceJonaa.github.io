@@ -277,6 +277,7 @@ footer small{display:block}
   overscroll-behavior-inline: contain;
 }
 #main-content .history-table :where(td, th) {
+  min-width: 112px;
   overflow-wrap: break-word;
 }
 #main-content .post-body,
