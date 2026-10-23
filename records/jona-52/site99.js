@@ -181,6 +181,7 @@ function renderSearch(query){
  var q=(query||'').toLowerCase(),found=[];
  titles.forEach(function(t,i){if(requirements[i]>clearance)return;var txt=data.versions[String(i)].replace(/<[^>]+>/g,' ');if((t+' '+txt).toLowerCase().includes(q))found.push('<li>'+anchor('SCP-JONA / J/'+i+' — '+t,'revision-'+i)+' · Level '+requirements[i]+'</li>')});
  seedThreads.forEach(function(t){if(t.level&&t.level>clearance)return;if((t.title+' '+t.posts.map(function(p){return p.body}).join(' ')).toLowerCase().includes(q))found.push('<li>'+anchor('Discussion / '+t.title,'thread-'+t.id)+'</li>')});
+ fileEntries.forEach(function(f,i){if(f.level>clearance)return;if((f.name+' '+f.kind+' '+f.body).toLowerCase().includes(q))found.push('<li>'+anchor('Attachment / '+f.name,'files-'+i)+' · Level '+f.level+'</li>')});
  $('main-content').innerHTML='<p>Query: <strong>'+esc(query)+'</strong></p><ul class="archive-index">'+(found.join('')||'<li>No local records found.</li>')+'</ul>';
 }
 function render(){
