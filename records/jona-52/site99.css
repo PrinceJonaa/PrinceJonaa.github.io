@@ -224,3 +224,208 @@ footer small{display:block}
 .restore-stamp{display:inline-block;margin:0 0 10px!important;border:1px solid #9a5b5b;padding:3px 7px;letter-spacing:.04em;font:700 11px/1.4 monospace;color:#822b2b;transform:rotate(-.4deg)}
 .restoration-table td:last-child{font-family:monospace;font-size:11px}
 @media(max-width:650px){.restoration-body{font-size:13px}.restoration-body table{font-size:11px}.restoration-body blockquote{margin:15px 1px}.restore-leaf{margin-left:0;margin-right:0;padding:13px 9px}.restore-stamp{font-size:10px}}
+
+
+/* Mobile containment: readable records without viewport-wide overflow.
+   Wide evidence tables scroll inside their own pane; regular prose wraps. */
+.layout > .reader-column,
+#main-content,
+#main-content .record-body,
+#main-content .incident-body,
+#main-content .restoration-body,
+#main-content .veil-dossier,
+#main-content .addendum-item,
+#main-content .addendum-content,
+#main-content .forum-post,
+#main-content .post-body,
+#main-content .credential-case,
+#main-content .attachment-preview {
+  min-width: 0;
+  max-width: 100%;
+}
+#main-content,
+#main-content :where(p, li, td, th, blockquote, .post-author, .post-body, .archive-note, .restore-stamp, .revision-notice) {
+  overflow-wrap: anywhere;
+}
+#main-content pre,
+#main-content .attachment-preview pre,
+#main-content .source-pre,
+#main-content .veil-ledger,
+#main-content #audit-lines {
+  display: block;
+  max-width: 100%;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#main-content :where(code, a) {
+  overflow-wrap: anywhere;
+}
+#main-content .history-table,
+#main-content .restoration-table,
+#main-content .veil-table,
+#main-content .incident-body table,
+#main-content .record-body table,
+#main-content .addendum-content table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-inline: contain;
+}
+#main-content .history-table :where(td, th) {
+  overflow-wrap: break-word;
+}
+#main-content .post-body,
+#main-content .reply-form,
+#main-content .reply-form :where(input, textarea),
+#main-content .credential-form,
+#main-content .credential-entry,
+#main-content .credential-entry input,
+#main-content .veil-form,
+#main-content .veil-controls,
+#main-content .veil-controls select,
+#main-content .clearance-ledger li {
+  min-width: 0;
+  max-width: 100%;
+}
+#main-content .page-options,
+#main-content .revision-notice {
+  overflow-wrap: anywhere;
+}
+@media (max-width: 650px) {
+  .topin {
+    height: auto;
+    width: 100%;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px 13px;
+  }
+  .topin > .brand,
+  .topin > .top-search,
+  .topin > .clearance {
+    grid-column: 1;
+    grid-row: auto;
+    width: 100%;
+    min-width: 0;
+  }
+  .brand strong {
+    white-space: normal;
+    font-size: clamp(19px, 5.7vw, 25px);
+    overflow-wrap: anywhere;
+  }
+  .brand span {min-width: 0}
+  .top-search {
+    display: flex;
+    max-width: none;
+    align-items: stretch;
+    margin: 0;
+    gap: 7px;
+  }
+  .top-search input {
+    flex: 1 1 auto;
+    width: 0;
+    min-width: 0;
+    max-width: 100%;
+    height: 36px;
+    padding: 6px 9px;
+    font-size: 16px;
+  }
+  .top-search button {
+    flex: 0 0 auto;
+    height: 36px;
+    padding-inline: 12px;
+    font-size: 13px;
+  }
+  .clearance {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    gap: 8px;
+    margin: 0;
+    align-self: auto;
+  }
+  .clearance label {min-width: 0;flex: 1 1 auto}
+  #clear {
+    flex: 0 1 190px;
+    width: auto;
+    min-width: 0;
+    max-width: 62%;
+    min-height: 34px;
+    font-size: 13px;
+  }
+  .site-nav {max-width: 100%}
+  .site-nav .inner {
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-inline: contain;
+  }
+  .layout > .reader-column,
+  .layout > .sidebar {min-width: 0;max-width: 100%}
+  #page-title {overflow-wrap: anywhere;font-size: clamp(23px, 6vw, 27px)}
+  #page-meta {overflow-wrap: anywhere}
+  .revision-notice {gap: 5px 10px}
+  #main-content .record-body blockquote,
+  #main-content .veil-dossier blockquote,
+  #main-content .restoration-body blockquote {
+    max-width: 100%;
+    margin: 13px 0;
+    padding: 10px 12px;
+  }
+  #main-content :where(.attachment-preview, .credential-case, .access-denied, .reply-form, .veil-form) {
+    padding: 12px 10px;
+  }
+  #main-content .addendum-item summary {
+    overflow-wrap: anywhere;
+  }
+  #main-content .addendum-item summary small {
+    float: none;
+    display: block;
+    margin: 4px 0 0 17px;
+  }
+  #main-content .addendum-content {padding: 10px}
+  #main-content .clearance-ledger li {gap: 6px;flex-wrap: wrap}
+  #main-content .restoration-body :where(pre, table),
+  #main-content .incident-body :where(pre, table) {
+    margin-inline: 0;
+  }
+  #main-content .restore-leaf {max-width: 100%}
+  .page-options details div {
+    right: 0;
+    max-width: min(260px, calc(100vw - 36px));
+    min-width: 0;
+  }
+  .dialog-box {
+    box-sizing: border-box;
+    width: min(500px, calc(100vw - 24px));
+    max-width: calc(100vw - 24px);
+    max-height: calc(100dvh - 24px);
+    overflow: auto;
+    padding: 16px;
+  }
+}
+@media (max-width: 420px) {
+  #main-content .forum-post {display: block}
+  #main-content .post-author {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 4px 8px;
+    border-right: 0;
+    border-bottom: 1px solid #ddd;
+    padding: 9px 11px;
+  }
+  #main-content .post-author span {margin: 0}
+  #main-content .post-body {min-height: 0;padding: 11px}
+  #main-content .credential-entry .site-btn {align-self: stretch}
+  #main-content .veil-controls .site-btn {width: 100%}
+  .topin {padding-inline: 11px}
+  main {padding-inline: 11px}
+  .site-credit {padding-inline: 11px}
+}
