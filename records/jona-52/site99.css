@@ -181,3 +181,28 @@ footer small{display:block}
 .linked-cases h2{font-size:15px!important;margin:8px 0 7px!important}
 .linked-cases p{margin:5px 0!important}
 @media(max-width:650px){.incident-body blockquote{margin:12px 3px}.incident-references ul{columns:1}.incident-body pre{font-size:11px}}
+
+
+/* Unindexed normalcy review: Foundation document aesthetic, no dashboard effects. */
+.veil-last-door{color:inherit!important;text-decoration:inherit!important;border-bottom:1px dotted #b7a1a1}
+.veil-last-door:hover,.veil-last-door:focus-visible{color:#900!important;text-decoration:underline!important;border-bottom:1px solid #900}
+.veil-dossier{font:14px/1.59 Arial,Helvetica,sans-serif}
+.veil-memo{border-left:3px solid #999;background:#f7f7f7;padding:11px 16px;margin:18px 0!important;font-size:12px}
+.veil-dossier h2{font-size:17px!important;color:#900!important;margin:25px 0 10px!important;border-bottom:1px solid #ddd;padding-bottom:5px}
+.veil-dossier p{margin:12px 0}
+.veil-table{display:block;width:100%;overflow-x:auto;border-collapse:collapse;font-size:12px;margin:12px 0}
+.veil-table th,.veil-table td{border:1px solid #bbb;padding:8px 10px;text-align:left;vertical-align:top;min-width:105px}
+.veil-table th{background:#eee}
+.veil-ledger{white-space:pre-wrap;word-break:break-word;background:#f5f5f5;border:1px solid #bbb;border-left:3px solid #933;padding:15px;font:12px/1.6 Consolas,monospace;overflow:auto}
+.veil-dossier blockquote{background:#f5f5f5;padding:12px 16px;border-left:3px solid #aaa;margin:17px 23px}
+.veil-form{border:1px solid #bbb;padding:13px 16px;background:#fcfcfc}
+.veil-form label{display:block;margin:0 0 9px;font-size:12px;font-weight:bold}
+.veil-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.veil-controls select{border:1px solid #aaa;background:white;padding:7px;font:13px Arial,Helvetica,sans-serif;max-width:100%}
+.veil-controls .site-btn{margin:0}
+.veil-assessment{margin:14px 0;border:1px solid #aaa;border-left:3px solid #900;background:#f7f7f7;padding:13px 16px;font-size:13px}
+.veil-assessment strong{font:700 12px/1.5 Consolas,monospace;color:#790009}
+.veil-assessment p{margin:7px 0 4px!important}
+.veil-last-leaf{border-top:1px solid #999;margin:30px 0 25px;padding:13px 0 0}
+.veil-last-leaf p:last-child{border-bottom:1px solid #ccc;padding-bottom:13px}
+@media(max-width:650px){.veil-dossier blockquote{margin:14px 4px}.veil-ledger{font-size:10px}.veil-form{padding:11px}.veil-controls{align-items:stretch;flex-direction:column}.veil-controls select,.veil-controls .site-btn{align-self:stretch}}

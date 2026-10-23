@@ -65,6 +65,42 @@ function tagsForRevision(i){var t=articleTags.slice();if(i===0)t=['scp','site-99
 function tagbar(current){var tagsToShow=current||articleTags;return '<div class="tagbar"><span>tags:</span> '+tagsToShow.map(function(t){return anchor(t,'tag-'+t)}).join(' ')+'</div>'}
 function setTitle(t){$('page-title').textContent=t;document.title=t+' - Site-99 Foundation Archive'}
 function setMeta(str){$('page-meta').textContent=str}
+
+/* Read/receipt/echo form the unindexed receiver path. No browser identity is collected. */
+var veilFile=window.Site99Veil,veilWitnessKey='site99:veil:v1',veilChoiceKey='site99:veil:judgment:v1';
+function veilMarks(){try{var raw=JSON.parse(sessionStorage.getItem(veilWitnessKey)||'[]');return Array.isArray(raw)?raw:[]}catch(e){return []}}
+function markVeilWitness(id){if(maxClearance<6)return;var marks=veilMarks();if(marks.indexOf(id)>=0)return;marks.push(id);try{sessionStorage.setItem(veilWitnessKey,JSON.stringify(marks))}catch(e){}}
+function veilEligible(){var marks=veilMarks();return maxClearance>=6&&['copy','return','echo'].every(function(k){return marks.indexOf(k)>=0})}
+function veilChoice(){try{return localStorage.getItem(veilChoiceKey)||''}catch(e){return ''}}
+function saveVeilChoice(v){try{localStorage.setItem(veilChoiceKey,v)}catch(e){}}
+function veilOutcome(v){
+ var options={
+  intact:{label:'INTACT / report 99-C/NIL-A',content:'Your assessment assigns the event to an explanation the public can carry without changing its world. This may be the intended function of the Veil. No record establishes whether the explanation preceded the event.'},
+  broken:{label:'BREACHED / report 99-C/NIL-B',content:'Your assessment treats reception of the record as exposure. The Foundation cannot establish whether the recipient believed it, or whether such belief was required for a breach to occur.'},
+  unknown:{label:'UNDETERMINED / report 99-C/NIL-C',content:'No binary status was entered. The Veil has not thereby been restored or destroyed. A receiving position exists; its relation to normalcy remains unclassified.'}
+ };
+ var entry=options[v];return entry?'<div class="veil-assessment" role="status"><strong>RAISA ENTRY RECORDED: '+entry.label+'</strong><p>'+entry.content+'</p><p>All three original reports remain on file. No Overseer ruling selects one over another.</p></div>':'';
+}
+function renderVeil(){
+ setTitle('99-C/NIL');setMeta('RAISA / NORMALCY CONTINUITY / UNINDEXED');$('rating-box').hidden=true;
+ if(!veilEligible()){
+  $('main-content').innerHTML='<p class="archive-note">RAISA-99 / Index reply</p><p>No entry corresponding to this address exists in the current revision ledger.</p><p>'+anchor('Return to JONA-52','revision-0')+'</p>';
+  return
+ }
+ var decision=veilChoice();
+ var field='<form id="veil-form" class="veil-form"><label for="veil-judgment">Receiving position — enter an assessment</label>'+
+ '<div class="veil-controls"><select id="veil-judgment" required><option value="">— No assessment entered —</option><option value="intact">Veil intact</option><option value="broken">Veil breached</option><option value="unknown">Unable to determine</option></select>'+
+ '<button type="submit" class="site-btn">File assessment</button></div></form>'+
+ '<div id="veil-result" aria-live="polite">'+veilOutcome(decision)+'</div>';
+ $('main-content').innerHTML=veilFile.html.replace('<div id="veil-interaction"></div>','<div id="veil-interaction">'+field+'</div>');
+ $('veil-judgment').value=decision||'';
+ $('veil-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  var v=$('veil-judgment').value;if(['intact','broken','unknown'].indexOf(v)<0)return;
+  saveVeilChoice(v);$('veil-result').innerHTML=veilOutcome(v);audit('99-C/NIL RECEIVER ASSESSMENT FILED');
+ });
+}
+
 function renderRevision(i){
  setTitle('SCP-JONA');
  setMeta('REVISION J/'+i+'  ·  '+classes[i].toUpperCase()+'  ·  SITE-99 / OFFSITE');
@@ -73,6 +109,7 @@ function renderRevision(i){
  if(locked){body.innerHTML=gatedHtml(requirements[i],'SCP-JONA / Revision J/'+i)+tagbar(['scp','site-99','restricted']);audit('RETRIEVAL REFUSED // J/'+i+' // LEVEL '+requirements[i]);return}
  var html=data.versions[String(i)]||'<p>FILE MISSING</p>';
  html=html.replace(/^<h1>.*?<\/h1>\s*/s,'');
+ if(i===8){markVeilWitness('copy');if(veilEligible()){html=html.replace('<strong>END OF FILE?</strong>','<strong><a href="#veil-nil" class="veil-last-door">END OF FILE?</a></strong>')}}
  // The index page is intentionally the first readable record, not a level-2 briefing.
  var match=['position','witness','witness','door','authority','feedback','receiver','feedback','receiver'][i];
  var evidence='<section class="linked-cases"><h2>Related Incident Files</h2><p>'+anchor('RAISA 99-C / '+(i<3?'field observations':i<6?'investigation': 'restricted custody'),'case-'+match)+' · '+anchor('Incident register','cases')+'</p></section>';
@@ -173,12 +210,15 @@ function renderAccess(){
  })};
 }
 function renderTerminalEcho(){
+ if(clearance>=6)markVeilWitness('echo');
  setTitle('Site-99 / Recovered Thread');setMeta('RAISA / UNINDEXED CORRESPONDENCE');$('rating-box').hidden=true;
  if(clearance<6){$('main-content').innerHTML=gatedHtml(6,'Unindexed correspondence');return}
  $('main-content').innerHTML='<p class="archive-note">RAISA document recovered after personnel verification. No associated account has been identified.</p>'+
  '<article class="forum-post"><div class="post-author"><strong>O5-11</strong><span>Thread closed</span></div><div class="post-body"><div class="post-date">02:23 / internal transmission</div><p>Six credentials. Six perfectly valid authorizations. None of them explains who requested the seventh.</p></div></article>'+
  '<article class="forum-post"><div class="post-author"><strong>READER</strong><span>Account not found</span></div><div class="post-body"><div class="post-date">02:24 / origin unrecorded</div><p>You keep calling this a file about him. Why was the first door a file about you?</p></div></article>'+
- '<p>'+anchor('Return to J/0','revision-0')+' · '+anchor('View J/8','revision-8')+'</p>';
+ '<p class="archive-note">RAISA correction: The final punctuation in the reader copy has not been authenticated. The original ends where a decision was expected.</p>'+ 
+ (veilEligible()&&veilChoice()?'<article class="forum-post"><div class="post-author"><strong>RAISA-99</strong><span>Return receipt</span></div><div class="post-body"><div class="post-date">99-C/NIL / receipt filed after closure</div><p>The Veil assessment has been entered. The receiving system stored it under OBSERVER, not NORMALCY. The archive cannot identify the rule that moved it.</p></div></article>':'')+
+ '<p>'+anchor('Return to J/0','revision-0')+' · '+anchor('View J/8','revision-8')+'</p>'; 
 }
 
 
@@ -203,6 +243,7 @@ function renderCase(id){
  setMeta('SITE-99 / UNRESOLVED FIELD INCIDENT / LEVEL '+c.level);$('rating-box').hidden=true;
  if(clearance<c.level){$('main-content').innerHTML=gatedHtml(c.level,c.num);return}
  if(id==='door')markDoor();
+ if(id==='receiver')markVeilWitness('return');
  var links='<div class="incident-references"><h3>Retained Correspondence / Related Records</h3><ul>'+c.bridges.map(function(b){return '<li>'+anchor(b[0],b[1])+'</li>'}).join('')+'</ul></div>';
  $('main-content').innerHTML='<div class="revision-notice"><span>RAISA FIELD INCIDENT '+esc(c.num)+'</span><span>STATUS: UNRESOLVED</span></div>'+
  '<div class="record-body incident-body">'+c.body+'</div>'+links+tagbar(c.tags);
@@ -230,6 +271,7 @@ function render(){
  else if(route==='directives')renderDirectives();
  else if(route==='access')renderAccess();
  else if(route==='terminal-echo')renderTerminalEcho();
+ else if(route==='veil-nil')renderVeil();
  else if(route==='discussion'||route.startsWith('thread-'))renderDiscussion(route.startsWith('thread-')?route.slice(7):null);
  else if(route.startsWith('source'))renderSource();
  else if(route.startsWith('search-'))renderSearch(route.slice(7));
@@ -254,7 +296,7 @@ document.addEventListener('click',function(e){
  if(action==='vote'){var dir=Number(btn.dataset.dir);localRating=Math.max(-1,Math.min(1,localRating+dir));$('rating-count').textContent=(52+localRating>=0?'+':'')+(52+localRating);audit('LOCAL RATING REGISTER UPDATED');}
  if(action==='notice-close'){$('notice-dialog').close()}
  if(action==='hint'){e.preventDefault();hintRevealed=Math.min(2,hintRevealed+1);renderAccess();}
- if(action==='reset-clearance'){e.preventDefault();maxClearance=0;clearance=0;hintRevealed=0;credentialMessage='';saveProgress();audit('LOCAL CREDENTIAL PROFILE ERASED');revNav();syncClearance();renderAccess();}
+ if(action==='reset-clearance'){e.preventDefault();maxClearance=0;clearance=0;hintRevealed=0;credentialMessage='';saveProgress();try{sessionStorage.removeItem(veilWitnessKey);localStorage.removeItem(veilChoiceKey)}catch(e){}audit('LOCAL CREDENTIAL PROFILE ERASED');revNav();syncClearance();renderAccess();}
 });
 function showNotice(message){$('notice-message').textContent=message;$('notice-dialog').showModal()}
 syncClearance();
