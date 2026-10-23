@@ -159,7 +159,7 @@ function renderRestoration(id){
 var worldBefore=window.Site99WorldBefore;
 var worldBeforeKey='site99:world-before:v1';
 function worldBeforeEligible(){
- return maxClearance>=6&&clearance>=6&&restorationStages.every(function(k){return seenRestoration(k)})&&veilEligible()&&!!veilChoice();
+ return maxClearance>=6&&clearance>=6&&(seenWorldBefore()||(restorationStages.every(function(k){return seenRestoration(k)})&&veilEligible()&&!!veilChoice()));
 }
 function seenWorldBefore(){try{return localStorage.getItem(worldBeforeKey)==='1'}catch(e){return false}}
 function markWorldBefore(){try{localStorage.setItem(worldBeforeKey,'1')}catch(e){}}
