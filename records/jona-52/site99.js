@@ -216,7 +216,8 @@ function renderTerminalEcho(){
  $('main-content').innerHTML='<p class="archive-note">RAISA document recovered after personnel verification. No associated account has been identified.</p>'+
  '<article class="forum-post"><div class="post-author"><strong>O5-11</strong><span>Thread closed</span></div><div class="post-body"><div class="post-date">02:23 / internal transmission</div><p>Six credentials. Six perfectly valid authorizations. None of them explains who requested the seventh.</p></div></article>'+
  '<article class="forum-post"><div class="post-author"><strong>READER</strong><span>Account not found</span></div><div class="post-body"><div class="post-date">02:24 / origin unrecorded</div><p>You keep calling this a file about him. Why was the first door a file about you?</p></div></article>'+
- '<p class="archive-note">RAISA correction: The final punctuation in the reader copy has not been authenticated. The original ends where a decision was expected.</p>'+
+ '<p class="archive-note">RAISA correction: The final punctuation in the reader copy has not been authenticated. The original ends where a decision was expected.</p>'+ 
+ (veilEligible()&&veilChoice()?'<article class="forum-post"><div class="post-author"><strong>RAISA-99</strong><span>Return receipt</span></div><div class="post-body"><div class="post-date">99-C/NIL / receipt filed after closure</div><p>The Veil assessment has been entered. The receiving system stored it under OBSERVER, not NORMALCY. The archive cannot identify the rule that moved it.</p></div></article>':'')+
  '<p>'+anchor('Return to J/0','revision-0')+' · '+anchor('View J/8','revision-8')+'</p>'; 
 }
 
