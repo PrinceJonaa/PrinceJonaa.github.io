@@ -79,7 +79,7 @@ function veilOutcome(v){
   broken:{label:'BREACHED / report 99-C/NIL-B',content:'Your assessment treats reception of the record as exposure. The Foundation cannot establish whether the recipient believed it, or whether such belief was required for a breach to occur.'},
   unknown:{label:'UNDETERMINED / report 99-C/NIL-C',content:'No binary status was entered. The Veil has not thereby been restored or destroyed. A receiving position exists; its relation to normalcy remains unclassified.'}
  };
- var entry=options[v];return entry?'<div class="veil-assessment" role="status"><strong>RAISA ENTRY RECORDED: '+entry.label+'</strong><p>'+entry.content+'</p><p>All three original reports remain on file. No Overseer ruling selects one over another.</p></div>':'';
+ var entry=options[v];var lastOriginal=worldBeforeEligible()?'<p class="archive-note final-original-slip">A physical enclosure has been released from records custody: '+anchor('Inspect the unreturned original','world-before')+'. The return docket contains no date.</p>':'';return entry?'<div class="veil-assessment" role="status"><strong>RAISA ENTRY RECORDED: '+entry.label+'</strong><p>'+entry.content+'</p><p>All three original reports remain on file. No Overseer ruling selects one over another.</p></div>'+lastOriginal:'';
 }
 function renderVeil(){
  setTitle('99-C/NIL');setMeta('RAISA / NORMALCY CONTINUITY / UNINDEXED');$('rating-box').hidden=true;
@@ -153,6 +153,28 @@ function renderRestoration(id){
  '<p>'+anchor('Return to the last revision','revision-7')+'</p>';
 }
 
+
+/* Last custodied original: never public-indexed, only discoverable after every
+   52-R original and the separate 99-C/NIL receiving judgment. */
+var worldBefore=window.Site99WorldBefore;
+var worldBeforeKey='site99:world-before:v1';
+function worldBeforeEligible(){
+ return maxClearance>=6&&clearance>=6&&(seenWorldBefore()||(restorationStages.every(function(k){return seenRestoration(k)})&&veilEligible()&&!!veilChoice()));
+}
+function seenWorldBefore(){try{return localStorage.getItem(worldBeforeKey)==='1'}catch(e){return false}}
+function markWorldBefore(){try{localStorage.setItem(worldBeforeKey,'1')}catch(e){}}
+function renderWorldBefore(){
+ setTitle('O5/52-NULL');setMeta('SITE-99 / UNRETURNED ORIGINAL / LEVEL 6');$('rating-box').hidden=true;
+ if(!worldBeforeEligible()){
+  $('main-content').innerHTML='<p class="archive-note">RAISA DISPOSITION: no custody item bearing this number is present in the active index.</p><p>'+anchor('Return to RAISA records','revision-0')+'</p>';
+  return
+ }
+ markWorldBefore();audit('UNRETURNED ORIGINAL OPENED // CHAIN-52 / O5-NULL');
+ $('main-content').innerHTML=worldBefore.html+
+ '<div class="world-before-return"><p class="archive-note">Custody seal intact. One earlier record now identifies a separate original.</p><p>'+
+ anchor('Review the first case again','revision-0')+' · '+anchor('Return to the Veil inquiry','veil-nil')+' · '+anchor('Overseas recovered register','continuity')+'</p></div>';
+}
+
 function renderRevision(i){
  setTitle('SCP-JONA');
  setMeta('REVISION J/'+i+'  ·  '+classes[i].toUpperCase()+'  ·  SITE-99 / OFFSITE');
@@ -164,6 +186,7 @@ function renderRevision(i){
  if(i===7){markRevisionSeven();if(clearance>=5)html+='<p class="archive-note">UNRECONCILED TRANSFER: '+anchor('52-R/0 / duplicate custody receipt','continuity')+'. Entered without original reference.</p>'}
  if(i===0&&hadRevisionSeven()){html+='<p class="archive-note"><strong>RAISA AMENDMENT / 02:22:</strong> The original document was closed before this amendment was entered. This remains the original document.</p>'}
  html+=restorationLeaf(restorationLeaves.versions,String(i));
+ if(i===0&&seenWorldBefore())html+=worldBefore.revisionAfter;
  if(i===8){markVeilWitness('copy');if(veilEligible()){html=html.replace('<strong>END OF FILE?</strong>','<strong><a href="#veil-nil" class="veil-last-door">END OF FILE?</a></strong>')}}
  // The index page is intentionally the first readable record, not a level-2 briefing.
  var match=['position','witness','witness','door','authority','feedback','receiver','feedback','receiver'][i];
@@ -330,6 +353,7 @@ function render(){
  else if(route==='access')renderAccess();
  else if(route==='terminal-echo')renderTerminalEcho();
  else if(route==='veil-nil')renderVeil();
+ else if(route==='world-before'||/^world-(sealed|internet|cabinet|noosphere|foundation|terminal|firstcentury|ages|finalyear|reversal|secondapproach|receipt)$/.test(route))renderWorldBefore();
  else if(route==='continuity'||route.startsWith('continuity-'))renderRestoration(route.startsWith('continuity-')?route.slice(11):null);
  else if(route==='discussion'||route.startsWith('thread-'))renderDiscussion(route.startsWith('thread-')?route.slice(7):null);
  else if(route.startsWith('source'))renderSource();
@@ -344,7 +368,8 @@ function render(){
  $('tag-link').href='#tags';
  $('page-identity').textContent=isRev?'SCP-JONA / J/'+ri:'SITE-99 / '+route.toUpperCase();
  syncClearance();
- if(location.hash){window.scrollTo({top:0,behavior:'instant'})}
+ if(/^world-(sealed|internet|cabinet|noosphere|foundation|terminal|firstcentury|ages|finalyear|reversal|secondapproach|receipt)$/.test(route)){var target=document.getElementById(route);if(target&&typeof target.scrollIntoView==='function')target.scrollIntoView({block:'start'})}
+ else if(location.hash){window.scrollTo({top:0,behavior:'instant'})}
 }
 document.addEventListener('click',function(e){
  var btn=e.target.closest('[data-action]');if(!btn)return;
@@ -355,7 +380,7 @@ document.addEventListener('click',function(e){
  if(action==='vote'){var dir=Number(btn.dataset.dir);localRating=Math.max(-1,Math.min(1,localRating+dir));$('rating-count').textContent=(52+localRating>=0?'+':'')+(52+localRating);audit('LOCAL RATING REGISTER UPDATED');}
  if(action==='notice-close'){$('notice-dialog').close()}
  if(action==='hint'){e.preventDefault();hintRevealed=Math.min(2,hintRevealed+1);renderAccess();}
- if(action==='reset-clearance'){e.preventDefault();maxClearance=0;clearance=0;hintRevealed=0;credentialMessage='';saveProgress();try{sessionStorage.removeItem(veilWitnessKey);sessionStorage.removeItem('site99:sealed-last-revision');restorationStages.forEach(function(k){localStorage.removeItem(restorePrefix+k)});localStorage.removeItem(veilChoiceKey)}catch(e){}audit('LOCAL CREDENTIAL PROFILE ERASED');revNav();syncClearance();renderAccess();}
+ if(action==='reset-clearance'){e.preventDefault();maxClearance=0;clearance=0;hintRevealed=0;credentialMessage='';saveProgress();try{sessionStorage.removeItem(veilWitnessKey);sessionStorage.removeItem('site99:sealed-last-revision');restorationStages.forEach(function(k){localStorage.removeItem(restorePrefix+k)});localStorage.removeItem(veilChoiceKey);localStorage.removeItem(worldBeforeKey)}catch(e){}audit('LOCAL CREDENTIAL PROFILE ERASED');revNav();syncClearance();renderAccess();}
 });
 function showNotice(message){$('notice-message').textContent=message;$('notice-dialog').showModal()}
 syncClearance();
