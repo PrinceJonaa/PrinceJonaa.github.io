@@ -195,10 +195,14 @@ function renderRevision(i){
  body.innerHTML='<div class="revision-notice"><span>ARCHIVE REVISION J/'+i+'</span><span>CLASS: '+esc(classes[i])+'</span></div>'+
  '<div class="record-body">'+html+'</div>'+evidence+appendicesHtml()+tagbar(tagsForRevision(i));
 }
+function renderCrossDepartment(){
+ setTitle('Cross-site file 52-B');setMeta('RAISA / MULTI-DEPARTMENT CUSTODY DISCREPANCY');$('rating-box').hidden=true;
+ $('main-content').innerHTML=window.Site99CrossDepartment.html();window.Site99CrossDepartment.mount();
+}
 function renderHome(){
  setTitle('Site-99 Archive');setMeta('RAISA NODE 99-C / OFFSITE MIRROR');$('rating-box').hidden=true;
  $('main-content').innerHTML='<div class="classified-warning"><strong>WARNING: THE FOUNDATION DATABASE IS</strong><span>CLASSIFIED</span><p>UNAUTHORIZED ACCESS IS SUBJECT TO INTERNAL SECURITY REVIEW</p></div>'+
- '<div class="content-columns"><section><h2>Archived Case Files</h2><p>'+anchor('SCP-JONA — The Reference Tone','revision-0')+' <span class="minor">[9 surviving revisions]</span></p><p>'+anchor('The Chain 52 Review','revision-3')+' <span class="minor">[Level 3]</span></p><p>'+anchor('O5 Offsite Directive 52/B','directives')+' <span class="minor">[Level 5]</span></p><h2>Record Integrity</h2><p>Site-99 was established following a conflicting set of deletion orders issued by the Foundation central index. RAISA has retained this isolated copy for comparison.</p><p>No open network synchronization is authorized. Local edits are retained as terminal annotations.</p></section><aside class="info-panel"><h3>Site Bulletin</h3><p><strong>22 Oct 2026</strong><br>Revision ledger preserved.</p><p><strong>21 Oct 2026</strong><br>Central-index synchronization suspended.</p><p><strong>20 Oct 2026</strong><br>Authorship field audit unresolved.</p><p>'+anchor('View discussion board','discussion')+'</p><p>'+anchor('Unresolved incidents','cases')+'</p></aside></div>'+
+ '<div class="content-columns"><section><h2>Archived Case Files</h2><p>'+anchor('Transfer 52-B / Interdepartmental Discrepancy','xdept')+' <span class="minor">[newly retained]</span></p><p>'+anchor('SCP-JONA — The Reference Tone','revision-0')+' <span class="minor">[9 surviving revisions]</span></p><p>'+anchor('The Chain 52 Review','revision-3')+' <span class="minor">[Level 3]</span></p><p>'+anchor('O5 Offsite Directive 52/B','directives')+' <span class="minor">[Level 5]</span></p><h2>Record Integrity</h2><p>Site-99 was established following a conflicting set of deletion orders issued by the Foundation central index. RAISA has retained this isolated copy for comparison.</p><p>No open network synchronization is authorized. Local edits are retained as terminal annotations.</p></section><aside class="info-panel"><h3>Site Bulletin</h3><p><strong>22 Oct 2026</strong><br>Revision ledger preserved.</p><p><strong>21 Oct 2026</strong><br>Central-index synchronization suspended.</p><p><strong>20 Oct 2026</strong><br>Authorship field audit unresolved.</p><p>'+anchor('View discussion board','discussion')+'</p><p>'+anchor('Unresolved incidents','cases')+'</p></aside></div>'+
  tagbar(['site-99','archival-integrity','information']);
 }
 function renderTags(filter){
@@ -329,7 +333,7 @@ function renderCase(id){
  if(id==='receiver')markVeilWitness('return');
  var links='<div class="incident-references"><h3>Retained Correspondence / Related Records</h3><ul>'+c.bridges.map(function(b){return '<li>'+anchor(b[0],b[1])+'</li>'}).join('')+'</ul></div>';
  $('main-content').innerHTML='<div class="revision-notice"><span>RAISA FIELD INCIDENT '+esc(c.num)+'</span><span>STATUS: UNRESOLVED</span></div>'+
- '<div class="record-body incident-body">'+c.body+restorationLeaf(restorationLeaves.cases,id)+(seenWorldBefore()&&worldBefore.lateCases[id]?worldBefore.lateCases[id]:'')+'</div>'+links+tagbar(c.tags);
+ '<div class="record-body incident-body">'+c.body+restorationLeaf(restorationLeaves.cases,id)+(seenWorldBefore()&&worldBefore.lateCases[id]?worldBefore.lateCases[id]:'')+'</div>'+(id==='door'?'<p class="archive-note">Supplemental custody investigation: '+anchor('Transfer 52-B / MTF evidence workstation','xdept')+'.</p>':'')+links+tagbar(c.tags);
 }
 
 function renderSearch(query){
@@ -342,9 +346,10 @@ function renderSearch(query){
  $('main-content').innerHTML='<p>Query: <strong>'+esc(query)+'</strong></p><ul class="archive-index">'+(found.join('')||'<li>No local records found.</li>')+'</ul>';
 }
 function render(){
- route=decodeURIComponent(location.hash.slice(1)||'revision-0');revNav();
+ route=decodeURIComponent(location.hash.slice(1)||'revision-0');if(route!=='xdept')window.Site99CrossDepartment.unmount();revNav();
  var index=Number((route.match(/^revision-(\d)$/)||[])[1]); if(/^revision-\d$/.test(route)&&index<9)renderRevision(index);
  else if(route==='site-99')renderHome();
+ else if(route==='xdept')renderCrossDepartment();
  else if(route==='cases')renderCaseIndex();
  else if(route.startsWith('case-'))renderCase(route.slice(5));
  else if(route==='tags'||route.startsWith('tag-'))renderTags(route.startsWith('tag-')?route.slice(4):null);
