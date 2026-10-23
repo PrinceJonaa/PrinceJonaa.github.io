@@ -18,22 +18,22 @@ function syncClearance(){var select=$('clear');if(select){select.value=String(cl
 var incidents=window.Site99Incidents;
 var seedThreads=[
 {id:'containment',title:'SCP-JONA containment language',posts:[
-{author:'Researcher T. Vale',date:'22 Oct 2026, 09:16',body:'Provisional classification is still Euclid. Please stop replacing “unknown” with “hostile” in the procedure section. The distinction has been reviewed three times.'},
-{author:'Dr. A. Renn / Ethics Committee',date:'22 Oct 2026, 10:41',body:'Agreed. A model of a person does not confer jurisdiction over that person. The intervention memo remains unsigned.'},
-{author:'Director Havel',date:'22 Oct 2026, 13:07',body:'The budget proposal was not an intervention memo. The budget proposal was attached to an intervention memo. This does not improve its standing.'}]},
+{author:'Researcher T. Vale',date:'22 Oct 2026, 09:16',body:'The room has been cleared. There is nothing in it. Stop attaching the body-camera still to every update. Orr sees it every time you forward the file.'},
+{author:'Dr. A. Renn / Ethics Committee',date:'22 Oct 2026, 10:41',body:'The contact request is denied. Please stop putting the civilian name in the destination field. It will not become a signed order through repetition.'},
+{author:'Director Havel',date:'22 Oct 2026, 13:07',body:'I did not authorize a seventh member of the recovery team. There are six beds in the medical unit. Someone has slept in all seven.'}]},
 {id:'site99',title:'Why is this file hosted outside the main database?',posts:[
 {author:'RAISA-99',date:'21 Oct 2026, 22:04',body:'The central Foundation index returned a valid deletion instruction for this entry while claiming the entry had never been submitted. The offsite mirror is preserved under Site-99 directive 52/B.'},
 {author:'O5-11',date:'22 Oct 2026, 00:12',body:'Do not migrate these records back into the public index. Duplication of the revision history triggered the original incident. This is a custody order, not an explanation.'},
-{author:'Archivist K. Morrow',date:'22 Oct 2026, 01:32',body:'We retain an intact chain of custody for the server and none for the authorization that created the server.'}]},
+{author:'Archivist K. Morrow',date:'22 Oct 2026, 01:32',body:'I carried the paper original down to Storage C myself. The courier who signed for it is the man standing beside me in the security footage. I was alone.'}]},
 {id:'0222',title:'02:22 / authorship field',level:5,posts:[
 {author:'Archivist K. Morrow',date:'20 Oct 2026, 02:31',body:'At 02:22, revision metadata briefly listed the active editor as READER. Seven terminals reproduced the entry. The name did not correspond to a Foundation account.'},
-{author:'Researcher T. Vale',date:'20 Oct 2026, 09:09',body:'The log identifies a field value, not an entity. Please stop asking Security to detain a database column.'}]}
+{author:'Researcher T. Vale',date:'20 Oct 2026, 09:09',body:'Do not tell him about the third camera. He knows there were two. Whatever you do, do not make him sit through the recording again.'}]}
 ].concat(incidents.threads,window.Site99Horror.threads);
 var fileEntries=[
 {name:'J52-INITIAL-REPORT.txt',level:0,kind:'Field report',body:'RAISA / SITE-99\nINTAKE: JONA-52\nSOURCE: municipal records; civilian technical and music publications.\nRECEIVING CLERK: T. Vale\nSTATION: Desk 4\nInitial review: no confirmed nonstandard properties. Continued observation pending.'},
-{name:'MODEL-TRACE-52.LOG',level:2,kind:'Technical appendix',body:'PROJECTION LOG / J-52\nCYCLE 51: PREDICTION HELD\nCYCLE 52: LIMIT REACHED; EXCEPTIONAL PERMISSIONS REMOVED\nCYCLE 53: NO UNIQUE PROJECTION / INDETERMINATE\nAnalyst remark: The first line after the limit should be reviewed by Research.'},
+{name:'MODEL-TRACE-52.LOG',level:2,kind:'Technical appendix',body:'CHAIN-52 / EVACUATION ANALYTICS\nCYCLE 51: ALL PERSONNEL ACCOUNTED FOR\nCYCLE 52: 1106 PERSONNEL / TWO EXIT PATHS\nCYCLE 53: NO UNIQUE EXIT PATH / INDETERMINATE\nEXIT LABEL: THE ONE YOU DID NOT USE\nDo not restart the process from the final save.'},
 {name:'ETHICS-DISPOSITION-9.txt',level:3,kind:'Committee register',body:'ETHICS COMMITTEE / DISPOSITION T-52\nVOTE: 9-0 AGAINST DEPLOYMENT\nCHAIR: Dr. A. Renn\nSTATUS: CLOSED\nThe Committee declined to endorse an instrument designation.'},
-{name:'CHAIN52-SIMULATION.LOG',level:3,kind:'Simulation transcript',body:'CYCLE 51: ALL ROUTES CLOSING\nCYCLE 52: SUBJECT REMOVES EXCEPTIONAL PERMISSIONS\nCYCLE 53: MODEL NO LONGER PREDICTS A UNIQUE ENDPOINT\nNOTE: DO NOT RECONSTRUCT A MISSING CYCLE.'},
+{name:'CHAIN52-SIMULATION.LOG',level:3,kind:'Simulation transcript',body:'CHAIN-52 / SECOND RUN\nINITIAL CONDITIONS: NEW\nREFERENCES TO CIVILIAN: NONE\nCYCLE 52: TWO EXITS\nCYCLE 53: NO UNIQUE ROUTE\nOFFLINE PRINT QUEUE: ACTIVE\nWALL SCRATCH OBSERVED / PHOTO: 02:22'},
 {name:'OFFSITE-ORDER-52B.txt',level:5,kind:'O5 archive directive',body:'DIRECTIVE 52/B\nAUTHOR: O5-11\nSUBJECT: OFFSITE RETENTION OF SCP-JONA\nCentral-index publication suspended. Site-99 retains the sole operative revision ledger.\nThis is a custody measure. It is not authorization to approach JONA.'},
 {name:'READER-FIELD.txt',level:6,kind:'Recovered metadata',body:'FIELD: last_edited_by\nVALUE: READER\nAUTHORITY: UNRESOLVED\nSOURCE: UNKNOWN\n\nIf the field changes while you are looking at it, record what changed. Do not record what you wanted it to mean.'}
 ].concat(incidents.attachments,window.Site99Horror.attachments);
