@@ -28,7 +28,7 @@ var seedThreads=[
 {id:'0222',title:'02:22 / authorship field',level:5,posts:[
 {author:'Archivist K. Morrow',date:'20 Oct 2026, 02:31',body:'At 02:22, revision metadata briefly listed the active editor as READER. Seven terminals reproduced the entry. The name did not correspond to a Foundation account.'},
 {author:'Researcher T. Vale',date:'20 Oct 2026, 09:09',body:'The log identifies a field value, not an entity. Please stop asking Security to detain a database column.'}]}
-].concat(incidents.threads);
+].concat(incidents.threads,window.Site99Horror.threads);
 var fileEntries=[
 {name:'J52-INITIAL-REPORT.txt',level:0,kind:'Field report',body:'RAISA / SITE-99\nINTAKE: JONA-52\nSOURCE: municipal records; civilian technical and music publications.\nRECEIVING CLERK: T. Vale\nSTATION: Desk 4\nInitial review: no confirmed nonstandard properties. Continued observation pending.'},
 {name:'MODEL-TRACE-52.LOG',level:2,kind:'Technical appendix',body:'PROJECTION LOG / J-52\nCYCLE 51: PREDICTION HELD\nCYCLE 52: LIMIT REACHED; EXCEPTIONAL PERMISSIONS REMOVED\nCYCLE 53: NO UNIQUE PROJECTION / INDETERMINATE\nAnalyst remark: The first line after the limit should be reviewed by Research.'},
@@ -36,7 +36,7 @@ var fileEntries=[
 {name:'CHAIN52-SIMULATION.LOG',level:3,kind:'Simulation transcript',body:'CYCLE 51: ALL ROUTES CLOSING\nCYCLE 52: SUBJECT REMOVES EXCEPTIONAL PERMISSIONS\nCYCLE 53: MODEL NO LONGER PREDICTS A UNIQUE ENDPOINT\nNOTE: DO NOT RECONSTRUCT A MISSING CYCLE.'},
 {name:'OFFSITE-ORDER-52B.txt',level:5,kind:'O5 archive directive',body:'DIRECTIVE 52/B\nAUTHOR: O5-11\nSUBJECT: OFFSITE RETENTION OF SCP-JONA\nCentral-index publication suspended. Site-99 retains the sole operative revision ledger.\nThis is a custody measure. It is not authorization to approach JONA.'},
 {name:'READER-FIELD.txt',level:6,kind:'Recovered metadata',body:'FIELD: last_edited_by\nVALUE: READER\nAUTHORITY: UNRESOLVED\nSOURCE: UNKNOWN\n\nIf the field changes while you are looking at it, record what changed. Do not record what you wanted it to mean.'}
-].concat(incidents.attachments);
+].concat(incidents.attachments,window.Site99Horror.attachments);
 incidents.cases.forEach(function(c){c.tags.forEach(function(t){if(tags.indexOf(t)<0)tags.push(t)})});
 var $=function(id){return document.getElementById(id)};
 var esc=function(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})};
