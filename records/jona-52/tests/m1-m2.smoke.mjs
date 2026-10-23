@@ -33,7 +33,7 @@ test('All cross-references resolve',()=>assert.ok(data.edges.every(([a,,b])=>ids
 test('Related records are resolvable',()=>assert.ok(data.records.every(r=>r.related.every(id=>ids.has(id)))));
 test('Findings depend only on explicit source records',()=>assert.ok(data.findings.every(f=>f.requires.every(id=>ids.has(id)))));
 test('Division identifier is not exposed in first two milestones',()=>{assert.ok(!file('evidence-data.js').includes('Division 0'));assert.ok(!file('personnel-security.js').includes('Division 0'))});
-test('A single document opens through its deep link',()=>assert.ok(evidence.renderRecord('sloane-person').includes('EMPLOYEE')));
+test('A single document opens through its deep link',()=>assert.ok(evidence.renderRecord('sloane-person').includes('99-00418')));
 test('Incident arrival is separately retained',()=>assert.ok(evidence.renderRecord('transfer-52b').includes('three minutes')));
 test('Inspecting only two sources cannot infer cyclic authorization',()=>{evidence.observe('appointment-0418');assert.ok(!evidence.found().some(f=>f.id==='identity-loop'))});
 test('The third independent source opens a founded connection',()=>{evidence.observe('badge-b419');assert.ok(evidence.found().some(f=>f.id==='identity-loop'))});
