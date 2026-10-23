@@ -137,3 +137,29 @@ footer small{display:block}
 }
 @media(max-width:340px){.top-search input{width:110px}.clearance{min-width:119px}.brand strong{font-size:21px}.brand span{font-size:10px}}
 @media print{.top,.site-nav,.sidebar,.page-options,.clearance,.site-credit,.audit-box,.tagbar,.reply-form{display:none!important}.layout{display:block}main{max-width:none}.reader-column{width:100%}}
+
+
+/* RAISA credential desk: consistent with the Sigma-era archive treatment. */
+.clearance-ledger{list-style:none;padding:0!important;margin:14px 0 20px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));border-top:1px solid #bbb;border-left:1px solid #bbb;font-size:11px}
+.clearance-ledger li{margin:0!important;border-bottom:1px solid #bbb;border-right:1px solid #bbb;padding:8px 10px;display:flex;justify-content:space-between;gap:12px;background:#f5f5f5;line-height:1.4}
+.clearance-ledger li.verified{background:#f9fcf9;color:#365039}
+.clearance-ledger li.current{background:#fff7f7;color:#760009;border-left:3px solid #900}
+.clearance-ledger li.sealed{color:#999}
+.credential-case{border:1px solid #bbb;background:#fcfcfc;padding:17px 18px 20px;margin:17px 0}
+.credential-eyebrow{font:700 11px/1.5 Consolas,monospace;color:#900;letter-spacing:.025em}
+.credential-case h2{margin:7px 0 11px!important}
+.credential-form label{display:block;margin:14px 0 6px;font-size:12px;font-weight:bold}
+.credential-entry{display:flex;align-items:stretch;gap:7px}
+.credential-entry input{min-width:0;flex:1;padding:9px 10px;background:#fff;border:1px solid #aaa;border-radius:2px;font:14px Consolas,monospace;letter-spacing:.06em}
+.credential-entry input[aria-invalid="true"]{border-color:#900}
+.credential-entry .site-btn{margin:0;white-space:nowrap}
+.credential-status{padding:7px 10px;background:#eee;border-left:3px solid #990011;color:#600;font:12px/1.5 Consolas,monospace;margin:12px 0!important}
+.hint-area{margin-top:14px;border-top:1px dotted #bbb;padding-top:10px}
+.hint-area .hint-button{margin:0 0 5px}
+.hint-text{background:#f5f5f5;border-left:3px solid #bbb;padding:9px 12px;margin:8px 0;font-size:12px}
+.hint-text p{margin:5px 0!important}
+.clearance-success{border:1px solid #adb9ad;background:#f7faf7;padding:15px 18px;margin:16px 0}
+.clearance-success h2{margin-top:0!important}
+.link-action{color:#97000c;border:0;background:transparent;padding:0;text-decoration:underline;cursor:pointer;font:inherit}
+.terminal-module .sidebar-note{margin-top:3px;margin-bottom:7px}
+@media(max-width:650px){.clearance-ledger{grid-template-columns:1fr}.credential-case{padding:13px}.credential-entry{flex-direction:column}.credential-entry .site-btn{align-self:flex-start}.clearance-ledger li{padding:6px 8px}}
