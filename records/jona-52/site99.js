@@ -138,8 +138,9 @@ function renderRestoration(id){
   markRestoration(id);audit('52-R TRANSFER READ // '+id.toUpperCase());
   var following=restorationStages[restorationStages.indexOf(id)+1];
   var next=following&&permittedRestoration(following)?'<p class="archive-note">An additional original has been located: '+anchor('Inspect attached custody copy','continuity-'+following)+'</p>':'';
+  var nextWitness=id==='palimpsest'?'<p class="archive-note">The last recovered page identifies a receiving copy, not a return address. '+anchor('Examine J/8 / receiving copy','revision-8')+'. No transfer number was assigned.</p>':'';
   var back='<p class="archive-note">'+anchor('Transfer register 52-R','continuity')+' · '+anchor('SCP-JONA / J/7','revision-7')+'</p>';
-  $('main-content').innerHTML='<div class="revision-notice"><span>OVERSEAS ARCHIVE 52-R / '+esc(id.toUpperCase())+'</span><span>LEVEL '+page.level+'</span></div><article class="record-body restoration-body">'+page.body+'</article>'+next+back;
+  $('main-content').innerHTML='<div class="revision-notice"><span>OVERSEAS ARCHIVE 52-R / '+esc(id.toUpperCase())+'</span><span>LEVEL '+page.level+'</span></div><article class="record-body restoration-body">'+page.body+'</article>'+next+nextWitness+back;
   return
  }
  var rows=pages.map(function(p){
