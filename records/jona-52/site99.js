@@ -108,8 +108,8 @@ function hadRevisionSeven(){try{return sessionStorage.getItem('site99:sealed-las
 var restoration=window.Site99Restoration,restorationLeaves=window.Site99RestorationLeaves;
 var restorationStages=['ledger','relay','overseers','flash','second','palimpsest'];
 var restorePrefix='site99:52r:';
-function seenRestoration(k){try{return sessionStorage.getItem(restorePrefix+k)==='1'}catch(e){return false}}
-function markRestoration(k){try{sessionStorage.setItem(restorePrefix+k,'1')}catch(e){}}
+function seenRestoration(k){try{return localStorage.getItem(restorePrefix+k)==='1'}catch(e){return false}}
+function markRestoration(k){try{localStorage.setItem(restorePrefix+k,'1')}catch(e){}}
 function permittedRestoration(id){
  if(clearance<5||!hadRevisionSeven())return false;
  if(id==='ledger')return true;
@@ -271,6 +271,9 @@ function renderTerminalEcho(){
  $('main-content').innerHTML='<p class="archive-note">RAISA document recovered after personnel verification. No associated account has been identified.</p>'+
  '<article class="forum-post"><div class="post-author"><strong>O5-11</strong><span>Thread closed</span></div><div class="post-body"><div class="post-date">02:23 / internal transmission</div><p>Six credentials. Six perfectly valid authorizations. None of them explains who requested the seventh.</p></div></article>'+
  '<article class="forum-post"><div class="post-author"><strong>READER</strong><span>Account not found</span></div><div class="post-body"><div class="post-date">02:24 / origin unrecorded</div><p>You keep calling this a file about him. Why was the first door a file about you?</p></div></article>'+
+ (seenRestoration('overseers')?'<article class="forum-post"><div class="post-author"><strong>O5-11</strong><span>Unsent memorandum / recovered</span></div><div class="post-body"><div class="post-date">02:19 / prior entry</div><p>There is a meeting in the record that none of us attended. In that meeting I voted to start the operation. In this one I am voting to prevent it. My signatures are genuine. I no longer know which was the first vote.</p></div></article>':'')+
+ (seenRestoration('second')?'<article class="forum-post"><div class="post-author"><strong>O5-13</strong><span>Destination undeliverable</span></div><div class="post-body"><div class="post-date">02:22 / retained copy of unsent reply</div><p>It was not destroyed when we closed it. It was already gone. Please do not build another door to find out where it went. Someone opened the last one and we are still standing here.</p></div></article>':'')+
+
  '<p class="archive-note">RAISA correction: The final punctuation in the reader copy has not been authenticated. The original ends where a decision was expected.</p>'+ 
  (veilEligible()&&veilChoice()?'<article class="forum-post"><div class="post-author"><strong>RAISA-99</strong><span>Return receipt</span></div><div class="post-body"><div class="post-date">99-C/NIL / receipt filed after closure</div><p>The Veil assessment has been entered. The receiving system stored it under OBSERVER, not NORMALCY. The archive cannot identify the rule that moved it.</p></div></article>':'')+
  '<p>'+anchor('Return to J/0','revision-0')+' · '+anchor('View J/8','revision-8')+'</p>'; 
@@ -352,7 +355,7 @@ document.addEventListener('click',function(e){
  if(action==='vote'){var dir=Number(btn.dataset.dir);localRating=Math.max(-1,Math.min(1,localRating+dir));$('rating-count').textContent=(52+localRating>=0?'+':'')+(52+localRating);audit('LOCAL RATING REGISTER UPDATED');}
  if(action==='notice-close'){$('notice-dialog').close()}
  if(action==='hint'){e.preventDefault();hintRevealed=Math.min(2,hintRevealed+1);renderAccess();}
- if(action==='reset-clearance'){e.preventDefault();maxClearance=0;clearance=0;hintRevealed=0;credentialMessage='';saveProgress();try{sessionStorage.removeItem(veilWitnessKey);sessionStorage.removeItem('site99:sealed-last-revision');restorationStages.forEach(function(k){sessionStorage.removeItem(restorePrefix+k)});localStorage.removeItem(veilChoiceKey)}catch(e){}audit('LOCAL CREDENTIAL PROFILE ERASED');revNav();syncClearance();renderAccess();}
+ if(action==='reset-clearance'){e.preventDefault();maxClearance=0;clearance=0;hintRevealed=0;credentialMessage='';saveProgress();try{sessionStorage.removeItem(veilWitnessKey);sessionStorage.removeItem('site99:sealed-last-revision');restorationStages.forEach(function(k){localStorage.removeItem(restorePrefix+k)});localStorage.removeItem(veilChoiceKey)}catch(e){}audit('LOCAL CREDENTIAL PROFILE ERASED');revNav();syncClearance();renderAccess();}
 });
 function showNotice(message){$('notice-message').textContent=message;$('notice-dialog').showModal()}
 syncClearance();
