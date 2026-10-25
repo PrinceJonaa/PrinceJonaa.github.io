@@ -1,0 +1,1244 @@
+{
+  "schema": 1,
+  "kind": "open-licensed-GuitarSet-real-recordings",
+  "dataset": "GuitarSet",
+  "version": "1.1.0",
+  "doi": "10.5281/zenodo.3371780",
+  "license": "CC BY 4.0",
+  "source": "Annotated GuitarSet v1.1.0 JAMS and tempo-encoded session IDs",
+  "sampleCount": 8,
+  "engineVersion": "jona-dsp-2.4.0-experimental",
+  "note": "This corpus is real acoustic guitar; source metadata is authoritative for its sessions. It is not independent evidence of performance on drill or rap full mixes. No adjustment to detector parameters from this evaluation.",
+  "aggregates": [
+    {
+      "method": "JonaAudio Quick",
+      "basis": "session-confirmed",
+      "tracks": 8,
+      "keyCount": 8,
+      "exactKeys": 4,
+      "scaleCompatible": 4,
+      "relativeKeys": 0,
+      "tempoCount": 8,
+      "bpmWithinOne": 1
+    },
+    {
+      "method": "JonaAudio Verify",
+      "basis": "session-confirmed",
+      "tracks": 8,
+      "keyCount": 8,
+      "exactKeys": 3,
+      "scaleCompatible": 3,
+      "relativeKeys": 0,
+      "tempoCount": 8,
+      "bpmWithinOne": 0
+    },
+    {
+      "method": "Spectral Peaks",
+      "basis": "session-confirmed",
+      "tracks": 8,
+      "keyCount": 8,
+      "exactKeys": 4,
+      "scaleCompatible": 4,
+      "relativeKeys": 0,
+      "tempoCount": 0,
+      "bpmWithinOne": 0
+    },
+    {
+      "method": "Spectral Flux",
+      "basis": "session-confirmed",
+      "tracks": 8,
+      "keyCount": 8,
+      "exactKeys": 0,
+      "scaleCompatible": 0,
+      "relativeKeys": 0,
+      "tempoCount": 8,
+      "bpmWithinOne": 1
+    }
+  ],
+  "perTrack": [
+    {
+      "id": "00_SS3-98-C_comp",
+      "sourceKey": "C major",
+      "sourceTempoBpm": 98,
+      "jamsBeatTempoBpm": 98,
+      "style": "comp",
+      "player": 0,
+      "file": "00_SS3-98-C_comp.m4a",
+      "quick": {
+        "key": "C major",
+        "bpm": 99
+      },
+      "verify": {
+        "key": "G major",
+        "bpm": 66,
+        "keyCandidates": [
+          {
+            "key": "G major",
+            "score": 0.9341171297009835
+          },
+          {
+            "key": "E minor",
+            "score": 0.9260726004646438
+          },
+          {
+            "key": "C major",
+            "score": 0.9191571559221876
+          }
+        ]
+      },
+      "spectralPeaks": {
+        "key": "C major",
+        "candidates": [
+          {
+            "key": "C major",
+            "score": 0.921317926526284
+          },
+          {
+            "key": "G major",
+            "score": 0.9196005686809032
+          },
+          {
+            "key": "E minor",
+            "score": 0.9110971400463828
+          }
+        ]
+      },
+      "spectralFlux": {
+        "bpm": 192,
+        "candidates": [
+          {
+            "bpm": 192,
+            "score": 0.4609
+          },
+          {
+            "bpm": 196,
+            "score": 0.4609
+          },
+          {
+            "bpm": 200,
+            "score": 0.4609
+          }
+        ]
+      },
+      "evidence": {
+        "keyComparison": {
+          "status": "disagreement",
+          "relation": "different-scale-notes",
+          "baseline": "G major",
+          "peak": "C major",
+          "sameAllowedNotes": false,
+          "changedNotes": {
+            "baselineOnly": [
+              "F♯"
+            ],
+            "peakOnly": [
+              "F"
+            ]
+          },
+          "reason": "The profiles disagree on pitch classes; never automatically select a tuning scale"
+        },
+        "tempoComparison": {
+          "status": "review",
+          "relation": "different-pulse",
+          "primary": 66,
+          "flux": 192,
+          "strongAlternatives": [
+            192,
+            196,
+            200,
+            204,
+            66,
+            94
+          ],
+          "ratio": 2.909,
+          "reason": "Competing onset profiles imply different pulse subdivisions; confirm against a beat grid"
+        }
+      },
+      "durationSeconds": 24.01
+    },
+    {
+      "id": "01_Jazz2-187-F#_solo",
+      "sourceKey": "F# minor",
+      "sourceTempoBpm": 187,
+      "jamsBeatTempoBpm": 187,
+      "style": "solo",
+      "player": 1,
+      "file": "01_Jazz2-187-F#_solo.m4a",
+      "quick": {
+        "key": "F♯ minor",
+        "bpm": 181
+      },
+      "verify": {
+        "key": "F♯ minor",
+        "bpm": 181,
+        "keyCandidates": [
+          {
+            "key": "F♯ minor",
+            "score": 0.9662235115057387
+          },
+          {
+            "key": "A major",
+            "score": 0.9532794061809162
+          },
+          {
+            "key": "E major",
+            "score": 0.9421809434409874
+          }
+        ]
+      },
+      "spectralPeaks": {
+        "key": "F♯ minor",
+        "candidates": [
+          {
+            "key": "F♯ minor",
+            "score": 0.9351165129393549
+          },
+          {
+            "key": "A major",
+            "score": 0.907757390393016
+          },
+          {
+            "key": "E major",
+            "score": 0.8943746877888267
+          }
+        ]
+      },
+      "spectralFlux": {
+        "bpm": 179,
+        "candidates": [
+          {
+            "bpm": 179,
+            "score": 0.5401
+          },
+          {
+            "bpm": 183,
+            "score": 0.5401
+          },
+          {
+            "bpm": 187,
+            "score": 0.5401
+          }
+        ]
+      },
+      "evidence": {
+        "keyComparison": {
+          "status": "agreement",
+          "relation": "exact-key",
+          "baseline": "F♯ minor",
+          "peak": "F♯ minor",
+          "sameAllowedNotes": true,
+          "changedNotes": {
+            "baselineOnly": [],
+            "peakOnly": []
+          },
+          "reason": "Both profiles select the same key (not ground truth)"
+        },
+        "tempoComparison": {
+          "status": "agreement",
+          "relation": "near-same",
+          "primary": 181,
+          "flux": 179,
+          "strongAlternatives": [
+            179,
+            183,
+            187,
+            191,
+            195,
+            199
+          ],
+          "ratio": 0.989,
+          "reason": "Two onset profiles suggest similar BPM; this is not ground truth"
+        }
+      },
+      "durationSeconds": 20.57
+    },
+    {
+      "id": "02_Rock2-142-D_solo",
+      "sourceKey": "D minor",
+      "sourceTempoBpm": 142,
+      "jamsBeatTempoBpm": 142,
+      "style": "solo",
+      "player": 2,
+      "file": "02_Rock2-142-D_solo.m4a",
+      "quick": {
+        "key": "A minor",
+        "bpm": 135
+      },
+      "verify": {
+        "key": "A minor",
+        "bpm": 135,
+        "keyCandidates": [
+          {
+            "key": "A minor",
+            "score": 0.9521896124366295
+          },
+          {
+            "key": "D major",
+            "score": 0.9183595939954415
+          },
+          {
+            "key": "D minor",
+            "score": 0.9182461323114458
+          }
+        ]
+      },
+      "spectralPeaks": {
+        "key": "A minor",
+        "candidates": [
+          {
+            "key": "A minor",
+            "score": 0.8755565000919096
+          },
+          {
+            "key": "D major",
+            "score": 0.8466831234161457
+          },
+          {
+            "key": "A major",
+            "score": 0.8450586475754571
+          }
+        ]
+      },
+      "spectralFlux": {
+        "bpm": 133,
+        "candidates": [
+          {
+            "bpm": 133,
+            "score": 0.3247
+          },
+          {
+            "bpm": 137,
+            "score": 0.3247
+          },
+          {
+            "bpm": 141,
+            "score": 0.2997
+          }
+        ]
+      },
+      "evidence": {
+        "keyComparison": {
+          "status": "agreement",
+          "relation": "exact-key",
+          "baseline": "A minor",
+          "peak": "A minor",
+          "sameAllowedNotes": true,
+          "changedNotes": {
+            "baselineOnly": [],
+            "peakOnly": []
+          },
+          "reason": "Both profiles select the same key (not ground truth)"
+        },
+        "tempoComparison": {
+          "status": "agreement",
+          "relation": "near-same",
+          "primary": 135,
+          "flux": 133,
+          "strongAlternatives": [
+            133,
+            137,
+            141,
+            145,
+            56,
+            91
+          ],
+          "ratio": 0.985,
+          "reason": "Two onset profiles suggest similar BPM; this is not ground truth"
+        }
+      },
+      "durationSeconds": 24.01
+    },
+    {
+      "id": "03_SS1-68-E_solo",
+      "sourceKey": "E major",
+      "sourceTempoBpm": 68,
+      "jamsBeatTempoBpm": 68,
+      "style": "solo",
+      "player": 3,
+      "file": "03_SS1-68-E_solo.m4a",
+      "quick": {
+        "key": "A♭ minor",
+        "bpm": 194
+      },
+      "verify": {
+        "key": "A♭ minor",
+        "bpm": 194,
+        "keyCandidates": [
+          {
+            "key": "A♭ minor",
+            "score": 0.9473412386732236
+          },
+          {
+            "key": "E major",
+            "score": 0.9230533564141594
+          },
+          {
+            "key": "E minor",
+            "score": 0.9198297323720835
+          }
+        ]
+      },
+      "spectralPeaks": {
+        "key": "A♭ minor",
+        "candidates": [
+          {
+            "key": "A♭ minor",
+            "score": 0.8620644050920546
+          },
+          {
+            "key": "G major",
+            "score": 0.8234266384746514
+          },
+          {
+            "key": "A♭ major",
+            "score": 0.8165659603882001
+          }
+        ]
+      },
+      "spectralFlux": {
+        "bpm": 192,
+        "candidates": [
+          {
+            "bpm": 192,
+            "score": 0.3459
+          },
+          {
+            "bpm": 196,
+            "score": 0.3459
+          },
+          {
+            "bpm": 200,
+            "score": 0.3459
+          }
+        ]
+      },
+      "evidence": {
+        "keyComparison": {
+          "status": "agreement",
+          "relation": "exact-key",
+          "baseline": "A♭ minor",
+          "peak": "A♭ minor",
+          "sameAllowedNotes": true,
+          "changedNotes": {
+            "baselineOnly": [],
+            "peakOnly": []
+          },
+          "reason": "Both profiles select the same key (not ground truth)"
+        },
+        "tempoComparison": {
+          "status": "agreement",
+          "relation": "near-same",
+          "primary": 194,
+          "flux": 192,
+          "strongAlternatives": [
+            192,
+            196,
+            200,
+            204,
+            208
+          ],
+          "ratio": 0.99,
+          "reason": "Two onset profiles suggest similar BPM; this is not ground truth"
+        }
+      },
+      "durationSeconds": 24.01
+    },
+    {
+      "id": "04_Funk2-119-G_solo",
+      "sourceKey": "G minor",
+      "sourceTempoBpm": 119,
+      "jamsBeatTempoBpm": 119,
+      "style": "solo",
+      "player": 4,
+      "file": "04_Funk2-119-G_solo.m4a",
+      "quick": {
+        "key": "G minor",
+        "bpm": 208
+      },
+      "verify": {
+        "key": "G minor",
+        "bpm": 208,
+        "keyCandidates": [
+          {
+            "key": "G minor",
+            "score": 0.955363134061817
+          },
+          {
+            "key": "D minor",
+            "score": 0.9501917550287687
+          },
+          {
+            "key": "A minor",
+            "score": 0.9498375047346728
+          }
+        ]
+      },
+      "spectralPeaks": {
+        "key": "G minor",
+        "candidates": [
+          {
+            "key": "G minor",
+            "score": 0.9642342148712754
+          },
+          {
+            "key": "G major",
+            "score": 0.950310589051817
+          },
+          {
+            "key": "C minor",
+            "score": 0.9312401339102555
+          }
+        ]
+      },
+      "spectralFlux": {
+        "bpm": 115,
+        "candidates": [
+          {
+            "bpm": 115,
+            "score": 0.3271
+          },
+          {
+            "bpm": 119,
+            "score": 0.3271
+          },
+          {
+            "bpm": 207,
+            "score": 0.2867
+          }
+        ]
+      },
+      "evidence": {
+        "keyComparison": {
+          "status": "agreement",
+          "relation": "exact-key",
+          "baseline": "G minor",
+          "peak": "G minor",
+          "sameAllowedNotes": true,
+          "changedNotes": {
+            "baselineOnly": [],
+            "peakOnly": []
+          },
+          "reason": "Both profiles select the same key (not ground truth)"
+        },
+        "tempoComparison": {
+          "status": "review",
+          "relation": "different-pulse",
+          "primary": 208,
+          "flux": 115,
+          "strongAlternatives": [
+            115,
+            119,
+            207,
+            123,
+            110
+          ],
+          "ratio": 0.553,
+          "reason": "Competing onset profiles imply different pulse subdivisions; confirm against a beat grid"
+        }
+      },
+      "durationSeconds": 24.01
+    },
+    {
+      "id": "00_BN2-166-Ab_solo",
+      "sourceKey": "Ab minor",
+      "sourceTempoBpm": 166,
+      "jamsBeatTempoBpm": 166,
+      "style": "solo",
+      "player": 0,
+      "file": "00_BN2-166-Ab_solo.m4a",
+      "quick": {
+        "key": "A♭ minor",
+        "bpm": 159
+      },
+      "verify": {
+        "key": "A♭ minor",
+        "bpm": 169,
+        "keyCandidates": [
+          {
+            "key": "A♭ minor",
+            "score": 0.9603165930794759
+          },
+          {
+            "key": "C♯ minor",
+            "score": 0.9498636693967768
+          },
+          {
+            "key": "E♭ minor",
+            "score": 0.9438567762394554
+          }
+        ]
+      },
+      "spectralPeaks": {
+        "key": "A♭ minor",
+        "candidates": [
+          {
+            "key": "A♭ minor",
+            "score": 0.9480621434147727
+          },
+          {
+            "key": "C♯ minor",
+            "score": 0.9110105941894849
+          },
+          {
+            "key": "A♭ major",
+            "score": 0.9068825108018932
+          }
+        ]
+      },
+      "spectralFlux": {
+        "bpm": 157,
+        "candidates": [
+          {
+            "bpm": 157,
+            "score": 0.5491
+          },
+          {
+            "bpm": 161,
+            "score": 0.5491
+          },
+          {
+            "bpm": 165,
+            "score": 0.5491
+          }
+        ]
+      },
+      "evidence": {
+        "keyComparison": {
+          "status": "agreement",
+          "relation": "exact-key",
+          "baseline": "A♭ minor",
+          "peak": "A♭ minor",
+          "sameAllowedNotes": true,
+          "changedNotes": {
+            "baselineOnly": [],
+            "peakOnly": []
+          },
+          "reason": "Both profiles select the same key (not ground truth)"
+        },
+        "tempoComparison": {
+          "status": "review",
+          "relation": "different-pulse",
+          "primary": 169,
+          "flux": 157,
+          "strongAlternatives": [
+            157,
+            161,
+            165,
+            169,
+            173,
+            177
+          ],
+          "ratio": 0.929,
+          "reason": "Competing onset profiles imply different pulse subdivisions; confirm against a beat grid"
+        }
+      },
+      "durationSeconds": 23.17
+    },
+    {
+      "id": "00_SS3-84-Bb_solo",
+      "sourceKey": "Bb major",
+      "sourceTempoBpm": 84,
+      "jamsBeatTempoBpm": 84,
+      "style": "solo",
+      "player": 0,
+      "file": "00_SS3-84-Bb_solo.m4a",
+      "quick": {
+        "key": "F major",
+        "bpm": 92
+      },
+      "verify": {
+        "key": "F major",
+        "bpm": 92,
+        "keyCandidates": [
+          {
+            "key": "F major",
+            "score": 0.939835804577344
+          },
+          {
+            "key": "G minor",
+            "score": 0.9237367813948086
+          },
+          {
+            "key": "D minor",
+            "score": 0.92262690032936
+          }
+        ]
+      },
+      "spectralPeaks": {
+        "key": "D minor",
+        "candidates": [
+          {
+            "key": "D minor",
+            "score": 0.8739082236581031
+          },
+          {
+            "key": "G minor",
+            "score": 0.873035680094148
+          },
+          {
+            "key": "F major",
+            "score": 0.8706278762427837
+          }
+        ]
+      },
+      "spectralFlux": {
+        "bpm": 83,
+        "candidates": [
+          {
+            "bpm": 83,
+            "score": 0.363
+          },
+          {
+            "bpm": 87,
+            "score": 0.3522
+          },
+          {
+            "bpm": 127,
+            "score": 0.2289
+          }
+        ]
+      },
+      "evidence": {
+        "keyComparison": {
+          "status": "disagreement",
+          "relation": "same-scale-different-tonic",
+          "baseline": "F major",
+          "peak": "D minor",
+          "sameAllowedNotes": true,
+          "changedNotes": {
+            "baselineOnly": [],
+            "peakOnly": []
+          },
+          "reason": "The profiles disagree on tonic/mode, but Auto-Tune note masks match"
+        },
+        "tempoComparison": {
+          "status": "review",
+          "relation": "different-pulse",
+          "primary": 92,
+          "flux": 83,
+          "strongAlternatives": [
+            83,
+            87
+          ],
+          "ratio": 0.902,
+          "reason": "Competing onset profiles imply different pulse subdivisions; confirm against a beat grid"
+        }
+      },
+      "durationSeconds": 24.01
+    },
+    {
+      "id": "00_Jazz1-200-B_solo",
+      "sourceKey": "B major",
+      "sourceTempoBpm": 200,
+      "jamsBeatTempoBpm": 200,
+      "style": "solo",
+      "player": 0,
+      "file": "00_Jazz1-200-B_solo.m4a",
+      "quick": {
+        "key": "B minor",
+        "bpm": 194
+      },
+      "verify": {
+        "key": "B minor",
+        "bpm": 99,
+        "keyCandidates": [
+          {
+            "key": "B minor",
+            "score": 0.9636632076065561
+          },
+          {
+            "key": "B major",
+            "score": 0.9370758337702388
+          },
+          {
+            "key": "F♯ minor",
+            "score": 0.9226631905932314
+          }
+        ]
+      },
+      "spectralPeaks": {
+        "key": "B minor",
+        "candidates": [
+          {
+            "key": "B minor",
+            "score": 0.9232257687033548
+          },
+          {
+            "key": "B major",
+            "score": 0.9123236865751353
+          },
+          {
+            "key": "A♭ minor",
+            "score": 0.9118934610309143
+          }
+        ]
+      },
+      "spectralFlux": {
+        "bpm": 192,
+        "candidates": [
+          {
+            "bpm": 192,
+            "score": 0.5775
+          },
+          {
+            "bpm": 196,
+            "score": 0.5775
+          },
+          {
+            "bpm": 200,
+            "score": 0.5775
+          }
+        ]
+      },
+      "evidence": {
+        "keyComparison": {
+          "status": "agreement",
+          "relation": "exact-key",
+          "baseline": "B minor",
+          "peak": "B minor",
+          "sameAllowedNotes": true,
+          "changedNotes": {
+            "baselineOnly": [],
+            "peakOnly": []
+          },
+          "reason": "Both profiles select the same key (not ground truth)"
+        },
+        "tempoComparison": {
+          "status": "review",
+          "relation": "different-pulse",
+          "primary": 99,
+          "flux": 192,
+          "strongAlternatives": [
+            192,
+            196,
+            200,
+            204,
+            98,
+            94
+          ],
+          "ratio": 1.939,
+          "reason": "Competing onset profiles imply different pulse subdivisions; confirm against a beat grid"
+        }
+      },
+      "durationSeconds": 14.44
+    }
+  ],
+  "classification": [
+    {
+      "id": "00_SS3-98-C_comp",
+      "method": "JonaAudio Quick",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "C major",
+      "predictedKey": "C major",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 98,
+      "predictedBpm": 99,
+      "tempoRelation": "within-1-bpm"
+    },
+    {
+      "id": "00_SS3-98-C_comp",
+      "method": "JonaAudio Verify",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "C major",
+      "predictedKey": "G major",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 98,
+      "predictedBpm": 66,
+      "tempoRelation": "two-to-three"
+    },
+    {
+      "id": "00_SS3-98-C_comp",
+      "method": "Spectral Peaks",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "C major",
+      "predictedKey": "C major",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 98,
+      "predictedBpm": null,
+      "tempoRelation": null
+    },
+    {
+      "id": "00_SS3-98-C_comp",
+      "method": "Spectral Flux",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "C major",
+      "predictedKey": null,
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 98,
+      "predictedBpm": 192,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "01_Jazz2-187-F#_solo",
+      "method": "JonaAudio Quick",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "F# minor",
+      "predictedKey": "F♯ minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 187,
+      "predictedBpm": 181,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "01_Jazz2-187-F#_solo",
+      "method": "JonaAudio Verify",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "F# minor",
+      "predictedKey": "F♯ minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 187,
+      "predictedBpm": 181,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "01_Jazz2-187-F#_solo",
+      "method": "Spectral Peaks",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "F# minor",
+      "predictedKey": "F♯ minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 187,
+      "predictedBpm": null,
+      "tempoRelation": null
+    },
+    {
+      "id": "01_Jazz2-187-F#_solo",
+      "method": "Spectral Flux",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "F# minor",
+      "predictedKey": null,
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 187,
+      "predictedBpm": 179,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "02_Rock2-142-D_solo",
+      "method": "JonaAudio Quick",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "D minor",
+      "predictedKey": "A minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 142,
+      "predictedBpm": 135,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "02_Rock2-142-D_solo",
+      "method": "JonaAudio Verify",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "D minor",
+      "predictedKey": "A minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 142,
+      "predictedBpm": 135,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "02_Rock2-142-D_solo",
+      "method": "Spectral Peaks",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "D minor",
+      "predictedKey": "A minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 142,
+      "predictedBpm": null,
+      "tempoRelation": null
+    },
+    {
+      "id": "02_Rock2-142-D_solo",
+      "method": "Spectral Flux",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "D minor",
+      "predictedKey": null,
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 142,
+      "predictedBpm": 133,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "03_SS1-68-E_solo",
+      "method": "JonaAudio Quick",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "E major",
+      "predictedKey": "A♭ minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 68,
+      "predictedBpm": 194,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "03_SS1-68-E_solo",
+      "method": "JonaAudio Verify",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "E major",
+      "predictedKey": "A♭ minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 68,
+      "predictedBpm": 194,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "03_SS1-68-E_solo",
+      "method": "Spectral Peaks",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "E major",
+      "predictedKey": "A♭ minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 68,
+      "predictedBpm": null,
+      "tempoRelation": null
+    },
+    {
+      "id": "03_SS1-68-E_solo",
+      "method": "Spectral Flux",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "E major",
+      "predictedKey": null,
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 68,
+      "predictedBpm": 192,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "04_Funk2-119-G_solo",
+      "method": "JonaAudio Quick",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "G minor",
+      "predictedKey": "G minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 119,
+      "predictedBpm": 208,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "04_Funk2-119-G_solo",
+      "method": "JonaAudio Verify",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "G minor",
+      "predictedKey": "G minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 119,
+      "predictedBpm": 208,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "04_Funk2-119-G_solo",
+      "method": "Spectral Peaks",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "G minor",
+      "predictedKey": "G minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 119,
+      "predictedBpm": null,
+      "tempoRelation": null
+    },
+    {
+      "id": "04_Funk2-119-G_solo",
+      "method": "Spectral Flux",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "G minor",
+      "predictedKey": null,
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 119,
+      "predictedBpm": 115,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "00_BN2-166-Ab_solo",
+      "method": "JonaAudio Quick",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "Ab minor",
+      "predictedKey": "A♭ minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 166,
+      "predictedBpm": 159,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "00_BN2-166-Ab_solo",
+      "method": "JonaAudio Verify",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "Ab minor",
+      "predictedKey": "A♭ minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 166,
+      "predictedBpm": 169,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "00_BN2-166-Ab_solo",
+      "method": "Spectral Peaks",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "Ab minor",
+      "predictedKey": "A♭ minor",
+      "exactKey": true,
+      "compatibleScale": true,
+      "relativeKey": false,
+      "annotatedBpm": 166,
+      "predictedBpm": null,
+      "tempoRelation": null
+    },
+    {
+      "id": "00_BN2-166-Ab_solo",
+      "method": "Spectral Flux",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "Ab minor",
+      "predictedKey": null,
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 166,
+      "predictedBpm": 157,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "00_SS3-84-Bb_solo",
+      "method": "JonaAudio Quick",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "Bb major",
+      "predictedKey": "F major",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 84,
+      "predictedBpm": 92,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "00_SS3-84-Bb_solo",
+      "method": "JonaAudio Verify",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "Bb major",
+      "predictedKey": "F major",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 84,
+      "predictedBpm": 92,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "00_SS3-84-Bb_solo",
+      "method": "Spectral Peaks",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "Bb major",
+      "predictedKey": "D minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 84,
+      "predictedBpm": null,
+      "tempoRelation": null
+    },
+    {
+      "id": "00_SS3-84-Bb_solo",
+      "method": "Spectral Flux",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "Bb major",
+      "predictedKey": null,
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 84,
+      "predictedBpm": 83,
+      "tempoRelation": "within-1-bpm"
+    },
+    {
+      "id": "00_Jazz1-200-B_solo",
+      "method": "JonaAudio Quick",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "B major",
+      "predictedKey": "B minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 200,
+      "predictedBpm": 194,
+      "tempoRelation": "not-equivalent"
+    },
+    {
+      "id": "00_Jazz1-200-B_solo",
+      "method": "JonaAudio Verify",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "B major",
+      "predictedKey": "B minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 200,
+      "predictedBpm": 99,
+      "tempoRelation": "half-time"
+    },
+    {
+      "id": "00_Jazz1-200-B_solo",
+      "method": "Spectral Peaks",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "B major",
+      "predictedKey": "B minor",
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 200,
+      "predictedBpm": null,
+      "tempoRelation": null
+    },
+    {
+      "id": "00_Jazz1-200-B_solo",
+      "method": "Spectral Flux",
+      "labelBasis": "session-confirmed",
+      "annotatedKey": "B major",
+      "predictedKey": null,
+      "exactKey": false,
+      "compatibleScale": false,
+      "relativeKey": false,
+      "annotatedBpm": 200,
+      "predictedBpm": 192,
+      "tempoRelation": "not-equivalent"
+    }
+  ]
+}
