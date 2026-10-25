@@ -73,6 +73,8 @@ export function formatTuningReference(result, values = {}) {
     'Allowed notes: ' + (state.allowedNotes.join(', ') || 'select manually'),
     'Tempo: ' + bpm,
     'Tempo candidates: ' + (tempoChoices || 'none'),
+    'BeatRoot review candidate (not auto-applied): ' + (result?.tempo?.beatRootEvidence?.primaryCandidate ?? 'not run'),
+    'BeatRoot half-time option: ' + (result?.tempo?.beatRootEvidence?.candidates?.[0]?.halfTime ?? 'not available'),
     'Other pulse readings: ' + (result?.tempo?.tempoHypotheses?.direct?.map(x=>x.bpm).join(' / ') || 'none'),
     'Half, double and triple interpretations: ' + (result?.tempo?.tempoHypotheses?.metricalAlternatives?.map(x=>x.bpm+' ('+x.relationship+')').join(' / ') || 'none'),
     'Alternative key: ' + (state.alternative ?? 'none'),
