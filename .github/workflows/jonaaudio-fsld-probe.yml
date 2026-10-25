@@ -1,9 +1,5 @@
 name: JonaAudio FSLD expert BPM and licenses probe
 on:
-  pull_request:
-    paths:
-      - 'JonaAudio/bench/probe-fsld.py'
-      - '.github/workflows/jonaaudio-fsld-probe.yml'
   workflow_dispatch:
 permissions:
   contents: read
