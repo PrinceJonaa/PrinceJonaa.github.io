@@ -2,9 +2,9 @@ name: Universe acceptance
 on:
   push:
     branches: [main, feat/universe-s0-s1, feat/universe-s1-s2]
-    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'cloudflare/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', 'records/**', '.github/workflows/universe-discovery.yml']
+    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'cloudflare/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', 'records/**', '.github/workflows/universe-discovery.yml', '.node-version']
   pull_request:
-    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', 'records/**', '.github/workflows/universe-discovery.yml']
+    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', 'records/**', '.github/workflows/universe-discovery.yml', '.node-version']
 permissions:
   contents: read
 jobs:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .node-version
       - name: Public catalog and JonaAudio regressions
         run: |
           node --test tests/*.test.mjs JonaAudio/tests/*.test.mjs

@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/publish-rhythmcut-artifact.mjs'
       - '.github/workflows/rhythmcut-artifact-publish.yml'
+      - '.node-version'
       - 'tests/catalog.test.mjs'
       - 'tests/live-release.test.mjs'
       - 'scripts/verify-rhythmcut-live.mjs'
@@ -13,6 +14,7 @@ on:
     paths:
       - 'scripts/publish-rhythmcut-artifact.mjs'
       - '.github/workflows/rhythmcut-artifact-publish.yml'
+      - '.node-version'
       - 'scripts/verify-rhythmcut-live.mjs'
       - 'tests/live-release.test.mjs'
   schedule:
@@ -37,7 +39,7 @@ jobs:
           persist-credentials: true
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .node-version
       - name: Download and validate Vercel production archive before changing Pages
         run: node scripts/publish-rhythmcut-artifact.mjs
       - name: Verify public catalog and route invariants against staged release

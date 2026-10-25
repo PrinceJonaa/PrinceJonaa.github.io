@@ -2,9 +2,9 @@ name: JonaAudio M6 regression
 on:
   push:
     branches: [main, feat/jonaaudio-m1]
-    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml']
+    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml', '.node-version']
   pull_request:
-    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml']
+    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml', '.node-version']
   workflow_dispatch:
 permissions:
   contents: read
@@ -18,7 +18,7 @@ jobs:
           fetch-depth: 2
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .node-version
       - name: All JonaAudio Node regression suites
         run: node --test JonaAudio/tests/*.test.mjs
       - name: Parse app and browser test modules
@@ -35,7 +35,7 @@ jobs:
           fetch-depth: 2
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .node-version
       - name: Install browser test runtime
         run: |
           npm install --no-save --no-package-lock playwright@1.58.2
