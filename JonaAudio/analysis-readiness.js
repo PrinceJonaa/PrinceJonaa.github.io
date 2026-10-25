@@ -74,7 +74,7 @@ export function formatTuningReference(result, values = {}) {
     'Tempo: ' + bpm,
     'Tempo candidates: ' + (tempoChoices || 'none'),
     'Other pulse readings: ' + (result?.tempo?.tempoHypotheses?.direct?.map(x=>x.bpm).join(' / ') || 'none'),
-    'Half, double and triple interpretations: ' + (result?.tempo?.tempoHypotheses?.metricalAlternatives?.slice(0,8).map(x=>x.bpm+' ('+x.relationship+')').join(' / ') || 'none'),
+    'Half, double and triple interpretations: ' + (result?.tempo?.tempoHypotheses?.metricalAlternatives?.map(x=>x.bpm+' ('+x.relationship+')').join(' / ') || 'none'),
     'Alternative key: ' + (state.alternative ?? 'none'),
     'Verify profile: ' + (result?.keyComparison?.relation ?? result?.keyComparison?.status ?? 'not run') + (result?.keyComparison?.peak ? ' (' + result.keyComparison.peak + ')' : ''),
     'Low-note clue: ' + (result?.bassEvidence?.notes?.slice(0,3).map(n=>n.note).join(' / ') || 'not measured') + ' (not proof of tonic)',
