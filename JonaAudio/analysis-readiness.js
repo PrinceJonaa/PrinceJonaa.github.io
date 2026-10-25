@@ -72,7 +72,7 @@ export function formatTuningReference(result, values = {}) {
     'Tempo candidates: ' + (tempoChoices || 'none'),
     'Alternative key: ' + (state.alternative ?? 'none'),
     'Verify profile: ' + (result?.keyComparison?.relation ?? result?.keyComparison?.status ?? 'not run') + (result?.keyComparison?.peak ? ' (' + result.keyComparison.peak + ')' : ''),
-    'Scale differences: ' + (result?.keyComparison?.changedNotes ? 
+    'Scale differences: ' + (result?.keyComparison?.changedNotes ?
       'baseline only '+(result.keyComparison.changedNotes.baselineOnly.join(' ')||'none')+
       '; peak only '+(result.keyComparison.changedNotes.peakOnly.join(' ')||'none') : 'not compared'),
     'Verify tonic, note mask and BPM by ear before setting Auto-Tune.'
