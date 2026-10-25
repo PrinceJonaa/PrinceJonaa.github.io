@@ -191,14 +191,20 @@ function refreshMusical(current){
  const ranges=[...(tempo?.ranges||[]),...(key?.ranges||[])],unique=[...new Map(ranges.map(r=>[r.start+':'+r.end,r])).values()];
  rangeText.textContent='Scope: '+values.scope+(unique.length?' · Sampled '+unique.map(r=>r.start.toFixed(1)+'–'+r.end.toFixed(1)+' s').join(', '):' · Ranges appear as analysis completes');
  quickCandidates.replaceChildren();const result=current.scopeResult;
- const measured=(result?.tempo?.alternatives||[]).slice(0,3).map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · main estimate'}));
+ const beat=result?.tempo?.beatRootEvidence;
+ const beatCandidates=beat?.status==='review'?[
+  {field:'bpm',value:beat.primaryCandidate,text:beat.primaryCandidate+' BPM · BeatRoot candidate (unverified)'},
+  ...(beat.candidates[0]?.halfTime?[{field:'bpm',value:beat.candidates[0].halfTime,text:beat.candidates[0].halfTime+' BPM · ½-time BeatRoot feel'}]:[]),
+  ...(beat.candidates[0]?.doubleTime?[{field:'bpm',value:beat.candidates[0].doubleTime,text:beat.candidates[0].doubleTime+' BPM · 2× BeatRoot feel'}]:[])
+ ]:[];
+ const measured=(result?.tempo?.alternatives||[]).slice(0,3).map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · original estimate'}));
  const reviewPulse=result?.tempo?.tempoHypotheses;
  const direct=(reviewPulse?.direct||[]).filter(x=>x.source!=='original-estimate').slice(0,4)
   .map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · extra pulse'}));
  const metrical=(reviewPulse?.metricalAlternatives||[]).slice(0,5)
   .map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · '+x.relationship}));
  const candidateKeys=(result?.keys||[]).slice(0,4).map(x=>({field:'key',value:x.key,text:x.key+' · estimated key'}));
- const choices=[...measured,...direct,...metrical,...candidateKeys].filter((value,index,array)=>
+ const choices=[...beatCandidates,...measured,...direct,...metrical,...candidateKeys].filter((value,index,array)=>
   index===array.findIndex(other=>other.field===value.field&&Math.abs(value.field==='bpm'?other.value-value.value:0)<.75&&
    (value.field==='bpm'||other.value===value.value)));
  for(const c of choices)quickCandidates.append(button(c.text,()=>bridge.setOverride(c.field,c.value,'candidate-choice'),'candidate'));
