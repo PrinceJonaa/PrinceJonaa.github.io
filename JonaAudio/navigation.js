@@ -194,7 +194,7 @@ function refreshMusical(current){
  const beat=result?.tempo?.beatRootEvidence;
  const decision=result?.tempo?.tempoDecision;
  const recommended=decision?.status==='recommend'?[
-  {field:'bpm',value:decision.suggestedBpm,text:'Suggested: '+decision.suggestedBpm+' BPM · '+(decision.suggestionType==='half-time'?'½-time':'normal pulse')+' (unverified)'}
+  {field:'bpm',value:decision.suggestedBpm,text:'Experimental: '+decision.suggestedBpm+' BPM · '+(decision.suggestionType==='half-time'?'½-time':'normal pulse')+' (unverified)'}
  ]:[];
  const beatCandidates=beat?.status==='review'?[
   {field:'bpm',value:beat.primaryCandidate,text:beat.primaryCandidate+' BPM · BeatRoot candidate (unverified)'},
