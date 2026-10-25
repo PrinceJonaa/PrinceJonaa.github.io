@@ -1,10 +1,5 @@
 name: JonaAudio creator-separated expert tempo evaluation
 on:
-  pull_request:
-    paths:
-      - 'JonaAudio/bench/fetch-fsld-creator-test.py'
-      - 'JonaAudio/bench/run-fsld.mjs'
-      - '.github/workflows/jonaaudio-fsld-external.yml'
   workflow_dispatch:
 permissions:
   contents: read
