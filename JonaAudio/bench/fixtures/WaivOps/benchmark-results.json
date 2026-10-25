@@ -1,0 +1,788 @@
+{
+  "schema": 1,
+  "dataset": "WaivOps CC BY 4.0 trap and boom-bap drum-loop examples",
+  "engineVersion": "jona-dsp-2.5.1-review-alternatives",
+  "license": "CC BY 4.0",
+  "datasetSize": 21,
+  "groundTruth": "Publisher-encoded BPM in the official example filename (not analysis estimates)",
+  "scope": "Rhythm/tempo ONLY; samples are labeled loops, NOT full songs and have no musical-key annotations",
+  "caveat": "Keep held-out reference labels unused for tuning. A broad set of tempo alternatives is NOT a high-precision BPM result.",
+  "groups": {
+    "all": {
+      "count": 21,
+      "quickExact": 3,
+      "quickWithin3": 5,
+      "verifyExact": 4,
+      "fluxExact": 4,
+      "fluxTop3": 11,
+      "octaveEquivalent": 7,
+      "directAlternativeExact": 15,
+      "expandedCandidateExact": 17,
+      "avgCandidateSetSize": 11.7
+    },
+    "development": {
+      "count": 11,
+      "quickExact": 2,
+      "quickWithin3": 4,
+      "verifyExact": 2,
+      "fluxExact": 1,
+      "fluxTop3": 5,
+      "octaveEquivalent": 4,
+      "directAlternativeExact": 7,
+      "expandedCandidateExact": 9,
+      "avgCandidateSetSize": 11.6
+    },
+    "held-out": {
+      "count": 10,
+      "quickExact": 1,
+      "quickWithin3": 1,
+      "verifyExact": 2,
+      "fluxExact": 3,
+      "fluxTop3": 6,
+      "octaveEquivalent": 3,
+      "directAlternativeExact": 8,
+      "expandedCandidateExact": 8,
+      "avgCandidateSetSize": 11.7
+    },
+    "trap": {
+      "count": 15,
+      "quickExact": 0,
+      "quickWithin3": 2,
+      "verifyExact": 1,
+      "fluxExact": 1,
+      "fluxTop3": 6,
+      "octaveEquivalent": 4,
+      "directAlternativeExact": 11,
+      "expandedCandidateExact": 11,
+      "avgCandidateSetSize": 11.8
+    },
+    "boom-bap": {
+      "count": 6,
+      "quickExact": 3,
+      "quickWithin3": 3,
+      "verifyExact": 3,
+      "fluxExact": 3,
+      "fluxTop3": 5,
+      "octaveEquivalent": 3,
+      "directAlternativeExact": 4,
+      "expandedCandidateExact": 6,
+      "avgCandidateSetSize": 11.3
+    }
+  },
+  "rows": [
+    {
+      "id": "110bpm_hh_trp_id_01_000180",
+      "group": "trap",
+      "split": "development",
+      "referenceBpm": 110,
+      "quickBpm": 108,
+      "verifyBpm": 56,
+      "fluxBpm": 55,
+      "quickExact": false,
+      "quickClose": true,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": true,
+      "octaveEquivalent": true,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 10,
+      "topAlternativeBpm": [
+        55,
+        110,
+        114,
+        106,
+        207
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 17.528163265306123,
+          "bpm": 56,
+          "score": 0.623
+        }
+      ],
+      "elapsedMs": 116.5
+    },
+    {
+      "id": "115bpm_hh_trp_id_01_000678",
+      "group": "trap",
+      "split": "held-out",
+      "referenceBpm": 115,
+      "quickBpm": 58,
+      "verifyBpm": 58,
+      "fluxBpm": 57,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": true,
+      "octaveEquivalent": true,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        57,
+        115,
+        119,
+        110,
+        207
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 16.770612244897958,
+          "bpm": 58,
+          "score": 0.624
+        }
+      ],
+      "elapsedMs": 53.2
+    },
+    {
+      "id": "122bpm_hh_trp_id_01_002090",
+      "group": "trap",
+      "split": "development",
+      "referenceBpm": 122,
+      "quickBpm": 82,
+      "verifyBpm": 81,
+      "fluxBpm": 61,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": true,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        61,
+        121,
+        125,
+        115,
+        207
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 15.80408163265306,
+          "bpm": 81,
+          "score": 0.672
+        }
+      ],
+      "elapsedMs": 50.3
+    },
+    {
+      "id": "128bpm_hh_trp_id_01_003019",
+      "group": "trap",
+      "split": "held-out",
+      "referenceBpm": 128,
+      "quickBpm": 65,
+      "verifyBpm": 129,
+      "fluxBpm": 127,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": true,
+      "fluxExact": true,
+      "fluxTop3": true,
+      "octaveEquivalent": true,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        127,
+        131,
+        135,
+        139,
+        64
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 15.07265306122449,
+          "bpm": 129,
+          "score": 0.392
+        }
+      ],
+      "elapsedMs": 66.1
+    },
+    {
+      "id": "135bpm_hh_trp_id_01_004513",
+      "group": "trap",
+      "split": "development",
+      "referenceBpm": 135,
+      "quickBpm": 90,
+      "verifyBpm": 90,
+      "fluxBpm": 88,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": false,
+      "directAlternativeExact": false,
+      "expandedCandidateExact": false,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        88,
+        133,
+        137,
+        92,
+        68
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 14.288979591836735,
+          "bpm": 90,
+          "score": 1.864
+        }
+      ],
+      "elapsedMs": 45.6
+    },
+    {
+      "id": "140bpm_hh_trp_id_01_005898",
+      "group": "trap",
+      "split": "held-out",
+      "referenceBpm": 140,
+      "quickBpm": 92,
+      "verifyBpm": 92,
+      "fluxBpm": 91,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": false,
+      "directAlternativeExact": false,
+      "expandedCandidateExact": false,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        91,
+        95,
+        69,
+        56,
+        133
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 13.79265306122449,
+          "bpm": 92,
+          "score": 1.593
+        }
+      ],
+      "elapsedMs": 47.2
+    },
+    {
+      "id": "142bpm_hh_trp_id_01_006363",
+      "group": "trap",
+      "split": "development",
+      "referenceBpm": 142,
+      "quickBpm": 95,
+      "verifyBpm": 95,
+      "fluxBpm": 71,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 11,
+      "topAlternativeBpm": [
+        71,
+        140,
+        144,
+        133,
+        148
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 13.583673469387755,
+          "bpm": 95,
+          "score": 0.743
+        }
+      ],
+      "elapsedMs": 53.9
+    },
+    {
+      "id": "145bpm_hh_trp_id_01_006875",
+      "group": "trap",
+      "split": "held-out",
+      "referenceBpm": 145,
+      "quickBpm": 96,
+      "verifyBpm": 96,
+      "fluxBpm": 94,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        94,
+        59,
+        98,
+        140,
+        144
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 13.296326530612244,
+          "bpm": 96,
+          "score": 1.041
+        }
+      ],
+      "elapsedMs": 45.3
+    },
+    {
+      "id": "148bpm_hh_trp_id_01_007214",
+      "group": "trap",
+      "split": "development",
+      "referenceBpm": 148,
+      "quickBpm": 59,
+      "verifyBpm": 59,
+      "fluxBpm": 98,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": false,
+      "directAlternativeExact": false,
+      "expandedCandidateExact": false,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        98,
+        73,
+        59,
+        94,
+        140
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 13.035102040816327,
+          "bpm": 59,
+          "score": 0.98
+        }
+      ],
+      "elapsedMs": 42.8
+    },
+    {
+      "id": "150bpm_hh_trp_id_01_007953",
+      "group": "trap",
+      "split": "held-out",
+      "referenceBpm": 150,
+      "quickBpm": 100,
+      "verifyBpm": 100,
+      "fluxBpm": 98,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        98,
+        60,
+        102,
+        75,
+        148
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 12.878367346938775,
+          "bpm": 100,
+          "score": 1.953
+        }
+      ],
+      "elapsedMs": 33.6
+    },
+    {
+      "id": "152bpm_hh_trp_id_01_008400",
+      "group": "trap",
+      "split": "development",
+      "referenceBpm": 152,
+      "quickBpm": 150,
+      "verifyBpm": 150,
+      "fluxBpm": 98,
+      "quickExact": false,
+      "quickClose": true,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": true,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 14,
+      "topAlternativeBpm": [
+        98,
+        61,
+        148,
+        152,
+        156
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 12.695510204081632,
+          "bpm": 150,
+          "score": 1.1
+        }
+      ],
+      "elapsedMs": 40.2
+    },
+    {
+      "id": "155bpm_hh_trp_id_01_008570",
+      "group": "trap",
+      "split": "held-out",
+      "referenceBpm": 155,
+      "quickBpm": 104,
+      "verifyBpm": 104,
+      "fluxBpm": 102,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": false,
+      "directAlternativeExact": false,
+      "expandedCandidateExact": false,
+      "totalHypotheses": 11,
+      "topAlternativeBpm": [
+        102,
+        78,
+        61,
+        98,
+        106
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 12.460408163265306,
+          "bpm": 104,
+          "score": 1.579
+        }
+      ],
+      "elapsedMs": 46
+    },
+    {
+      "id": "158bpm_hh_trp_id_01_009305",
+      "group": "trap",
+      "split": "development",
+      "referenceBpm": 158,
+      "quickBpm": 103,
+      "verifyBpm": 103,
+      "fluxBpm": 78,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": true,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 11,
+      "topAlternativeBpm": [
+        78,
+        157,
+        161,
+        165,
+        82
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 12.225306122448979,
+          "bpm": 103,
+          "score": 0.454
+        }
+      ],
+      "elapsedMs": 32.1
+    },
+    {
+      "id": "162bpm_hh_trp_id_01_009977",
+      "group": "trap",
+      "split": "held-out",
+      "referenceBpm": 162,
+      "quickBpm": 108,
+      "verifyBpm": 108,
+      "fluxBpm": 106,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": true,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        106,
+        157,
+        161,
+        165,
+        80
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 11.911836734693878,
+          "bpm": 108,
+          "score": 1.221
+        }
+      ],
+      "elapsedMs": 37.9
+    },
+    {
+      "id": "165bpm_hh_trp_id_01_010639",
+      "group": "trap",
+      "split": "development",
+      "referenceBpm": 165,
+      "quickBpm": 159,
+      "verifyBpm": 159,
+      "fluxBpm": 55,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        55,
+        157,
+        161,
+        165,
+        83
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 11.702857142857143,
+          "bpm": 159,
+          "score": 0.81
+        }
+      ],
+      "elapsedMs": 38.2
+    },
+    {
+      "id": "79bpm_hh_lfbb_mid_012_15",
+      "group": "boom-bap",
+      "split": "development",
+      "referenceBpm": 79,
+      "quickBpm": 95,
+      "verifyBpm": 95,
+      "fluxBpm": 78,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": true,
+      "fluxTop3": true,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 9,
+      "topAlternativeBpm": [
+        78,
+        82,
+        94,
+        157,
+        161
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 24,
+          "bpm": 95,
+          "score": 0.646
+        }
+      ],
+      "elapsedMs": 61.5
+    },
+    {
+      "id": "79bpm_hh_lfbb_mid_012_16",
+      "group": "boom-bap",
+      "split": "held-out",
+      "referenceBpm": 79,
+      "quickBpm": 80,
+      "verifyBpm": 80,
+      "fluxBpm": 78,
+      "quickExact": true,
+      "quickClose": true,
+      "verifyExact": true,
+      "fluxExact": true,
+      "fluxTop3": true,
+      "octaveEquivalent": true,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 10,
+      "topAlternativeBpm": [
+        78,
+        148,
+        152,
+        156,
+        160
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 24,
+          "bpm": 80,
+          "score": 0.624
+        }
+      ],
+      "elapsedMs": 62.9
+    },
+    {
+      "id": "80bpm_hh_lfbb_mid_010_06",
+      "group": "boom-bap",
+      "split": "development",
+      "referenceBpm": 80,
+      "quickBpm": 80,
+      "verifyBpm": 80,
+      "fluxBpm": 106,
+      "quickExact": true,
+      "quickClose": true,
+      "verifyExact": true,
+      "fluxExact": false,
+      "fluxTop3": true,
+      "octaveEquivalent": true,
+      "directAlternativeExact": false,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        106,
+        80,
+        64,
+        102,
+        110
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 24,
+          "bpm": 80,
+          "score": 1.81
+        }
+      ],
+      "elapsedMs": 63
+    },
+    {
+      "id": "81bpm_hh_lfbb_mid_006_07",
+      "group": "boom-bap",
+      "split": "held-out",
+      "referenceBpm": 81,
+      "quickBpm": 159,
+      "verifyBpm": 117,
+      "fluxBpm": 80,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": true,
+      "fluxTop3": true,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        80,
+        157,
+        161,
+        165,
+        84
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 17.841632653061225,
+          "bpm": 117,
+          "score": 0.532
+        }
+      ],
+      "elapsedMs": 47.7
+    },
+    {
+      "id": "81bpm_hh_lfbb_mid_011_03",
+      "group": "boom-bap",
+      "split": "development",
+      "referenceBpm": 81,
+      "quickBpm": 80,
+      "verifyBpm": 80,
+      "fluxBpm": 64,
+      "quickExact": true,
+      "quickClose": true,
+      "verifyExact": true,
+      "fluxExact": false,
+      "fluxTop3": false,
+      "octaveEquivalent": true,
+      "directAlternativeExact": false,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 13,
+      "topAlternativeBpm": [
+        64,
+        106,
+        148,
+        152,
+        156
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 23.771428571428572,
+          "bpm": 80,
+          "score": 0.385
+        }
+      ],
+      "elapsedMs": 62.8
+    },
+    {
+      "id": "81bpm_hh_lfbb_mid_012_02",
+      "group": "boom-bap",
+      "split": "held-out",
+      "referenceBpm": 81,
+      "quickBpm": 107,
+      "verifyBpm": 107,
+      "fluxBpm": 106,
+      "quickExact": false,
+      "quickClose": false,
+      "verifyExact": false,
+      "fluxExact": false,
+      "fluxTop3": true,
+      "octaveEquivalent": false,
+      "directAlternativeExact": true,
+      "expandedCandidateExact": true,
+      "totalHypotheses": 12,
+      "topAlternativeBpm": [
+        106,
+        80,
+        64,
+        84,
+        102
+      ],
+      "tempoSections": [
+        {
+          "start": 0,
+          "end": 23.771428571428572,
+          "bpm": 107,
+          "score": 1.08
+        }
+      ],
+      "elapsedMs": 63.1
+    }
+  ]
+}
