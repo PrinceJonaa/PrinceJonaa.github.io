@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .node-version
       - name: Parse Site-99 modules
         run: |
           for file in records/jona-52/*.js; do node --check "$file"; done
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v7
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .node-version
       - name: Install Chromium test runtime
         run: |
           npm install --no-save --no-package-lock playwright@1.58.2

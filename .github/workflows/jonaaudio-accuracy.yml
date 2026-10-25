@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .node-version
       - name: Test correctness, fallback and private WAV decoder
         run: node --test JonaAudio/tests/harmonic-key.test.mjs JonaAudio/tests/benchmark-local.test.mjs JonaAudio/tests/readiness.test.mjs JonaAudio/tests/tempo-crosscheck.test.mjs JonaAudio/tests/bass-evidence.test.mjs JonaAudio/tests/tempo-midi.test.mjs JonaAudio/tests/labeled-scoring.test.mjs
       - name: Validate optional local reference-engine Python script syntax
@@ -24,7 +24,7 @@ jobs:
         run: node JonaAudio/bench/compare.mjs /tmp/jonaaudio-synthetic.json
       - name: Preserve metric report only (not source audio)
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: jonaaudio-synthetic-metrics
           path: /tmp/jonaaudio-synthetic.json

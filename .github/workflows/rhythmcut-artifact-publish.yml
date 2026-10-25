@@ -37,7 +37,7 @@ jobs:
           persist-credentials: true
       - uses: actions/setup-node@v7
         with:
-          node-version: '22'
+          node-version-file: .node-version
       - name: Download and validate Vercel production archive before changing Pages
         run: node scripts/publish-rhythmcut-artifact.mjs
       - name: Verify public catalog and route invariants against staged release
