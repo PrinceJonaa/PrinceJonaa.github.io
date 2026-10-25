@@ -52,7 +52,7 @@ jobs:
           PY
       - name: Preserve real legal audio and metrics as downloadable artifact
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: JonaAudio-GuitarSet-CCBY-8-real-songs-and-benchmark
           path: JonaAudio/bench/fixtures/GuitarSet/
