@@ -10,6 +10,7 @@ def main():
   print('ZIP paths first 30',[(x.filename,x.file_size) for x in members[:30]],flush=True)
   meta=[m for m in members if m.filename.lower().endswith(('.csv','.json','.md','.txt')) and m.file_size<300000]
   print('Metadata paths',[(m.filename,m.file_size) for m in meta[:25]],flush=True)
+  print('Source dataset README:',archive.read('README.txt').decode('utf-8-sig','replace')[:6500],flush=True)
   for member in meta[:5]:
    data=archive.read(member.filename)
    print('METADATA EXCERPT',member.filename,data[:2000].decode('utf-8-sig','replace'),flush=True)
