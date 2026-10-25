@@ -1,0 +1,55 @@
+name: JonaAudio real-audio regression (licensed GuitarSet)
+on:
+  pull_request:
+    paths:
+      - 'JonaAudio/**'
+      - '.github/workflows/jonaaudio-guitarset-regression.yml'
+      - '.node-version'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  real-source-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+      - name: Install offline decoder for already committed CC BY audio
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Verify fusion, original DSP safety, and fractional pulse candidates
+        run: |
+          node --test JonaAudio/tests/real-benchmark-candidates.test.mjs
+          node --test JonaAudio/tests/harmonic-key.test.mjs JonaAudio/tests/tempo-crosscheck.test.mjs
+      - name: Benchmark eight real published-key, published-tempo performances
+        run: node JonaAudio/bench/run-guitarset.mjs JonaAudio/bench/fixtures/GuitarSet
+      - name: Assert baseline does not regress; report experimental results separately
+        run: |
+          python3 - <<'PY'
+          import json
+          p='JonaAudio/bench/fixtures/GuitarSet/benchmark-results.json'
+          r=json.load(open(p))
+          assert r['sampleCount']==8
+          scores={m['method']:m for m in r['aggregates']}
+          for method in ['JonaAudio Quick','JonaAudio Verify','Spectral Peaks','Spectral Flux',
+                         'Fused key (review only)','Fractional pulse (review only)']:
+              assert method in scores, 'Missing real-source benchmark method '+method
+          assert scores['JonaAudio Quick']['exactKeys']>=4, 'Original Quick key regression'
+          assert scores['JonaAudio Verify']['exactKeys']>=3, 'Original Verify key regression'
+          assert scores['JonaAudio Quick']['bpmWithinOne']>=1, 'Original Quick BPM regression'
+          print('Real GuitarSet eight-track benchmark:')
+          for m in r['aggregates']:
+              print(m['method'],m['exactKeys'],'/',m['keyCount'],'exact key',
+                    m['scaleCompatible'],'/',m['keyCount'],'compatible notes',
+                    m['bpmWithinOne'],'/',m['tempoCount'],'BPM±1')
+          print('Scores on eight acoustic-guitar excerpts must not be marketed as production-population accuracy.')
+          PY
+      - name: Save real-music numeric result, without modifying reference clips or labels
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: JonaAudio-GuitarSet-CandidateComparison
+          path: JonaAudio/bench/fixtures/GuitarSet/benchmark-results.json
+          if-no-files-found: warn
