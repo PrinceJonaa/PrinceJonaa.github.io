@@ -1,0 +1,45 @@
+name: Website npm dependency audit
+on:
+  pull_request:
+    branches: [main]
+    paths: ['package.json', 'package-lock.json', '.github/workflows/npm-dependencies.yml', '.node-version']
+  push:
+    branches: [main]
+    paths: ['package.json', 'package-lock.json', '.github/workflows/npm-dependencies.yml', '.node-version']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audited-install:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .node-version
+          cache: npm
+      - name: Generate a reviewable lockfile during the bootstrap PR only
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ ! -f package-lock.json ]; then
+            npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+            echo "BOOTSTRAP_LOCKFILE_BEGIN"
+            node -e "const b=require('fs').readFileSync('package-lock.json').toString('base64');for(const part of b.match(/.{1,120}/g)||[])console.log('LOCKPART='+part)"
+            echo "BOOTSTRAP_LOCKFILE_END"
+          fi
+      - name: Reproduce dependency graph
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Validate dependency and peer resolution
+        run: npm ls --all
+      - name: Reject high or critical known vulnerabilities
+        run: npm audit --audit-level=high
+      - name: Report future package updates without auto-applying breaking changes
+        shell: bash
+        run: |
+          npm outdated || test "$?" -eq 1
+      - name: Verify Playwright and PGlite modules load
+        run: |
+          npx playwright --version
+          node --input-type=module -e "import {PGlite} from '@electric-sql/pglite'; console.log('PGlite module loaded:',typeof PGlite)"
