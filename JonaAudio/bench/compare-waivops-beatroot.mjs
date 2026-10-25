@@ -12,16 +12,20 @@ const packagePath=process.env.BEATROOT_PACKAGE||'music-tempo';
 const MusicTempo=require(packagePath);
 const root='JonaAudio/bench/fixtures/WaivOps';
 const m=JSON.parse(readFileSync(join(root,'manifest.json'),'utf8'));
+const sampleRate=Number(process.env.BEATROOT_SAMPLE_RATE||44100);
+if(![44100,11025].includes(sampleRate))throw Error('Unsupported comparator sample rate');
+const fftSize=sampleRate===44100?2048:512;
+const hopSize=sampleRate===44100?441:110;
 const work=mkdtempSync(join(tmpdir(),'jona-musictempo-')),rows=[];
 try{
  for(const [i,track] of m.tracks.entries()){
   const path=join(work,i+'.wav');
   const p=spawnSync('ffmpeg',['-nostdin','-hide_banner','-loglevel','error','-y','-i',join(root,track.file),
-    '-ac','1','-ar','44100','-c:a','pcm_s16le',path],{encoding:'utf8',timeout:45000});
+    '-ac','1','-ar',String(sampleRate),'-c:a','pcm_s16le',path],{encoding:'utf8',timeout:45000});
   if(p.status!==0)throw Error(String(p.stderr||p.error));
   const audio=decodeLocalWav(path);
   const mt=new MusicTempo(audio.getChannelData(0),{
-    bufferSize:2048,hopSize:441,timeStep:.01,
+    bufferSize:fftSize,hopSize,timeStep:hopSize/sampleRate,
     minBeatInterval:60/210,maxBeatInterval:60/55
   });
   const parsed=Number(mt.tempo); // Upstream BeatRoot serializes BPM with toFixed() to a string.
@@ -39,7 +43,7 @@ for(const split of ['all','development','held-out']){
  stats[split]={count:xs.length,withinOne:xs.filter(x=>x.within1).length,withinThree:xs.filter(x=>x.within3).length};
 }
 const obj={schema:1,reference:'Original WaivOps CC BY source BPM annotations',engine:'music-tempo@1.0.3 (BeatRoot), MIT licensed',
- config:'44.1kHz mono, FFT2048 hop441, IBI bounds 55–210 BPM',
+ config:sampleRate+'Hz mono, FFT'+fftSize+' hop'+hopSize+', IBI bounds 55–210 BPM',
  disclaimer:'One independently tested method; evaluate held-out not just development before integration',
  stats,rows};
 writeFileSync(join(root,'music-tempo-results.json'),JSON.stringify(obj,null,2)+'\n');
