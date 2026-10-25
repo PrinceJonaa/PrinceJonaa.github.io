@@ -24,6 +24,19 @@ function wav(seconds=5,rate=44100,tempo=120){
   await page.locator('#files').setInputFiles([{name:'M6 Artist.wav',mimeType:'audio/wav',buffer:a},{name:'M6 Reference.wav',mimeType:'audio/wav',buffer:b}]);
   await page.waitForFunction(()=>window.JonaAudioBridge.list().length===2,null,{timeout:15000});
   await page.waitForFunction(()=>window.JonaAudioBridge.list().every(t=>t.analysis?.['track:key']?.status==='ready'||t.analysis?.['track:key']?.status==='unavailable'),null,{timeout:60000});
+  // P2: Quick never disguises the heuristic result as verified, and the selected
+  // source can be rechecked without changing the primary key recommendation.
+  const initialKey=await page.evaluate(()=>window.JonaAudioBridge.list()[0].scopeResult?.keys?.[0]?.key||null);
+  assert.ok(await page.locator('#copy-tuning').isEnabled(),'Tuning reference available for a detected key');
+  assert.match(await page.locator('#key-alt').innerText(),/Unverified estimate|Selected key/);
+  await page.locator('#mode').selectOption('verify');
+  await page.evaluate(()=>window.JonaAudioBridge.requestAnalysis(['key'],{force:true}));
+  await page.waitForFunction(()=>['agreement','disagreement','unavailable'].includes(window.JonaAudioBridge.list()[0]?.scopeResult?.keyComparison?.status),null,{timeout:60000});
+  const checked=await page.evaluate(()=>window.JonaAudioBridge.list()[0].scopeResult);
+  assert.equal(checked.keys[0].key,initialKey,'Secondary engine must not override legacy key');
+  assert.ok(checked.peakEvidence?.method,'Verify attaches secondary method provenance');
+  assert.equal(await page.locator('#copy-tuning').isEnabled(),true);
+
   await page.locator('[data-route=studio]').click();await page.locator('[data-tool=engineer]').click();
   await page.getByRole('button',{name:'Analyze levels'}).click();
   await page.waitForFunction(()=>!!window.JonaAudioBridge.list()[0].result?.quality,null,{timeout:30000});
