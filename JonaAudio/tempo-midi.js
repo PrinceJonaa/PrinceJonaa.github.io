@@ -8,7 +8,7 @@ export function makeTempoMidi(bpm,{numerator=4,denominator=4,ppq=480}={}){
  if(!Number.isInteger(ppq)||ppq<24||ppq>32767)throw Error('Invalid MIDI ticks-per-quarter');
  const micros=Math.round(60000000/bpm);
  const track=[
-  0x00,0xff,0x03,0x10,...new TextEncoder().encode('JonaAudio tempo'),
+  0x00,0xff,0x03,0x0f,...new TextEncoder().encode('JonaAudio tempo'),
   0x00,0xff,0x51,0x03,(micros>>16)&255,(micros>>8)&255,micros&255,
   0x00,0xff,0x58,0x04,numerator,Math.log2(denominator),24,8,
   0x00,0xff,0x2f,0x00
