@@ -203,8 +203,14 @@ function refreshMusical(current){
   .map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · extra pulse'}));
  const metrical=(reviewPulse?.metricalAlternatives||[]).slice(0,5)
   .map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · '+x.relationship}));
- const candidateKeys=(result?.keys||[]).slice(0,4).map(x=>({field:'key',value:x.key,text:x.key+' · estimated key'}));
- const choices=[...beatCandidates,...measured,...direct,...metrical,...candidateKeys].filter((value,index,array)=>
+ const savedQuick=result?.quickKeyEvidence;
+ const scopeRevision=current.analysisScopeId?
+  (current.regions||[]).find(r=>r.id===current.analysisScopeId)?.regionRevision??0:0;
+ const quickKeyChoices=savedQuick?.key&&savedQuick.sourceRevision===current.sourceRevision&&
+   savedQuick.scopeRevision===scopeRevision?
+  [{field:'key',value:savedQuick.key,text:savedQuick.key+' · Quick key (retained)'}]:[];
+ const candidateKeys=(result?.keys||[]).slice(0,4).map(x=>({field:'key',value:x.key,text:x.key+' · Deep key candidate'}));
+ const choices=[...beatCandidates,...measured,...direct,...metrical,...quickKeyChoices,...candidateKeys].filter((value,index,array)=>
   index===array.findIndex(other=>other.field===value.field&&Math.abs(value.field==='bpm'?other.value-value.value:0)<.75&&
    (value.field==='bpm'||other.value===value.value)));
  for(const c of choices)quickCandidates.append(button(c.text,()=>bridge.setOverride(c.field,c.value,'candidate-choice'),'candidate'));
