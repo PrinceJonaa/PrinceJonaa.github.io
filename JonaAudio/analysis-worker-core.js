@@ -2,6 +2,7 @@ import {detectTempo,computeChroma,rankKeys,computeSpectrogram,computeQuality,ons
 import {ENGINE_VERSION} from './config.js';
 import {resample} from './resample.js';
 import {analyzePeakKey,compareKeyFamilies,PEAK_ENGINE_VERSION} from './harmonic-key.js';
+import {spectralFluxCandidates,compareTempoFamilies,FLUX_TEMPO_VERSION} from './tempo-crosscheck.js';
 export {resample} from './resample.js';
 import {prepareRegion} from './sample-dsp.js';
 import {rankCandidates} from './sample-candidates.js';
@@ -28,7 +29,25 @@ export function analyzeCapability(capability,input){
   const alternatives=[...scores].map(([bpm,score])=>({bpm,score:score/windows.length})).sort((a,b)=>b.score-a.score||a.bpm-b.bpm).slice(0,5);
   const bpm=alternatives[0]?.score>.04?alternatives[0].bpm:null,readings=sections.map(s=>s.bpm).filter(Number.isFinite);
   const variable=readings.some(v=>bpm&&Math.min(Math.abs(v-bpm),Math.abs(v*2-bpm),Math.abs(v/2-bpm))>4);
-  return {type:bpm?'result':'unavailable',reason:bpm?null:'No steady tempo found. Try tap tempo or a manual BPM.',result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,rangePreference:'none',thresholds:{pulseToRms:.005,aggregateAutocorrelation:.04}},ranges,diagnostics};
+  // A different onset representation is evaluated only in Verify mode. Do not
+  // silently change the BPM, beat markers, or an artist's manually confirmed grid.
+  let fluxEvidence=null,tempoComparison=null;
+  if(input.analysisMode==='verify'){
+   const measured=windows.map(w=>({start:w.start,end:w.end,...spectralFluxCandidates(w.samples,w.sampleRate)}));
+   const weighted=new Map();
+   for(const m of measured)if(m.status==='experimental')
+    for(const c of m.candidates)weighted.set(c.bpm,(weighted.get(c.bpm)||0)+c.score);
+   const ranked=[...weighted].map(([pulse,score])=>({bpm:pulse,score:+(score/windows.length).toFixed(4)}))
+    .sort((a,b)=>b.score-a.score||a.bpm-b.bpm);
+   const candidates=[];
+   for(const c of ranked){if(!candidates.some(prev=>Math.abs(prev.bpm-c.bpm)<4))candidates.push(c);if(candidates.length===6)break;}
+   fluxEvidence={method:FLUX_TEMPO_VERSION,candidates,scores:'uncalibrated',
+    sections:measured.map(({start,end,status,candidates})=>({start,end,status,candidates:candidates.slice(0,3)}))};
+   tempoComparison=compareTempoFamilies({bpm},fluxEvidence);
+  }
+  return {type:bpm?'result':'unavailable',reason:bpm?null:'No steady tempo found. Try tap tempo or a manual BPM.',
+    result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,fluxEvidence,tempoComparison,
+      rangePreference:'none',thresholds:{pulseToRms:.005,aggregateAutocorrelation:.04}},ranges,diagnostics};
  }
  if(capability==='key'){
   const vectors=[],evidence=[];
