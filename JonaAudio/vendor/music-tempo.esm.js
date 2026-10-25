@@ -645,8 +645,8 @@
      * @param {Number} tempo - tempo hypothesis of the Agent
      * @param {Number} firstBeatTime - the time of the first beat accepted by this Agent
      * @param {Number} firsteventScore - salience value of the first beat accepted by this Agent
-     * @param {Array} agentList - reference to the agent list 
-     * @param {Object} [params={}] - parameters     
+     * @param {Array} agentList - reference to the agent list
+     * @param {Object} [params={}] - parameters
      * @param {Number} [params.expiryTime=10] - the time after which an Agent that has not accepted any beat will be destroyed
      * @param {Number} [params.toleranceWndInner=0.04] - the maximum time that a beat can deviate from the predicted beat time without a fork occurring
      * @param {Number} [params.toleranceWndPre=0.15] - the maximum amount by which a beat can be earlier than the predicted beat time, expressed as a fraction of the beat period
@@ -660,79 +660,79 @@
 
       _classCallCheck(this, Agent);
 
-      /** 
+      /**
        * the time after which an Agent that has not accepted any beat will be destroyed
-       * @type {Number} 
+       * @type {Number}
        */
       this.expiryTime = params.expiryTime || 10;
-      /** 
+      /**
        * the maximum time that a beat can deviate from the predicted beat time without a fork occurring
-       * @type {Number} 
+       * @type {Number}
        */
       this.toleranceWndInner = params.toleranceWndInner || 0.04;
-      /** 
+      /**
        * the maximum amount by which a beat can be earlier than the predicted beat time, expressed as a fraction of the beat period
-       * @type {Number} 
+       * @type {Number}
        */
       this.toleranceWndPre = params.toleranceWndPre || 0.15;
-      /** 
+      /**
        * the maximum amount by which a beat can be later than the predicted beat time, expressed as a fraction of the beat period
-       * @type {Number} 
+       * @type {Number}
        */
       this.toleranceWndPost = params.toleranceWndPost || 0.3;
 
       this.toleranceWndPre *= tempo;
       this.toleranceWndPost *= tempo;
 
-      /** 
+      /**
        * correction factor for updating beat period
-       * @type {Number} 
+       * @type {Number}
        */
       this.correctionFactor = params.correctionFactor || 50;
-      /** 
+      /**
        * the maximum allowed deviation from the initial tempo, expressed as a fraction of the initial beat period
-       * @type {Number} 
+       * @type {Number}
        */
       this.maxChange = params.maxChange || 0.2;
-      /** 
+      /**
        * factor for correcting score, if onset do not coincide precisely with predicted beat time
-       * @type {Number} 
+       * @type {Number}
        */
       this.penaltyFactor = params.penaltyFactor || 0.5;
 
-      /** 
+      /**
        * the current tempo hypothesis of the Agent, expressed as the beat period
-       * @type {Number} 
+       * @type {Number}
        */
       this.beatInterval = tempo;
-      /** 
+      /**
        * the initial tempo hypothesis of the Agent, expressed as the beat period
        * @type {Number}
        */
       this.initialBeatInterval = tempo;
-      /** 
+      /**
        * the time of the most recent beat accepted by this Agent
-       * @type {Number} 
+       * @type {Number}
        */
       this.beatTime = firstBeatTime;
-      /** 
+      /**
        * the number of beats found by this Agent, including interpolated beats
-       * @type {Number} 
+       * @type {Number}
        */
       this.totalBeatCount = 1;
-      /** 
+      /**
        * the array of onsets accepted by this Agent as beats, plus interpolated beats
-       * @type {Array} 
+       * @type {Array}
        */
       this.events = [firstBeatTime];
-      /** 
+      /**
        * sum of salience values of the onsets which have been interpreted as beats by this Agent
-       * @type {Number} 
+       * @type {Number}
        */
       this.score = firsteventScore;
-      /** 
-       * reference to the agent list 
-       * @type {Array} 
+      /**
+       * reference to the agent list
+       * @type {Array}
        */
       this.agentListRef = agentList;
     }
@@ -1100,7 +1100,7 @@
             var len = toLength(items.length);
 
             // 13. If IsConstructor(C) is true, then
-            // 13. a. Let A be the result of calling the [[Construct]] internal method 
+            // 13. a. Let A be the result of calling the [[Construct]] internal method
             // of C with an argument list containing the single item len.
             // 14. a. Else, Let A be ArrayCreate(len).
             var A = isCallable(C) ? Object(new C(len)) : new Array(len);
@@ -1131,20 +1131,20 @@
     }
     var timeStep = params.timeStep || 0.01;
     var res = _OnsetDetection2.default.calculateSF(audioData, _FFT2.default, params);
-    /** 
+    /**
      * Spectral flux
-     * @type {Array} 
+     * @type {Array}
      */
     this.spectralFlux = res;
     _OnsetDetection2.default.normalize(this.spectralFlux);
-    /** 
+    /**
      * Spectral flux peaks indexes
-     * @type {Array} 
+     * @type {Array}
      */
     this.peaks = _OnsetDetection2.default.findPeaks(this.spectralFlux, params);
-    /** 
+    /**
      * Onsets times array
-     * @type {Array} 
+     * @type {Array}
      */
     this.events = this.peaks.map(function (a) {
       return a * timeStep;
@@ -1159,9 +1159,9 @@
       clScores: scores.clScores,
       clScoresIdxs: scores.clScoresIdxs
     };
-    /** 
+    /**
      * Tempo hypotheses array
-     * @type {Array} 
+     * @type {Array}
      */
     this.tempoList = _TempoInduction2.default.createTempoList(clusters, params);
 
@@ -1171,27 +1171,27 @@
     var eventsScores = this.peaks.map(function (a) {
       return _this.spectralFlux[a] - minSFValue;
     });
-    /** 
+    /**
      * Agents array
-     * @type {Array} 
+     * @type {Array}
      */
     this.agents = _BeatTracking2.default.trackBeat(this.events, eventsScores, this.tempoList, params);
 
     var bestScore = -1;
     var idxBestAgent = -1;
-    /** 
+    /**
      * The tempo value in beats per minute
-     * @type {Number} 
+     * @type {Number}
      */
     this.tempo = -1;
-    /** 
+    /**
      * Beat times array
-     * @type {Array} 
+     * @type {Array}
      */
     this.beats = [];
-    /** 
+    /**
      * Inter-beat interval
-     * @type {Number} 
+     * @type {Number}
      */
     this.beatInterval = -1;
 
@@ -1202,9 +1202,9 @@
       }
     }
     if (this.agents[idxBestAgent]) {
-      /** 
+      /**
        * The agent with the highest score
-       * @type {Agent} 
+       * @type {Agent}
        */
       this.bestAgent = this.agents[idxBestAgent];
       this.bestAgent.fillBeats();
