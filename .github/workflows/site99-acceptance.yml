@@ -1,0 +1,46 @@
+name: Site-99 archive acceptance
+on:
+  pull_request:
+    branches: [main]
+    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml']
+  push:
+    branches: [main]
+    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Parse Site-99 modules
+        run: |
+          for file in records/jona-52/*.js; do node --check "$file"; done
+      - name: Verify evidence links, custody, and narrative state
+        run: node records/jona-52/tests/m1-m2.smoke.mjs
+  browser:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Install Chromium test runtime
+        run: |
+          npm install --no-save --no-package-lock playwright@1.58.2
+          npx playwright install --with-deps chromium
+      - name: Test Site-99 interactive routes and notebook at mobile sizes
+        run: node records/jona-52/tests/browser.cjs
+      - name: Preserve screenshot on error
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: site99-browser-diagnostics
+          path: /tmp/site99-failure.png
+          if-no-files-found: ignore

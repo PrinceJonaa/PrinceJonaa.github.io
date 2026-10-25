@@ -6,11 +6,15 @@ on:
       - 'scripts/publish-rhythmcut-artifact.mjs'
       - '.github/workflows/rhythmcut-artifact-publish.yml'
       - 'tests/catalog.test.mjs'
+      - 'tests/live-release.test.mjs'
+      - 'scripts/verify-rhythmcut-live.mjs'
   push:
     branches: [main]
     paths:
       - 'scripts/publish-rhythmcut-artifact.mjs'
       - '.github/workflows/rhythmcut-artifact-publish.yml'
+      - 'scripts/verify-rhythmcut-live.mjs'
+      - 'tests/live-release.test.mjs'
   schedule:
     - cron: '11,26,41,56 * * * *'
   workflow_dispatch:
@@ -37,7 +41,7 @@ jobs:
       - name: Download and validate Vercel production archive before changing Pages
         run: node scripts/publish-rhythmcut-artifact.mjs
       - name: Verify public catalog and route invariants against staged release
-        run: node --test tests/catalog.test.mjs
+        run: node --test tests/catalog.test.mjs tests/live-release.test.mjs
       - name: Commit only approved RhythmCut site files and evidence
         if: github.event_name != 'pull_request'
         id: publish
@@ -70,3 +74,9 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/builds" \
             -o /tmp/pages-build.json
           cat /tmp/pages-build.json
+      - name: Verify that princejona.me serves the same static release and assets
+        if: github.event_name != 'pull_request'
+        timeout-minutes: 12
+        env:
+          LIVE_VERIFY_MAX_WAIT_MS: '480000'
+        run: node scripts/verify-rhythmcut-live.mjs
