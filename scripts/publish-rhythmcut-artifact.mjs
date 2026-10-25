@@ -102,7 +102,8 @@ try {
   };
   patchField('sourceCommit', release.commit);
   patchField('builtArtifactCommit', release.commit);
-  patchField('servedDeploymentId', release.commit);
+  // A source commit is not a verified Pages deployment identifier.
+  entry = entry.replace(/servedDeploymentId:(?:'[^']*'|null)/, 'servedDeploymentId:null');
   patchField('releaseVersion', release.version);
   patchField('builtAt', built.builtAt || '');
   patchField('lastKnownIssue', 'Pages publication awaiting independent live acceptance; physical iPhone performance is not certified.');
