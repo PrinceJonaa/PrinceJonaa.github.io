@@ -1,6 +1,7 @@
 import {detectTempo,computeChroma,rankKeys,computeSpectrogram,computeQuality,onsetCurve} from './engine.js';
 import {ENGINE_VERSION} from './config.js';
 import {resample} from './resample.js';
+import {analyzePeakKey,compareKeyFamilies,PEAK_ENGINE_VERSION} from './harmonic-key.js';
 export {resample} from './resample.js';
 import {prepareRegion} from './sample-dsp.js';
 import {rankCandidates} from './sample-candidates.js';
@@ -38,7 +39,24 @@ export function analyzeCapability(capability,input){
   if(!vectors.length)return {type:'unavailable',reason:'No usable tonal estimate. Choose a key manually; percussive or very short audio may not establish one.',result:{keys:[],chroma:null,evidence},ranges,diagnostics};
   const chroma=Array.from({length:12},(_,i)=>vectors.reduce((sum,v)=>sum+v[i],0)/vectors.length),keys=rankKeys(chroma).slice(0,5);
   const disagreement=new Set(evidence.flatMap(e=>e.keys.length?[e.keys[0].key]:[])).size>1,ambiguous=(keys[0].score-keys[1].score)<.025||disagreement;
-  return {type:'result',result:{keys,chroma,evidence,ambiguous,disagreement,thresholds:{tonalContrast:.12,closeSimilarityGap:.025}},ranges,diagnostics};
+  // Verify computes a SECOND, bounded spectral-peak profile. Quick remains baseline speed.
+  // Both profiles share FFT and key templates; agreement is not independent validation.
+  let peakEvidence=null,keyComparison=null;
+  if(input.analysisMode==='verify'){
+   const peaks=windows.map(w=>({start:w.start,end:w.end,...analyzePeakKey(w.samples,w.sampleRate,[{start:0,end:w.samples.length/w.sampleRate}],{maxFrames:24})}));
+   const usable=peaks.filter(p=>p.status!=='unavailable');
+   if(usable.length){
+    const frames=usable.reduce((acc,p)=>acc+p.frames,0);
+    const profile=Array.from({length:12},(_,pc)=>usable.reduce((acc,p)=>acc+p.chroma[pc]*p.frames,0)/frames);
+    peakEvidence={keys:rankKeys(profile).slice(0,5),chroma:profile,
+     sections:peaks.map(({start,end,keys,status,reason,tuningCents,activePitchClasses,frames})=>({start,end,keys:keys.slice(0,2),status,reason,tuningCents,activePitchClasses,frames})),
+     method:PEAK_ENGINE_VERSION,scores:'uncalibrated'};
+   }else peakEvidence={keys:[],chroma:null,sections:peaks.map(({start,end,status,reason})=>({start,end,status,reason})),method:PEAK_ENGINE_VERSION};
+   keyComparison=compareKeyFamilies(keys,peakEvidence);
+  }
+  return {type:'result',result:{keys,chroma,evidence,ambiguous,disagreement,peakEvidence,keyComparison,
+   thresholds:{tonalContrast:.12,closeSimilarityGap:.025}},ranges,
+   diagnostics:{...diagnostics,verification:input.analysisMode==='verify'?'bounded spectral-peak cross-check (experimental)':'baseline quick'}};
  }
  if(capability==='spectrum'){
   const w=windows[0];if(w.samples.length<2048)return {type:'unavailable',reason:'This range is too short for the spectrum window.',ranges,diagnostics};
