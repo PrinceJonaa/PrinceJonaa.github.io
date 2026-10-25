@@ -1,0 +1,22 @@
+{
+  "name": "princejona-website-ci",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Development-only browser and database test dependencies for princejona.me (production is static)",
+  "scripts": {
+    "test:unit": "node --test tests/*.test.mjs JonaAudio/tests/*.test.mjs",
+    "test:universe": "node tests/universe-browser.cjs",
+    "test:jonaaudio:browser": "node JonaAudio/tests/m6-browser.cjs",
+    "test:site99:browser": "node records/jona-52/tests/browser.cjs",
+    "test:inquiry:db": "node tests/inquiry-db.cjs",
+    "check:deps": "npm ls --all && npm audit --audit-level=high",
+    "check:versions": "npm outdated"
+  },
+  "engines": {
+    "node": ">=24.22.1 <25"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "0.5.11",
+    "playwright": "1.64.1"
+  }
+}

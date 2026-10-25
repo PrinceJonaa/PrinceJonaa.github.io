@@ -2,9 +2,9 @@ name: JonaAudio M6 regression
 on:
   push:
     branches: [main, feat/jonaaudio-m1]
-    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml', '.node-version']
+    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml', '.node-version', 'package.json', 'package-lock.json']
   pull_request:
-    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml', '.node-version']
+    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml', '.node-version', 'package.json', 'package-lock.json']
   workflow_dispatch:
 permissions:
   contents: read
@@ -38,7 +38,7 @@ jobs:
           node-version-file: .node-version
       - name: Install browser test runtime
         run: |
-          npm install --no-save --no-package-lock playwright@1.58.2
+          npm ci --ignore-scripts --no-audit --no-fund
           npx playwright install --with-deps chromium
       - name: Run local browser smoke
         run: |
