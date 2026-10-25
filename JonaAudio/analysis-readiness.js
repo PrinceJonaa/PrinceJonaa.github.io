@@ -52,6 +52,8 @@ export function describeKeyReadiness(result, values = {}) {
   if (state.reasonCodes.includes('PROFILE_TONIC_CONFLICT')) parts.push('cross-check shares notes but differs on tonic');
   if (state.reasonCodes.includes('PROFILE_DISAGREEMENT')) parts.push('cross-check differs; verify the notes');
   if (state.alternative) parts.push('alternative: ' + state.alternative);
+  const suggested=result?.keyFusion?.keys?.[0]?.key;
+  if(suggested&&suggested!==state.key)parts.push('combined-profile alternative: '+suggested+' (unverified)');
   const bass=result?.bassEvidence?.notes?.[0];if(bass)parts.push('bass clue: '+bass.note+' (not confirmed root)');
   return parts.join(' · ') + '.';
 }
@@ -74,6 +76,7 @@ export function formatTuningReference(result, values = {}) {
     'Alternative key: ' + (state.alternative ?? 'none'),
     'Verify profile: ' + (result?.keyComparison?.relation ?? result?.keyComparison?.status ?? 'not run') + (result?.keyComparison?.peak ? ' (' + result.keyComparison.peak + ')' : ''),
     'Low-note clue: ' + (result?.bassEvidence?.notes?.slice(0,3).map(n=>n.note).join(' / ') || 'not measured') + ' (not proof of tonic)',
+    'Combined profile: ' + (result?.keyFusion?.keys?.[0]?.key ?? 'not run') + ' (review only)',
     'Scale differences: ' + (result?.keyComparison?.changedNotes ?
       'baseline only '+(result.keyComparison.changedNotes.baselineOnly.join(' ')||'none')+
       '; peak only '+(result.keyComparison.changedNotes.peakOnly.join(' ')||'none') : 'not compared'),
