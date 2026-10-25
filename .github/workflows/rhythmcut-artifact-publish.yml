@@ -1,0 +1,72 @@
+name: Publish verified RhythmCut main artifact to Pages
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/publish-rhythmcut-artifact.mjs'
+      - '.github/workflows/rhythmcut-artifact-publish.yml'
+      - 'tests/catalog.test.mjs'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/publish-rhythmcut-artifact.mjs'
+      - '.github/workflows/rhythmcut-artifact-publish.yml'
+  schedule:
+    - cron: '11,26,41,56 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: rhythmcut-public-publish
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pages: write
+
+jobs:
+  verify-and-publish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+      - name: Download and validate Vercel production archive before changing Pages
+        run: node scripts/publish-rhythmcut-artifact.mjs
+      - name: Verify public catalog and route invariants against staged release
+        run: node --test tests/catalog.test.mjs
+      - name: Commit only approved RhythmCut site files and evidence
+        if: github.event_name != 'pull_request'
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          git add -A -- rhythmcut/ assets/registry.js
+          if git diff --cached --quiet; then
+            echo 'published=false' >> "$GITHUB_OUTPUT"
+            echo 'Pages already matches verified release'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "Publish verified RhythmCut main static release [automated]"
+          git pull --rebase origin main
+          git push origin HEAD:main
+          echo 'published=true' >> "$GITHUB_OUTPUT"
+      - name: Explicitly request classic GitHub Pages rebuild
+        if: steps.publish.outputs.published == 'true'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          curl --fail-with-body --retry 3 --retry-delay 5 -sSL -X POST \
+            -H 'Accept: application/vnd.github+json' \
+            -H 'X-GitHub-Api-Version: 2022-11-28' \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/builds" \
+            -o /tmp/pages-build.json
+          cat /tmp/pages-build.json
