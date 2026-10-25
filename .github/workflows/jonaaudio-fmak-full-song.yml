@@ -5,6 +5,7 @@ on:
       - 'JonaAudio/bench/audit-fmak-licenses.py'
       - 'JonaAudio/bench/fetch-fmak-licensed-audio.py'
       - 'JonaAudio/bench/run-fmak-full-songs.mjs'
+      - 'JonaAudio/bench/compare-fmak-essentia.py'
       - '.github/workflows/jonaaudio-fmak-full-song.yml'
   workflow_dispatch:
 permissions:
@@ -31,6 +32,10 @@ jobs:
         run: python -u JonaAudio/bench/fetch-fmak-licensed-audio.py
       - name: Compare expert key labels with the actual JonaAudio analysis engine
         run: node JonaAudio/bench/run-fmak-full-songs.mjs
+      - name: Install AGPL Essentia only for independent full-song key research
+        run: python -m pip install --disable-pip-version-check essentia numpy
+      - name: Compare Essentia HPCP song-level key candidates to fixed expert annotations
+        run: python -u JonaAudio/bench/compare-fmak-essentia.py
       - name: Inspect report and prevent fabricated label-only 'accuracy'
         run: |
           python - <<'PY'
@@ -53,4 +58,5 @@ jobs:
             JonaAudio/bench/fixtures/FMAK/license-audit.json
             JonaAudio/bench/fixtures/FMAK/selection.json
             JonaAudio/bench/fixtures/FMAK/full-song-results.json
+            JonaAudio/bench/fixtures/FMAK/essentia-key-results.json
           if-no-files-found: warn
