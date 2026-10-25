@@ -80,21 +80,21 @@ Atlas plan: https://app.notion.com/p/403adfe90e7081f4ad2ec69fc1e02440
 
 ## Optional professional reference engines — no cloud audio transfer
 
-The comparison driver \`reference-engines.py\` runs **locally**. It uses existing FFmpeg
+The comparison driver `reference-engines.py` runs **locally**. It uses existing FFmpeg
 for decoding, plus user-installed libre Python libraries; it never uploads music.
 No third-party key prediction is automatically promoted to "truth". Supported
 references:
 
-- \`--librosa\`: STFT chroma, CQT chroma, CENS; \`--hpss\` adds harmonic-only CQT.
-- \`--essentia\`: if local \`essentia\` Python bindings are available, runs
-  KeyExtractor with the electronic-music \`edma\` and general \`bgate\` profiles
+- `--librosa`: STFT chroma, CQT chroma, CENS; `--hpss` adds harmonic-only CQT.
+- `--essentia`: if local `essentia` Python bindings are available, runs
+  KeyExtractor with the electronic-music `edma` and general `bgate` profiles
   and RhythmExtractor2013. The required 44.1 kHz signal is decoded separately.
   If missing, the JSON explicitly says unavailable; it **never invents results**.
 - Installing libraries is a user-controlled step; confirm Python package support
   and relevant licenses. Essentia is AGPL-3.0, so the web app does not embed its
   compiled library in this pilot. Browser sources are not pushed to a server.
 
-Create a *private* file at \`~/Music/JonaAudio-Benchmark/reference-manifest.json\`:
+Create a *private* file at `~/Music/JonaAudio-Benchmark/reference-manifest.json`:
 
 ~~~json
 {
@@ -126,7 +126,7 @@ We have run librosa/CQT/CENS/HPSS locally on the five owner-provided tracks;
 
 A key chosen in a reliable vocal pitch-correction workflow is a useful reference,
 but may be a relative major/minor label rather than the original musical tonic.
-Use \`working-setting\` for that kind of annotation; use \`session-confirmed\` only
+Use `working-setting` for that kind of annotation; use `session-confirmed` only
 when original score/MIDI or a separately verified original session establishes it.
 
 The **offline** comparison evaluator accepts this minimal private file:
