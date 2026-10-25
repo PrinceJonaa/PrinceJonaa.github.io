@@ -192,6 +192,10 @@ function refreshMusical(current){
  rangeText.textContent='Scope: '+values.scope+(unique.length?' · Sampled '+unique.map(r=>r.start.toFixed(1)+'–'+r.end.toFixed(1)+' s').join(', '):' · Ranges appear as analysis completes');
  quickCandidates.replaceChildren();const result=current.scopeResult;
  const beat=result?.tempo?.beatRootEvidence;
+ const decision=result?.tempo?.tempoDecision;
+ const recommended=decision?.status==='recommend'?[
+  {field:'bpm',value:decision.suggestedBpm,text:'Suggested: '+decision.suggestedBpm+' BPM · '+(decision.suggestionType==='half-time'?'½-time':'normal pulse')+' (unverified)'}
+ ]:[];
  const beatCandidates=beat?.status==='review'?[
   {field:'bpm',value:beat.primaryCandidate,text:beat.primaryCandidate+' BPM · BeatRoot candidate (unverified)'},
   ...(beat.candidates[0]?.halfTime?[{field:'bpm',value:beat.candidates[0].halfTime,text:beat.candidates[0].halfTime+' BPM · ½-time BeatRoot feel'}]:[]),
@@ -210,13 +214,17 @@ function refreshMusical(current){
    savedQuick.scopeRevision===scopeRevision?
   [{field:'key',value:savedQuick.key,text:savedQuick.key+' · Quick key (retained)'}]:[];
  const candidateKeys=(result?.keys||[]).slice(0,4).map(x=>({field:'key',value:x.key,text:x.key+' · Deep key candidate'}));
- const choices=[...beatCandidates,...measured,...direct,...metrical,...quickKeyChoices,...candidateKeys].filter((value,index,array)=>
+ const choices=[...recommended,...beatCandidates,...measured,...direct,...metrical,...quickKeyChoices,...candidateKeys].filter((value,index,array)=>
   index===array.findIndex(other=>other.field===value.field&&Math.abs(value.field==='bpm'?other.value-value.value:0)<.75&&
    (value.field==='bpm'||other.value===value.value)));
  // Keep this usable on iPhone: preferred pulse readings and the retained Quick
  // key stay visible, while the full research candidate list remains in exports.
  const visibleChoices=[...choices.filter(c=>c.field==='bpm').slice(0,7),
   ...choices.filter(c=>c.field==='key').slice(0,4)];
+ if(decision?.status==='abstain'&&beat?.status==='review'){
+  const reason=node('p','muted','No confident tempo choice: compare normal and half-time BPM by ear.');
+  quickCandidates.append(reason);
+ }
  for(const c of visibleChoices)quickCandidates.append(button(c.text,()=>bridge.setOverride(c.field,c.value,'candidate-choice'),'candidate'));
  for(const [b,f] of [[half,.5],[double,2]]){const value=tempoMultiple(values.bpm,f);b.disabled=value==null;b.title=value==null?'Choose a tempo; the result must stay between 25 and 400 BPM.':'Use '+value+' BPM';b.textContent=(f===.5?'½':'2×')+' tempo'+(value==null?'':' · '+value);}
  metroButton.disabled=!Number.isFinite(values.bpm);phase.disabled=metronome.running;count.disabled=metronome.running;
