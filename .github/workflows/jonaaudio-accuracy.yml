@@ -1,0 +1,31 @@
+name: JonaAudio P0/P2 accuracy diagnostics
+on:
+  pull_request:
+    paths:
+      - 'JonaAudio/**'
+      - '.github/workflows/jonaaudio-accuracy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  synthetic-benchmark:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test correctness, fallback and private WAV decoder
+        run: node --test JonaAudio/tests/harmonic-key.test.mjs JonaAudio/tests/benchmark-local.test.mjs JonaAudio/tests/readiness.test.mjs JonaAudio/tests/tempo-crosscheck.test.mjs JonaAudio/tests/bass-evidence.test.mjs JonaAudio/tests/tempo-midi.test.mjs JonaAudio/tests/labeled-scoring.test.mjs
+      - name: Validate optional local reference-engine Python script syntax
+        run: python3 -m py_compile JonaAudio/bench/reference-engines.py
+      - name: Run deterministic synthetic-only key/BPM comparison
+        run: node JonaAudio/bench/compare.mjs /tmp/jonaaudio-synthetic.json
+      - name: Preserve metric report only (not source audio)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jonaaudio-synthetic-metrics
+          path: /tmp/jonaaudio-synthetic.json
+          if-no-files-found: ignore

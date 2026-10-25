@@ -5,9 +5,11 @@ import {createJobs} from './jobs.js';
 import {createSampleService} from './sample-service.js';
 import {RESOURCE_POLICY} from './config.js';
 import {parseBpm} from './musical-controls.js';
+import {makeTempoMidi,saveTempoMidi} from './tempo-midi.js';
+import {describeKeyReadiness, formatTuningReference} from './analysis-readiness.js';
 import {createSessionWriter,readSavedSession,parseSession,sessionSnapshot,sampledFingerprint} from './session-persistence.js';
 import {csvReport,jsonReport,downloadText} from './reports.js';
-const $=id=>document.getElementById(id),ui={};for(const id of ['files','drop','clear','tracks','count','search','export','mode','status','song-name','song-meta','bpm','bpm-alt','key','key-alt','length','format','rms','wave','spectrum','chroma','candidates','peak','crest','stereo','clips','lead','trail','play','seek','time','end-time','rate','zoomin','zoomout','zoom-label','fix-bpm','fix-key','save-fix','reset-fix','message','audio','theme','mobile-analyze','mobile-library'])ui[id]=$(id);
+const $=id=>document.getElementById(id),ui={};for(const id of ['files','drop','clear','tracks','count','search','export','mode','status','song-name','song-meta','bpm','bpm-alt','key','key-alt','copy-tuning','length','format','rms','wave','spectrum','chroma','candidates','peak','crest','stereo','clips','lead','trail','play','seek','time','end-time','rate','zoomin','zoomout','zoom-label','fix-bpm','fix-key','save-fix','reset-fix','message','audio','theme','mobile-analyze','mobile-library'])ui[id]=$(id);
 const MAX_FILE_BYTES=RESOURCE_POLICY.maxFileBytes,MAX_TRACKS=RESOURCE_POLICY.maxTracks,notes=KEYS,keys=notes.flatMap(n=>[n+' major',n+' minor']);
 for(const key of keys){const option=document.createElement('option');option.value=key;option.textContent=key;ui['fix-key'].append(option);}
 let runId=0,zoom=1,drawQueued=false;
@@ -67,10 +69,10 @@ function select(item){
 function removeTrack(item){jobs.cancel(item.id);item.state='cancelled';URL.revokeObjectURL(item.url);const active=selectedTrack()?.id===item.id;if(active)playback.clear();dispatch({type:'remove',trackId:item.id});if(active&&state.tracks.length)select(state.tracks[0]);refreshMobile();renderDetail();renderLibrary();}
 function clearSession(){samples.clear();jobs.clear();playback.stopCompanions();state.tracks.forEach(t=>URL.revokeObjectURL(t.url));playback.clear();dispatch({type:'clear'});refreshMobile();switchMobile('analyze');renderDetail();renderLibrary();notify('Session cleared. No audio was uploaded.');}
 function renderDetail(){const item=selectedTrack(),result=scopeResult(item),scope=item?.analysisScopeId?item.regions.find(r=>r.id===item.analysisScopeId):item,correction=scope?.corrections||{};ui.status.textContent=item?statusNames[item.state].toUpperCase():'AWAITING AUDIO';ui['song-name'].textContent=item?.name||'No track selected';ui['song-meta'].textContent=item?`${(item.size/1048576).toFixed(1)} MB · ${item.duration?fmt(item.duration):'Reading duration'}${item.error?' · '+item.error:''}`:'Drag in a song to begin.';
- ui.bpm.textContent=valuesFor(item).bpm??'—';ui['bpm-alt'].textContent=result?.tempo?.alternatives?.length?`Candidates: ${result.tempo.alternatives.slice(0,3).map(c=>c.bpm).join(' / ')}`:Object.entries(item?.analysis||{}).find(([k])=>k===((item.analysisScopeId||'track')+':tempo'))?.[1]?.reason||'BPM is an estimate';ui.key.textContent=valuesFor(item).key||'—';ui['key-alt'].textContent=result?.keys?.[1]?.key?`${result.ambiguous?'Two close matches — choose or audition. ':''}Alternative: ${result.keys[1].key}`:Object.entries(item?.analysis||{}).find(([k])=>k===((item.analysisScopeId||'track')+':key'))?.[1]?.reason||'Key may be ambiguous';ui.length.textContent=item?.duration?fmt(item.duration):'—';ui.format.textContent=(item?.file?.name||item?.name||'').split('.').at(-1)?.toUpperCase()||'Source audio';ui.rms.textContent=result?.quality?decibels(result.quality.rmsDb):'—';ui.rms.parentElement.querySelector('span').textContent='MONO-SUM RMS · dBFS';
+ ui.bpm.textContent=valuesFor(item).bpm??'—';ui['bpm-alt'].textContent=result?.tempo?.tempoComparison?.status==='review'?`Unverified pulse · ${result.tempo.tempoComparison.primary} vs ${result.tempo.tempoComparison.flux} BPM (${result.tempo.tempoComparison.relation})`:result?.tempo?.alternatives?.length?`Candidates: ${result.tempo.alternatives.slice(0,3).map(c=>c.bpm).join(' / ')}`:Object.entries(item?.analysis||{}).find(([k])=>k===((item.analysisScopeId||'track')+':tempo'))?.[1]?.reason||'BPM is an estimate';ui.key.textContent=valuesFor(item).key||'—';ui['key-alt'].textContent=describeKeyReadiness(result,valuesFor(item));ui.length.textContent=item?.duration?fmt(item.duration):'—';ui.format.textContent=(item?.file?.name||item?.name||'').split('.').at(-1)?.toUpperCase()||'Source audio';ui.rms.textContent=result?.quality?decibels(result.quality.rmsDb):'—';ui.rms.parentElement.querySelector('span').textContent='MONO-SUM RMS · dBFS';
  ui.bpm.parentElement.querySelector('span').textContent='BPM · '+valuesFor(item).bpmSource.toUpperCase();ui.key.parentElement.querySelector('span').textContent='KEY · '+valuesFor(item).keySource.toUpperCase();
  const q=result?.quality;ui.peak.textContent=q?decibels(q.samplePeakDb):'—';ui.crest.textContent=q?decibels(q.crestDb):'—';ui.stereo.textContent=q?(Number.isFinite(q.stereoCorrelation)?number(q.stereoCorrelation,2):q.stereoCorrelationReason||'unavailable'):'—';ui.clips.textContent=q?Number(q.nearCeilingSamples).toLocaleString():'—';ui.lead.textContent=q?number(q.leadingSilence,2)+' s':'—';ui.trail.textContent=q?number(q.trailingSilence,2)+' s':'—';
- ui['end-time'].textContent=item?.duration?fmt(item.duration):'0:00';ui.play.disabled=!item?.sourceAvailable;ui.seek.disabled=!item?.sourceAvailable;ui.zoomin.disabled=!item?.wave;ui.zoomout.disabled=!item?.wave;ui['save-fix'].disabled=!item;ui['reset-fix'].disabled=!item;if(!document.querySelector('dialog[open] .corrections')){ui['fix-bpm'].value=correction.bpm||'';ui['fix-key'].value=correction.key||'';}drawWave();drawSpectrum();drawChroma();renderCandidates();updatePosition();}
+ ui['end-time'].textContent=item?.duration?fmt(item.duration):'0:00';ui.play.disabled=!item?.sourceAvailable;ui.seek.disabled=!item?.sourceAvailable;ui.zoomin.disabled=!item?.wave;ui.zoomout.disabled=!item?.wave;ui['copy-tuning'].disabled=!valuesFor(item).key;ui['save-fix'].disabled=!item;ui['reset-fix'].disabled=!item;if(!document.querySelector('dialog[open] .corrections')){ui['fix-bpm'].value=correction.bpm||'';ui['fix-key'].value=correction.key||'';}drawWave();drawSpectrum();drawChroma();renderCandidates();updatePosition();}
 function canvasContext(canvas){const box=canvas.getBoundingClientRect(),width=Math.max(200,Math.floor(box.width)),height=Math.max(100,Math.floor(box.height||Number(canvas.getAttribute('height'))));const dpr=Math.min(devicePixelRatio||1,window.innerWidth<760?1.25:1.75);if(canvas.width!==Math.round(width*dpr)||canvas.height!==Math.round(height*dpr)){canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);}const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);return {ctx,w:width,h:height};}
 function palette(){const css=getComputedStyle(document.documentElement);return {accent:css.getPropertyValue('--accent').trim(),muted:css.getPropertyValue('--muted').trim(),line:css.getPropertyValue('--line').trim(),text:css.getPropertyValue('--text').trim()};}
 function scheduleWave(){if(drawQueued)return;drawQueued=true;requestAnimationFrame(()=>{drawQueued=false;drawWave();});}
@@ -86,6 +88,19 @@ function renderCandidates(){const area=ui.candidates;area.replaceChildren();cons
 
 function updatePosition(){ui['end-time'].textContent=fmt(playback.owner?.duration||0);ui.time.textContent=fmt(playback.position||0);ui.seek.value=playback.owner?.duration?String(Math.round(playback.position/playback.owner.duration*1000)):'0';ui.play.textContent=playback.playing?'❚❚':'▶';ui.rate.disabled=playback.isLoop;if(selectedTrack()?.wave&&ui.audio.duration)scheduleWave();}
 function exportCsv(){downloadText(csvReport(state.tracks),'jonaaudio-analysis.csv','text/csv;charset=utf-8');}
+ui['copy-tuning'].addEventListener('click',async()=>{
+ const track=selectedTrack();if(!track)return;
+ const reference=formatTuningReference(scopeResult(track),valuesFor(track));
+ try {
+  if(!navigator.clipboard?.writeText)throw new Error('Clipboard API unavailable');
+  await navigator.clipboard.writeText(reference);
+  notify('Tuning reference copied. Auto-Tune and Logic were not modified.');
+ } catch {
+  const field=document.createElement('textarea');field.value=reference;field.setAttribute('aria-label','Copy tuning reference');field.style.position='fixed';field.style.left='-9999px';document.body.append(field);field.select();
+  let copied=false;try{copied=document.execCommand('copy');}catch{}field.remove();
+  notify(copied?'Tuning reference copied. Auto-Tune was not modified.':'Clipboard unavailable. Open Studio → Tune to copy manually.');
+ }
+});
 ui.files.addEventListener('change',e=>{addFiles(e.target.files);e.target.value='';});ui.search.addEventListener('input',renderLibrary);ui.clear.addEventListener('click',clearSession);ui.export.addEventListener('click',exportCsv);
 for(const event of ['dragenter','dragover'])document.addEventListener(event,e=>{e.preventDefault();ui.drop.classList.add('dragging');});for(const event of ['dragleave','drop'])document.addEventListener(event,e=>{e.preventDefault();if(event==='drop'){ui.drop.classList.remove('dragging');addFiles(e.dataTransfer?.files||[]);}else if(e.target===document.documentElement||e.target===document.body)ui.drop.classList.remove('dragging');});
 ui.play.onclick=()=>playback.toggle();
@@ -104,6 +119,18 @@ ui.theme.onclick=()=>{const value=document.documentElement.dataset.theme==='ligh
 let resizeQueued=false;window.addEventListener('resize',()=>{if(resizeQueued)return;resizeQueued=true;requestAnimationFrame(()=>{resizeQueued=false;drawWave();drawSpectrum();});});window.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement?.tagName||'')){e.preventDefault();ui.play.click();}});
 ui['mobile-analyze'].addEventListener('click',()=>switchMobile('analyze'));
 ui['mobile-library'].addEventListener('click',()=>switchMobile('library'));
+function downloadTempoMidi(){
+ const track=selectedTrack(),effective=valuesFor(track);
+ if(!track||!Number.isFinite(effective.bpm)){notify('Choose or confirm a BPM before exporting MIDI.');return false;}
+ const reviewed=['manual','tap','candidate-choice'].includes(effective.bpmSource);
+ if(!reviewed&&!window.confirm('This BPM is an unverified estimate. Export a MIDI tempo reference anyway? You will still choose whether to import it in Logic.'))return false;
+ try {
+  const midi=makeTempoMidi(effective.bpm);
+  saveTempoMidi(midi,'jonaaudio-'+Math.round(effective.bpm*100)/100+'bpm.mid');
+  notify('Tempo MIDI exported as a file. Logic was not changed; review timing before importing.');
+  return true;
+ }catch(error){notify(error?.message||'Tempo export failed');return false;}
+}
 function exportJson(){downloadText(jsonReport(state),'jonaaudio-analysis.json','application/json');}
 async function exportSession(){await writer.flush();downloadText(JSON.stringify(sessionSnapshot(state),null,2),'jonaaudio-session.json','application/json');}
 function applyRecovered(data){
@@ -144,7 +171,7 @@ window.JonaAudioBridge=Object.freeze({
  subscribe,values:(id,regionId)=>resolveValues(state.tracks.find(t=>t.id===Number(id)),regionId),
  auditionRange:(id,range)=>{const t=state.tracks.find(t=>t.id===id);return t?.sourceAvailable?playback.audition(t,range):Promise.resolve(false);},
  auditionCompare:(id,gain=1)=>{const t=state.tracks.find(t=>t.id===Number(id));if(!t?.sourceAvailable||!t.url)return Promise.resolve(false);playback.setListeningAttenuation(gain);return playback.audition(t,{start:t.playback.position||0});},setCompareAttenuation:value=>playback.setListeningAttenuation(value),auditionReference:(id,scopeId=null)=>{const t=state.tracks.find(t=>t.id===id);if(!t?.sourceAvailable)return Promise.resolve(false);const r=scopeId?t.regions.find(r=>r.id===scopeId):null;return playback.audition(t,{start:r?.start||0,end:r?.end??null});},
- redraw:()=>{drawWave();drawSpectrum();},exportJson,exportSession,pickSession,transport:playback
+ redraw:()=>{drawWave();drawSpectrum();},exportJson,exportSession,pickSession,downloadTempoMidi,transport:playback
 });
 window.dispatchEvent(new Event('jona:ready'));
 
