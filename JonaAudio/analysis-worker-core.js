@@ -1,7 +1,8 @@
-import {detectTempo,computeChroma,rankKeys,computeSpectrogram,computeQuality,onsetCurve} from './engine.js';
+import {KEYS,detectTempo,computeChroma,rankKeys,computeSpectrogram,computeQuality,onsetCurve} from './engine.js';
 import {ENGINE_VERSION} from './config.js';
 import {resample} from './resample.js';
 import {analyzePeakKey,compareKeyFamilies,PEAK_ENGINE_VERSION} from './harmonic-key.js';
+import {estimateBassEvidence,compareBassToKeys,BASS_EVIDENCE_VERSION} from './bass-evidence.js';
 import {spectralFluxCandidates,compareTempoFamilies,FLUX_TEMPO_VERSION} from './tempo-crosscheck.js';
 export {resample} from './resample.js';
 import {prepareRegion} from './sample-dsp.js';
@@ -60,7 +61,7 @@ export function analyzeCapability(capability,input){
   const disagreement=new Set(evidence.flatMap(e=>e.keys.length?[e.keys[0].key]:[])).size>1,ambiguous=(keys[0].score-keys[1].score)<.025||disagreement;
   // Verify computes a SECOND, bounded spectral-peak profile. Quick remains baseline speed.
   // Both profiles share FFT and key templates; agreement is not independent validation.
-  let peakEvidence=null,keyComparison=null;
+  let peakEvidence=null,keyComparison=null,bassEvidence=null,bassComparison=null;
   if(input.analysisMode==='verify'){
    const peaks=windows.map(w=>({start:w.start,end:w.end,...analyzePeakKey(w.samples,w.sampleRate,[{start:0,end:w.samples.length/w.sampleRate}],{maxFrames:24})}));
    const usable=peaks.filter(p=>p.status!=='unavailable');
@@ -72,8 +73,26 @@ export function analyzeCapability(capability,input){
      method:PEAK_ENGINE_VERSION,scores:'uncalibrated'};
    }else peakEvidence={keys:[],chroma:null,sections:peaks.map(({start,end,status,reason})=>({start,end,status,reason})),method:PEAK_ENGINE_VERSION};
    keyComparison=compareKeyFamilies(keys,peakEvidence);
+   // Separate low-frequency note distribution. Bass pitch support is not a key label.
+   // Keep bounded work per region and never automatically rerank the original key.
+   const bassSegments=windows.map(w=>({start:w.start,end:w.end,
+     ...estimateBassEvidence(w.samples,w.sampleRate,[{start:0,end:w.samples.length/w.sampleRate}],{maxFrames:16})}));
+   const useful=bassSegments.filter(e=>e.status==='experimental');
+   if(useful.length){
+    const totals=new Float64Array(12);
+    for(const e of useful)for(const note of e.notes)totals[note.pitchClass]+=note.weight*e.frames;
+    const overall=totals.reduce((a,b)=>a+b,0);
+    const notes=Array.from(totals,(weight,pitchClass)=>({pitchClass,note:KEYS[pitchClass],
+      weight:overall>0?+(weight/overall).toFixed(4):0}))
+      .filter(n=>n.weight>.015).sort((a,b)=>b.weight-a.weight).slice(0,6);
+    bassEvidence={status:'experimental',notes,method:BASS_EVIDENCE_VERSION,
+      sections:bassSegments.map(({start,end,status,notes,reason})=>({start,end,status,notes:notes?.slice(0,3)||[],reason})),
+      caveat:'Measured low notes do not prove a tonic; kick drums can confound the estimator.'};
+    bassComparison=compareBassToKeys(keys,bassEvidence);
+   }else bassEvidence={status:'unavailable',method:BASS_EVIDENCE_VERSION,
+     reason:'No usable low-register note evidence',notes:[]};
   }
-  return {type:'result',result:{keys,chroma,evidence,ambiguous,disagreement,peakEvidence,keyComparison,
+  return {type:'result',result:{keys,chroma,evidence,ambiguous,disagreement,peakEvidence,keyComparison,bassEvidence,bassComparison,
    thresholds:{tonalContrast:.12,closeSimilarityGap:.025}},ranges,
    diagnostics:{...diagnostics,verification:input.analysisMode==='verify'?'bounded spectral-peak cross-check (experimental)':'baseline quick'}};
  }
