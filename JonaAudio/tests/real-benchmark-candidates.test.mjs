@@ -4,6 +4,7 @@ import {fuseKeyProfiles} from '../key-fusion.js';
 import {fractionalPulseCandidates,aggregateRefinedPulse} from '../pulse-refinement.js';
 import {synthTempoFixture,synthKeyFixture} from '../bench/fixtures.mjs';
 import {computeChroma} from '../engine.js';
+import {buildTempoHypotheses,shortTempoGuide} from '../tempo-hypotheses.js';
 import {analyzePeakKey} from '../harmonic-key.js';
 import {analyzeCapability} from '../analysis-worker-core.js';
 
@@ -39,18 +40,31 @@ test('fractional tempo emits plausible candidates with sub-integer BPM without o
  assert.ok(refined.candidates.every(x=>Number.isFinite(x.bpm)&&x.bpm>=55&&x.bpm<=210));
  const quick=analyzeCapability('tempo',{windows:[{...clip,start:0,end:12}],analysisMode:'quick'});
  const deep=analyzeCapability('tempo',{windows:[{...clip,start:0,end:12}],analysisMode:'verify'});
- assert.equal(quick.result.pulseRefinement,null);
+ assert.equal(quick.result.tempoHypotheses,null);
  assert.equal(quick.result.bpm,deep.result.bpm);
- assert.equal(deep.result.pulseRefinement.method,'fractional-lag-onset-v0.1.0');
- assert.ok(Array.isArray(deep.result.pulseRefinement.candidates));
+ assert.equal(deep.result.pulseRefinement,undefined,'Unhelpful interpolator is benchmark-only');
+ assert.equal(deep.result.tempoHypotheses.status,'review');
+ assert.ok(Array.isArray(deep.result.tempoHypotheses.metricalAlternatives));
 });
-test('Verify adds combined keys while preserving all legacy primary outputs',()=>{
+test('Failed equal-chroma fusion remains offline-only and does not distort main key',()=>{
  const clip=synthKeyFixture(9,'minor');
  const window={...clip,start:0,end:clip.duration};
  const quick=analyzeCapability('key',{windows:[window],analysisMode:'quick'});
  const deep=analyzeCapability('key',{windows:[window],analysisMode:'verify'});
- assert.equal(quick.result.keyFusion,null);
+ assert.equal(deep.result.keyFusion,undefined,'Experimental fusion is not a live DSP dependency');
  assert.equal(quick.result.keys[0].key,deep.result.keys[0].key);
- assert.equal(deep.result.keyFusion.status,'review');
- assert.equal(deep.result.keyFusion.method,'equal-chroma-key-review-v0.1.0');
+ assert.equal(deep.result.peakEvidence.status,undefined);
+});
+test('Tempo alternative transformations preserve provenance and never mark an estimate confirmed',()=>{
+ const data=buildTempoHypotheses({bpm:99},{candidates:[
+  {bpm:196,score:.8},{bpm:204,score:.77},{bpm:187,score:.72}
+ ]});
+ assert.equal(data.status,'review');
+ assert.equal(data.originalBpm,99);
+ assert.equal(data.direct[0].bpm,99);
+ assert.ok(data.metricalAlternatives.some(x=>x.bpm===98&&x.relationship==='half-time'));
+ assert.ok(data.metricalAlternatives.some(x=>x.bpm===68&&x.relationship==='third-time'));
+ assert.ok(data.metricalAlternatives.every(x=>x.verified===false));
+ assert.match(shortTempoGuide(data),/Unverified/);
+ assert.equal(buildTempoHypotheses({bpm:null},{candidates:[]}).status,'unavailable');
 });
