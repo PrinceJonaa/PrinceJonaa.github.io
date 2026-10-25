@@ -18,7 +18,6 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
-          cache: npm
       - name: Generate a reviewable lockfile during the bootstrap PR only
         shell: bash
         run: |
