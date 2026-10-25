@@ -5,6 +5,7 @@ import {createJobs} from './jobs.js';
 import {createSampleService} from './sample-service.js';
 import {RESOURCE_POLICY} from './config.js';
 import {parseBpm} from './musical-controls.js';
+import {makeTempoMidi,saveTempoMidi} from './tempo-midi.js';
 import {describeKeyReadiness, formatTuningReference} from './analysis-readiness.js';
 import {createSessionWriter,readSavedSession,parseSession,sessionSnapshot,sampledFingerprint} from './session-persistence.js';
 import {csvReport,jsonReport,downloadText} from './reports.js';
@@ -118,6 +119,18 @@ ui.theme.onclick=()=>{const value=document.documentElement.dataset.theme==='ligh
 let resizeQueued=false;window.addEventListener('resize',()=>{if(resizeQueued)return;resizeQueued=true;requestAnimationFrame(()=>{resizeQueued=false;drawWave();drawSpectrum();});});window.addEventListener('keydown',e=>{if(e.code==='Space'&&!e.repeat&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(document.activeElement?.tagName||'')){e.preventDefault();ui.play.click();}});
 ui['mobile-analyze'].addEventListener('click',()=>switchMobile('analyze'));
 ui['mobile-library'].addEventListener('click',()=>switchMobile('library'));
+function downloadTempoMidi(){
+ const track=selectedTrack(),effective=valuesFor(track);
+ if(!track||!Number.isFinite(effective.bpm)){notify('Choose or confirm a BPM before exporting MIDI.');return false;}
+ const reviewed=['manual','tap','candidate-choice'].includes(effective.bpmSource);
+ if(!reviewed&&!window.confirm('This BPM is an unverified estimate. Export a MIDI tempo reference anyway? You will still choose whether to import it in Logic.'))return false;
+ try {
+  const midi=makeTempoMidi(effective.bpm);
+  saveTempoMidi(midi,'jonaaudio-'+Math.round(effective.bpm*100)/100+'bpm.mid');
+  notify('Tempo MIDI exported as a file. Logic was not changed; review timing before importing.');
+  return true;
+ }catch(error){notify(error?.message||'Tempo export failed');return false;}
+}
 function exportJson(){downloadText(jsonReport(state),'jonaaudio-analysis.json','application/json');}
 async function exportSession(){await writer.flush();downloadText(JSON.stringify(sessionSnapshot(state),null,2),'jonaaudio-session.json','application/json');}
 function applyRecovered(data){
@@ -158,7 +171,7 @@ window.JonaAudioBridge=Object.freeze({
  subscribe,values:(id,regionId)=>resolveValues(state.tracks.find(t=>t.id===Number(id)),regionId),
  auditionRange:(id,range)=>{const t=state.tracks.find(t=>t.id===id);return t?.sourceAvailable?playback.audition(t,range):Promise.resolve(false);},
  auditionCompare:(id,gain=1)=>{const t=state.tracks.find(t=>t.id===Number(id));if(!t?.sourceAvailable||!t.url)return Promise.resolve(false);playback.setListeningAttenuation(gain);return playback.audition(t,{start:t.playback.position||0});},setCompareAttenuation:value=>playback.setListeningAttenuation(value),auditionReference:(id,scopeId=null)=>{const t=state.tracks.find(t=>t.id===id);if(!t?.sourceAvailable)return Promise.resolve(false);const r=scopeId?t.regions.find(r=>r.id===scopeId):null;return playback.audition(t,{start:r?.start||0,end:r?.end??null});},
- redraw:()=>{drawWave();drawSpectrum();},exportJson,exportSession,pickSession,transport:playback
+ redraw:()=>{drawWave();drawSpectrum();},exportJson,exportSession,pickSession,downloadTempoMidi,transport:playback
 });
 window.dispatchEvent(new Event('jona:ready'));
 
