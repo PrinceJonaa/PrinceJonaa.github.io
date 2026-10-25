@@ -29,7 +29,7 @@ try{
    within1:bpm!==null&&Math.abs(track.bpm-bpm)<=1,
    within3:bpm!==null&&Math.abs(track.bpm-bpm)<=3,
    beatCount:mt.beats?.length??0});
-  console.log(track.id,'label',track.bpm,'MIT BeatRoot',bpm,flush=true);
+  console.log(track.id,'label',track.bpm,'MIT BeatRoot',bpm);
  }
 }finally{rmSync(work,{force:true,recursive:true});}
 const stats={};
