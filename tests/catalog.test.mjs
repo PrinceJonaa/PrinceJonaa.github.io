@@ -24,7 +24,7 @@ test('task routes and four paths reach real endpoints',()=>{
  const hashes=musicTasks.filter(t=>t.href.startsWith('/JonaAudio/')).map(t=>new URL(t.href,'https://princejona.me').hash);assert.deepEqual(hashes,['#quick','#studio/tune','#studio/sample','#studio/engineer','#studio/compare']);
 });
 test('release evidence preserves source/deployment distinction and canonical origin',()=>{
- const r=apps.find(a=>a.id==='rhythmcut'),release=JSON.parse(readFileSync('rhythmcut/release.json'));assert.equal(r.builtArtifactCommit,release.commit);assert.notEqual(r.sourceCommit,r.builtArtifactCommit);assert.match(r.lastKnownIssue,/behind/);
+ const r=apps.find(a=>a.id==='rhythmcut'),release=JSON.parse(readFileSync('rhythmcut/release.json'));assert.equal(r.builtArtifactCommit,release.commit);assert.equal(r.sourceCommit,release.commit);assert.equal(r.releaseVersion,release.version);assert.match(r.lastKnownIssue,/physical iPhone/i);
  assert.equal(readFileSync('CNAME','utf8').trim(),'princejona.me');
 });
 test('all public pages have direct navigation, palette, breadcrumbs and public metadata',()=>{
