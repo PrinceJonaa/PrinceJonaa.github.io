@@ -4,6 +4,7 @@ import {resample} from './resample.js';
 import {analyzePeakKey,compareKeyFamilies,PEAK_ENGINE_VERSION} from './harmonic-key.js';
 import {estimateBassEvidence,compareBassToKeys,BASS_EVIDENCE_VERSION} from './bass-evidence.js';
 import {spectralFluxCandidates,compareTempoFamilies,FLUX_TEMPO_VERSION} from './tempo-crosscheck.js';
+import {buildTempoHypotheses} from './tempo-hypotheses.js';
 export {resample} from './resample.js';
 import {prepareRegion} from './sample-dsp.js';
 import {rankCandidates} from './sample-candidates.js';
@@ -32,7 +33,7 @@ export function analyzeCapability(capability,input){
   const variable=readings.some(v=>bpm&&Math.min(Math.abs(v-bpm),Math.abs(v*2-bpm),Math.abs(v/2-bpm))>4);
   // A different onset representation is evaluated only in Verify mode. Do not
   // silently change the BPM, beat markers, or an artist's manually confirmed grid.
-  let fluxEvidence=null,tempoComparison=null;
+  let fluxEvidence=null,tempoComparison=null,tempoHypotheses=null;
   if(input.analysisMode==='verify'){
    const measured=windows.map(w=>({start:w.start,end:w.end,...spectralFluxCandidates(w.samples,w.sampleRate)}));
    const weighted=new Map();
@@ -45,9 +46,10 @@ export function analyzeCapability(capability,input){
    fluxEvidence={method:FLUX_TEMPO_VERSION,candidates,scores:'uncalibrated',
     sections:measured.map(({start,end,status,candidates})=>({start,end,status,candidates:candidates.slice(0,3)}))};
    tempoComparison=compareTempoFamilies({bpm},fluxEvidence);
+   tempoHypotheses=buildTempoHypotheses({bpm},fluxEvidence);
   }
   return {type:bpm?'result':'unavailable',reason:bpm?null:'No steady tempo found. Try tap tempo or a manual BPM.',
-    result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,fluxEvidence,tempoComparison,
+    result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,fluxEvidence,tempoComparison,tempoHypotheses,
       rangePreference:'none',thresholds:{pulseToRms:.005,aggregateAutocorrelation:.04}},ranges,diagnostics};
  }
  if(capability==='key'){

@@ -52,6 +52,8 @@ export function describeKeyReadiness(result, values = {}) {
   if (state.reasonCodes.includes('PROFILE_TONIC_CONFLICT')) parts.push('cross-check shares notes but differs on tonic');
   if (state.reasonCodes.includes('PROFILE_DISAGREEMENT')) parts.push('cross-check differs; verify the notes');
   if (state.alternative) parts.push('alternative: ' + state.alternative);
+  const next=(result?.keys||[]).slice(1,4).map(k=>k.key);
+  if(next.length)parts.push('also consider: '+next.join(' / '));
   const bass=result?.bassEvidence?.notes?.[0];if(bass)parts.push('bass clue: '+bass.note+' (not confirmed root)');
   return parts.join(' · ') + '.';
 }
@@ -71,6 +73,8 @@ export function formatTuningReference(result, values = {}) {
     'Allowed notes: ' + (state.allowedNotes.join(', ') || 'select manually'),
     'Tempo: ' + bpm,
     'Tempo candidates: ' + (tempoChoices || 'none'),
+    'Other pulse readings: ' + (result?.tempo?.tempoHypotheses?.direct?.map(x=>x.bpm).join(' / ') || 'none'),
+    'Half, double and triple interpretations: ' + (result?.tempo?.tempoHypotheses?.metricalAlternatives?.map(x=>x.bpm+' ('+x.relationship+')').join(' / ') || 'none'),
     'Alternative key: ' + (state.alternative ?? 'none'),
     'Verify profile: ' + (result?.keyComparison?.relation ?? result?.keyComparison?.status ?? 'not run') + (result?.keyComparison?.peak ? ' (' + result.keyComparison.peak + ')' : ''),
     'Low-note clue: ' + (result?.bassEvidence?.notes?.slice(0,3).map(n=>n.note).join(' / ') || 'not measured') + ' (not proof of tonic)',
