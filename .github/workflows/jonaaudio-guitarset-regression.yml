@@ -5,18 +5,36 @@ on:
       - 'JonaAudio/**'
       - '.github/workflows/jonaaudio-guitarset-regression.yml'
       - '.node-version'
+  push:
+    branches: [main]
+    paths:
+      - 'JonaAudio/**'
+      - '.github/workflows/jonaaudio-guitarset-regression.yml'
+      - '.node-version'
   workflow_dispatch:
 permissions:
   contents: read
 jobs:
   real-source-benchmark:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.11'
+      - name: Check Python builder and Node scoring source
+        run: |
+          python -m py_compile JonaAudio/bench/build-guitarset-fixtures.py
+          node --check JonaAudio/bench/run-guitarset.mjs
+          node --check JonaAudio/bench/tests/guitarset-regression.test.mjs
+      - name: Validate CC BY license and SHA-256 checksums before scoring
+        run: node --test --test-name-pattern='fixture|license' JonaAudio/bench/tests/guitarset-regression.test.mjs
       - name: Install offline decoder for already committed CC BY audio
         run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
       - name: Verify fusion, original DSP safety, and fractional pulse candidates
@@ -24,10 +42,14 @@ jobs:
           node --test JonaAudio/tests/real-benchmark-candidates.test.mjs
           node --test JonaAudio/tests/harmonic-key.test.mjs JonaAudio/tests/tempo-crosscheck.test.mjs
       - name: Benchmark eight real published-key, published-tempo performances
-        run: node JonaAudio/bench/run-guitarset.mjs JonaAudio/bench/fixtures/GuitarSet
+        run: |
+          rm -f JonaAudio/bench/fixtures/GuitarSet/benchmark-results.json
+          node JonaAudio/bench/run-guitarset.mjs JonaAudio/bench/fixtures/GuitarSet
+      - name: Verify fresh report matches all eight original source labels
+        run: node --test JonaAudio/bench/tests/guitarset-regression.test.mjs
       - name: Assert baseline does not regress; report experimental results separately
         run: |
-          python3 - <<'PY'
+          python - <<'PY'
           import json
           p='JonaAudio/bench/fixtures/GuitarSet/benchmark-results.json'
           r=json.load(open(p))
@@ -52,4 +74,5 @@ jobs:
         with:
           name: JonaAudio-GuitarSet-CandidateComparison
           path: JonaAudio/bench/fixtures/GuitarSet/benchmark-results.json
-          if-no-files-found: warn
+          if-no-files-found: error
+          retention-days: 14
