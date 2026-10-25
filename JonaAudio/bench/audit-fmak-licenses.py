@@ -19,7 +19,7 @@ ALLOWED_GENRES={'Hip-Hop','Electronic','Pop','Rock','Folk','Jazz','Blues'}
 def read_labels():
     req=urllib.request.Request(LABELS,headers={'User-Agent':'JonaAudio-license-audit/1.0'})
     with urllib.request.urlopen(req,timeout=60) as response:
-        content=response.read().decode('utf8-sig')
+        content=response.read().decode('utf-8-sig')
     lines=content.splitlines()
     assert lines[0].startswith(',spotify,key_and_mode') and lines[1].startswith('track_id,')
     reader=csv.DictReader(lines[1:])
