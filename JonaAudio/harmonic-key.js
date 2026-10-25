@@ -1,4 +1,5 @@
 import {fft, rankKeys} from './engine.js';
+import {setupFromKey,noteName} from './tuning-model.js';
 
 export const PEAK_ENGINE_VERSION = 'spectral-peaks-experimental-0.1.0';
 const FRAME = 4096, HOP = 2048;
@@ -80,10 +81,23 @@ export function analyzePeakKey(samples,sampleRate,segments,options={}) {
   return {...profile,keys:rankKeys(profile.chroma).slice(0,5),status:'experimental',method:PEAK_ENGINE_VERSION};
 }
 
+// Key naming and allowed pitch classes are separate questions. Relative keys can
+// disagree on tonic without changing any Auto-Tune-eligible note.
 export function compareKeyFamilies(primary,secondary) {
   const first=primary?.[0]?.key??null,other=secondary?.keys?.[0]?.key??null;
-  if(!first||!other)return {status:'unavailable',baseline:first,peak:other,reason:'Insufficient comparable evidence'};
+  if(!first||!other)return {status:'unavailable',relation:'unavailable',baseline:first,peak:other,reason:'Insufficient comparable evidence'};
   const exact=first===other;
-  return {status:exact?'agreement':'disagreement',baseline:first,peak:other,
-    reason:exact?'Same top ranked key (not independent validation)':'Peak-filtered and baseline profiles choose different keys; review by ear'};
+  const primarySetup=setupFromKey(first),peakSetup=setupFromKey(other);
+  const sameMask=Boolean(primarySetup&&peakSetup&&
+    primarySetup.allowedPitchClasses.every(pc=>peakSetup.allowedPitchClasses.includes(pc)));
+  const relation=exact?'exact-key':sameMask?'same-scale-different-tonic':'different-scale-notes';
+  const changedNotes=primarySetup&&peakSetup?{
+    baselineOnly:primarySetup.allowedPitchClasses.filter(pc=>!peakSetup.allowedPitchClasses.includes(pc)).map(pc=>noteName(pc,primarySetup)),
+    peakOnly:peakSetup.allowedPitchClasses.filter(pc=>!primarySetup.allowedPitchClasses.includes(pc)).map(pc=>noteName(pc,peakSetup))
+  }:null;
+  return {status:exact?'agreement':'disagreement',relation,baseline:first,peak:other,
+    sameAllowedNotes:sameMask,changedNotes,
+    reason:exact?'Both profiles select the same key (not ground truth)':
+      sameMask?'The profiles disagree on tonic/mode, but Auto-Tune note masks match':
+      'The profiles disagree on pitch classes; never automatically select a tuning scale'};
 }
