@@ -37,12 +37,20 @@ try{
   const primaryVerify=deep.result?.bpm??null;
   const flux=deep.result?.fluxEvidence?.candidates??[];
   const alt=deep.result?.tempoHypotheses;
+  const beat=deep.result?.beatRootEvidence;
   const exact=accurate(primaryQuick,track.bpm);
   const close=accurate(primaryQuick,track.bpm,3);
   const hypotheses=[...(alt?.direct||[]),...(alt?.metricalAlternatives||[])];
   const directChoices=flux.slice(0,3).map(x=>x.bpm);
   rows.push({id:track.id,group:track.genreGroup,split:track.split,referenceBpm:track.bpm,
     quickBpm:primaryQuick,verifyBpm:primaryVerify,fluxBpm:flux[0]?.bpm??null,
+    beatRootBpm:beat?.primaryCandidate??null,
+    beatRootStatus:beat?.status??'unavailable',
+    beatRootExact:accurate(beat?.primaryCandidate,track.bpm),
+    beatRootWithinThree:accurate(beat?.primaryCandidate,track.bpm,3),
+    beatRootHalfTimeExact:accurate(beat?.candidates?.[0]?.halfTime,track.bpm),
+    beatRootTopTwo:[beat?.primaryCandidate,beat?.candidates?.[0]?.halfTime].some(x=>accurate(x,track.bpm)),
+    beatRootSections:beat?.sections??[],
     quickExact:exact,quickClose:close,verifyExact:accurate(primaryVerify,track.bpm),
     fluxExact:accurate(flux[0]?.bpm,track.bpm),
     fluxTop3:directChoices.some(x=>accurate(x,track.bpm)),
@@ -55,7 +63,7 @@ try{
     elapsedMs});
   console.log(track.id+' | '+track.split+' | label '+track.bpm+
     ' | quick '+primaryQuick+' | verify '+primaryVerify+
-    ' | flux '+(flux[0]?.bpm??'—')+' | ms '+elapsedMs);
+    ' | flux '+(flux[0]?.bpm??'—')+' | beatroot '+(beat?.primaryCandidate??'—')+' | ms '+elapsedMs);
  }
 }finally{rmSync(work,{recursive:true,force:true});}
 const summarize=(items)=>({
@@ -64,6 +72,10 @@ const summarize=(items)=>({
  quickWithin3:items.filter(x=>x.quickClose).length,
  verifyExact:items.filter(x=>x.verifyExact).length,
  fluxExact:items.filter(x=>x.fluxExact).length,
+ beatRootExact:items.filter(x=>x.beatRootExact).length,
+ beatRootWithinThree:items.filter(x=>x.beatRootWithinThree).length,
+ beatRootHalfTimeExact:items.filter(x=>x.beatRootHalfTimeExact).length,
+ beatRootTopTwo:items.filter(x=>x.beatRootTopTwo).length,
  fluxTop3:items.filter(x=>x.fluxTop3).length,
  octaveEquivalent:items.filter(x=>x.octaveEquivalent).length,
  directAlternativeExact:items.filter(x=>x.directAlternativeExact).length,
@@ -79,7 +91,7 @@ const report={
  engineVersion:ENGINE_VERSION,license:'CC BY 4.0',datasetSize:rows.length,
  groundTruth:'Publisher-encoded BPM in the official example filename (not analysis estimates)',
  scope:'Rhythm/tempo ONLY; samples are labeled loops, NOT full songs and have no musical-key annotations',
- caveat:'Keep held-out reference labels unused for tuning. A broad set of tempo alternatives is NOT a high-precision BPM result.',
+ caveat:'Initial development and held-out labels have already been examined during research. These fixed splits are regression sets, NOT untouched validation. Independent artist-held-out data is needed for generalization.',
  groups,rows
 };
 writeFileSync(join(base,'benchmark-results.json'),JSON.stringify(report,null,2)+'\n');
