@@ -87,7 +87,7 @@ try {
   }
   if (!html.includes('/rhythmcut/assets/')) throw new Error('Incorrect public asset prefix');
   if ((await stat('assets/app-return.js')).size === 0) throw new Error('Website return shell missing');
-  const copy = spawnSync('rsync', ['-a', '--delete', stage + '/', 'rhythmcut/'], { stdio: 'inherit' });
+  const copy = spawnSync('rsync', ['-a', '--delete', '--exclude=rhythmcut-release.tar.gz', stage + '/', 'rhythmcut/'], { stdio: 'inherit' });
   if (copy.status !== 0) throw new Error('Refusing to publish after failed staged copy');
 
   const file = 'assets/registry.js';
