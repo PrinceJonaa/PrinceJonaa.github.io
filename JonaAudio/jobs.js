@@ -37,7 +37,7 @@ export function createJobs({policy=RESOURCE_POLICY,makeContext=()=>new (window.A
    else {
     target.result||={tempo:{bpm:null,alternatives:[],beats:[]},keys:[]};
     if(job.capability==='tempo'){target.result.tempo=message.result||{bpm:null,alternatives:[],beats:[]};if(!job.scopeId&&track.sampleGrid?.bpmOrigin?.startsWith('inherited')&&track.sampleGrid.bpm!==resolveValues(track).bpm){track.gridStale=true;track.candidatesStale=true;track.gridRevision++;}}
-    if(job.capability==='key'){target.result.keys=message.result?.keys||[];target.result.chroma=message.result?.chroma;target.result.keyEvidence=message.result?.evidence;target.result.ambiguous=message.result?.ambiguous||false;}
+    if(job.capability==='key'){target.result.keys=message.result?.keys||[];target.result.chroma=message.result?.chroma;target.result.keyEvidence=message.result?.evidence;target.result.ambiguous=message.result?.ambiguous||false;target.result.disagreement=message.result?.disagreement||false;target.result.peakEvidence=message.result?.peakEvidence||null;target.result.keyComparison=message.result?.keyComparison||null;}
     if(job.capability==='levels')target.result.quality=message.result;
     if(job.capability==='spectrum')target.result.spectrogram=message.result;
     target.result.engineVersion=ENGINE_VERSION;
@@ -120,6 +120,7 @@ export function createJobs({policy=RESOURCE_POLICY,makeContext=()=>new (window.A
    return {input:{channels,sampleRate:buffer.sampleRate,ranges:[{start:start/buffer.sampleRate,end:end/buffer.sampleRate}]},transfer:channels.map(c=>c.buffer)};
   }
   const input=windowInputs(buffer,job.options,policy);
+  input.analysisMode=job.options.mode;
   if(job.capability==='spectrum'){input.windows=input.windows.slice(0,1);input.ranges=input.ranges.slice(0,1);}
   return {input,transfer:input.windows.map(w=>w.samples.buffer)};
  }
