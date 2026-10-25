@@ -30,7 +30,9 @@ export function assessKeyReadiness(result, values = {}) {
   if (new Set(sectionKeys).size > 1) reasons.push('SECTION_DISAGREEMENT');
   if (other && samePitchSet(key, other)) reasons.push('SAME_NOTES_DIFFERENT_TONIC');
   if (sections.length && !sections.some(section => section?.keys?.length)) reasons.push('WEAK_TONAL_EVIDENCE');
-  if (result?.keyComparison?.status === 'disagreement') reasons.push('PROFILE_DISAGREEMENT');
+  if (result?.keyComparison?.relation === 'different-scale-notes') reasons.push('PROFILE_SCALE_CONFLICT');
+  else if (result?.keyComparison?.relation === 'same-scale-different-tonic') reasons.push('PROFILE_TONIC_CONFLICT');
+  else if (result?.keyComparison?.status === 'disagreement') reasons.push('PROFILE_DISAGREEMENT');
   const setup = setupFromKey(key);
   return {
     status: 'review', key, source, reasonCodes: distinct(reasons), alternative: other,
@@ -46,7 +48,9 @@ export function describeKeyReadiness(result, values = {}) {
   if (state.reasonCodes.includes('SECTION_DISAGREEMENT')) parts.push('sections disagree');
   if (state.reasonCodes.includes('CLOSE_CANDIDATES')) parts.push('close key candidates');
   if (state.reasonCodes.includes('SAME_NOTES_DIFFERENT_TONIC')) parts.push('same notes, different tonic');
-  if (state.reasonCodes.includes('PROFILE_DISAGREEMENT')) parts.push('spectral-peak cross-check disagrees');
+  if (state.reasonCodes.includes('PROFILE_SCALE_CONFLICT')) parts.push('cross-check disagrees on allowed tuning notes');
+  if (state.reasonCodes.includes('PROFILE_TONIC_CONFLICT')) parts.push('cross-check shares notes but differs on tonic');
+  if (state.reasonCodes.includes('PROFILE_DISAGREEMENT')) parts.push('cross-check differs; verify the notes');
   if (state.alternative) parts.push('alternative: ' + state.alternative);
   return parts.join(' · ') + '.';
 }
@@ -67,7 +71,10 @@ export function formatTuningReference(result, values = {}) {
     'Tempo: ' + bpm,
     'Tempo candidates: ' + (tempoChoices || 'none'),
     'Alternative key: ' + (state.alternative ?? 'none'),
-    'Verify profile: ' + (result?.keyComparison?.status ?? 'not run') + (result?.keyComparison?.peak ? ' (' + result.keyComparison.peak + ')' : ''),
+    'Verify profile: ' + (result?.keyComparison?.relation ?? result?.keyComparison?.status ?? 'not run') + (result?.keyComparison?.peak ? ' (' + result.keyComparison.peak + ')' : ''),
+    'Scale differences: ' + (result?.keyComparison?.changedNotes ? 
+      'baseline only '+(result.keyComparison.changedNotes.baselineOnly.join(' ')||'none')+
+      '; peak only '+(result.keyComparison.changedNotes.peakOnly.join(' ')||'none') : 'not compared'),
     'Verify tonic, note mask and BPM by ear before setting Auto-Tune.'
   ].join('\n');
 }
