@@ -34,8 +34,12 @@ jobs:
           # Original baselines are guarded but do NOT require a new estimator to fit these songs.
           assert r['groups']['all']['quickExact']>=3
           assert r['groups']['all']['verifyExact']>=4
+          assert r['groups']['all']['beatRootExact']>=12, 'BeatRoot integration failed fixed reference regression'
+          assert r['groups']['held-out']['beatRootExact']>=6, 'Fixed held-out regression; NOT untouched evaluation'
+          assert r['groups']['all']['beatRootTopTwo']>=r['groups']['all']['beatRootExact']
+          assert all(x['beatRootStatus'] in ('review','unavailable') for x in r['rows'])
           print('Original Quick/Verify regressed?',False)
-          print('Measured independent CC BY loops:',r['groups'])
+          print('Original and BeatRoot experimental exact-BPM results:',r['groups'])
           PY
       - name: Save numeric results without copying source audio
         if: always()
