@@ -76,3 +76,102 @@ The runner requires an annotation, but cannot establish if it is musically true.
 5. Promote/replace a detector only if held-out evidence supports it. Otherwise keep Verify comparison-only or roll back.
 
 Atlas plan: https://app.notion.com/p/403adfe90e7081f4ad2ec69fc1e02440
+
+
+## Optional professional reference engines — no cloud audio transfer
+
+The comparison driver \`reference-engines.py\` runs **locally**. It uses existing FFmpeg
+for decoding, plus user-installed libre Python libraries; it never uploads music.
+No third-party key prediction is automatically promoted to "truth". Supported
+references:
+
+- \`--librosa\`: STFT chroma, CQT chroma, CENS; \`--hpss\` adds harmonic-only CQT.
+- \`--essentia\`: if local \`essentia\` Python bindings are available, runs
+  KeyExtractor with the electronic-music \`edma\` and general \`bgate\` profiles
+  and RhythmExtractor2013. The required 44.1 kHz signal is decoded separately.
+  If missing, the JSON explicitly says unavailable; it **never invents results**.
+- Installing libraries is a user-controlled step; confirm Python package support
+  and relevant licenses. Essentia is AGPL-3.0, so the web app does not embed its
+  compiled library in this pilot. Browser sources are not pushed to a server.
+
+Create a *private* file at \`~/Music/JonaAudio-Benchmark/reference-manifest.json\`:
+
+~~~json
+{
+  "schema": 1,
+  "tracks": [
+    {
+      "id": "anonymized-track-01",
+      "path": "/absolute/path/to/your/source.wav"
+    }
+  ]
+}
+~~~
+
+For example, after installing the chosen tools on your Mac:
+
+~~~bash
+python3 JonaAudio/bench/reference-engines.py \
+  ~/Music/JonaAudio-Benchmark/reference-manifest.json \
+  ~/Music/JonaAudio-Benchmark/independent-estimates.json \
+  --librosa --hpss --essentia
+~~~
+
+The resulting JSON contains anonymous IDs, section positions, estimated keys,
+tempo results and explicit unavailability/errors, not raw audio or source paths.
+We have run librosa/CQT/CENS/HPSS locally on the five owner-provided tracks;
+**Essentia was not installed in the analysis runtime** and is not claimed tested.
+
+## Keep *working settings* separate from true key labels
+
+A key chosen in a reliable vocal pitch-correction workflow is a useful reference,
+but may be a relative major/minor label rather than the original musical tonic.
+Use \`working-setting\` for that kind of annotation; use \`session-confirmed\` only
+when original score/MIDI or a separately verified original session establishes it.
+
+The **offline** comparison evaluator accepts this minimal private file:
+
+~~~json
+{
+  "schema": 1,
+  "annotations": [
+    {
+      "id": "anonymized-track-01",
+      "basis": "working-setting",
+      "key": "F major",
+      "bpm": null
+    }
+  ],
+  "predictions": [
+    {
+      "id": "anonymized-track-01",
+      "method": "experimental-peak",
+      "key": "D minor",
+      "bpm": null
+    }
+  ]
+}
+~~~
+
+Run:
+
+~~~bash
+node JonaAudio/bench/run-labeled-score.mjs \
+  ~/Music/JonaAudio-Benchmark/evaluation.json \
+  ~/Music/JonaAudio-Benchmark/scored.json
+~~~
+
+This scores **exact root+mode**, **same allowed scale notes**, **relative-key
+confusions**, **BPM within ±1**, and independent half/double/3:2 metrical relations.
+An F major / D minor pair is *not* an exact match but *is* the same seven-note
+pitch collection for basic major/natural-minor Auto-Tune restrictions. Keep all
+private labeled files out of the public GitHub repository.
+
+## P3 experimental DAW handoff
+
+JonaAudio Quick includes a user-triggered **Export tempo MIDI for Logic** action.
+The file contains a standards-compliant tempo event and 4/4 meter, with no notes
+or any instruction to change a currently open Logic project. An unconfirmed BPM
+requires acknowledgement. The file format is unit-tested; **actual Logic import
+behavior still needs on-device verification**. Nothing controls the Antares AU
+automatically.
