@@ -5,6 +5,7 @@ import {analyzePeakKey,compareKeyFamilies,PEAK_ENGINE_VERSION} from './harmonic-
 import {estimateBassEvidence,compareBassToKeys,BASS_EVIDENCE_VERSION} from './bass-evidence.js';
 import {spectralFluxCandidates,compareTempoFamilies,FLUX_TEMPO_VERSION} from './tempo-crosscheck.js';
 import {buildTempoHypotheses} from './tempo-hypotheses.js';
+import {extractBeatRootPulse,summarizeBeatRootWindows,relateBeatRoot} from './beatroot-evidence.js';
 export {resample} from './resample.js';
 import {prepareRegion} from './sample-dsp.js';
 import {rankCandidates} from './sample-candidates.js';
@@ -33,7 +34,7 @@ export function analyzeCapability(capability,input){
   const variable=readings.some(v=>bpm&&Math.min(Math.abs(v-bpm),Math.abs(v*2-bpm),Math.abs(v/2-bpm))>4);
   // A different onset representation is evaluated only in Verify mode. Do not
   // silently change the BPM, beat markers, or an artist's manually confirmed grid.
-  let fluxEvidence=null,tempoComparison=null,tempoHypotheses=null;
+  let fluxEvidence=null,tempoComparison=null,tempoHypotheses=null,beatRootEvidence=null;
   if(input.analysisMode==='verify'){
    const measured=windows.map(w=>({start:w.start,end:w.end,...spectralFluxCandidates(w.samples,w.sampleRate)}));
    const weighted=new Map();
@@ -47,9 +48,21 @@ export function analyzeCapability(capability,input){
     sections:measured.map(({start,end,status,candidates})=>({start,end,status,candidates:candidates.slice(0,3)}))};
    tempoComparison=compareTempoFamilies({bpm},fluxEvidence);
    tempoHypotheses=buildTempoHypotheses({bpm},fluxEvidence);
+   // Local MIT beat tracking runs only during user-requested Deep analysis.
+   // A second estimate is exposed for explicit human selection. Neither saved
+   // overrides nor the existing primary estimate is ever silently changed.
+   const beatSections=windows.slice(0,3).map(w=>({
+    start:w.start,end:w.end,
+    ...extractBeatRootPulse(w.samples,w.sampleRate,{maxSeconds:Math.min(24,w.samples.length/w.sampleRate)})
+   }));
+   beatRootEvidence=summarizeBeatRootWindows(beatSections);
+   beatRootEvidence.relationToPrimary=relateBeatRoot({bpm},beatRootEvidence);
+   beatRootEvidence.sections=beatSections.map(({start,end,status,bpm,beats,reason})=>({
+    start,end,status,bpm:bpm??null,beats:beats??0,reason:reason??null
+   }));
   }
   return {type:bpm?'result':'unavailable',reason:bpm?null:'No steady tempo found. Try tap tempo or a manual BPM.',
-    result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,fluxEvidence,tempoComparison,tempoHypotheses,
+    result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,fluxEvidence,tempoComparison,tempoHypotheses,beatRootEvidence,
       rangePreference:'none',thresholds:{pulseToRms:.005,aggregateAutocorrelation:.04}},ranges,diagnostics};
  }
  if(capability==='key'){

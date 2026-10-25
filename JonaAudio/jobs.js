@@ -37,7 +37,20 @@ export function createJobs({policy=RESOURCE_POLICY,makeContext=()=>new (window.A
    else {
     target.result||={tempo:{bpm:null,alternatives:[],beats:[]},keys:[]};
     if(job.capability==='tempo'){target.result.tempo=message.result||{bpm:null,alternatives:[],beats:[]};if(!job.scopeId&&track.sampleGrid?.bpmOrigin?.startsWith('inherited')&&track.sampleGrid.bpm!==resolveValues(track).bpm){track.gridStale=true;track.candidatesStale=true;track.gridRevision++;}}
-    if(job.capability==='key'){target.result.keys=message.result?.keys||[];target.result.chroma=message.result?.chroma;target.result.keyEvidence=message.result?.evidence;target.result.ambiguous=message.result?.ambiguous||false;target.result.disagreement=message.result?.disagreement||false;target.result.peakEvidence=message.result?.peakEvidence||null;target.result.keyComparison=message.result?.keyComparison||null;target.result.bassEvidence=message.result?.bassEvidence||null;target.result.bassComparison=message.result?.bassComparison||null;}
+    if(job.capability==='key'){
+     if(job.options.mode==='quick'){
+      target.result.quickKeyEvidence={
+       key:message.result?.keys?.[0]?.key??null,
+       sourceRevision:job.sourceRevision,scopeRevision:job.scopeRevision,
+       source:'Quick analysis',score:message.result?.keys?.[0]?.score??null
+      };
+     }else if(target.result.quickKeyEvidence&&
+      (target.result.quickKeyEvidence.sourceRevision!==job.sourceRevision||
+       target.result.quickKeyEvidence.scopeRevision!==job.scopeRevision)){
+      // A changed source or edited region invalidates the earlier Quick key.
+      delete target.result.quickKeyEvidence;
+     }
+     target.result.keys=message.result?.keys||[];target.result.chroma=message.result?.chroma;target.result.keyEvidence=message.result?.evidence;target.result.ambiguous=message.result?.ambiguous||false;target.result.disagreement=message.result?.disagreement||false;target.result.peakEvidence=message.result?.peakEvidence||null;target.result.keyComparison=message.result?.keyComparison||null;target.result.bassEvidence=message.result?.bassEvidence||null;target.result.bassComparison=message.result?.bassComparison||null;}
     if(job.capability==='levels')target.result.quality=message.result;
     if(job.capability==='spectrum')target.result.spectrogram=message.result;
     target.result.engineVersion=ENGINE_VERSION;

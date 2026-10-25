@@ -1,0 +1,50 @@
+name: JonaAudio source-labeled hip-hop tempo regression
+on:
+  pull_request:
+    paths:
+      - 'JonaAudio/**'
+      - '.github/workflows/jonaaudio-waivops-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare-real-loops:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install the decoder
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Benchmark the 21 committed CC BY drum loops against producer BPMs
+        run: node JonaAudio/bench/run-waivops.mjs
+      - name: Check source integrity and guard original engine regressions
+        run: |
+          python3 - <<'PY'
+          import json,hashlib,pathlib
+          root=pathlib.Path('JonaAudio/bench/fixtures/WaivOps')
+          m=json.loads((root/'manifest.json').read_text())
+          r=json.loads((root/'benchmark-results.json').read_text())
+          assert len(m['tracks'])==r['groups']['all']['count']==21
+          assert r['groups']['development']['count']==11
+          assert r['groups']['held-out']['count']==10
+          assert all(hashlib.sha256((root/t['file']).read_bytes()).hexdigest()==t['sha256'] for t in m['tracks'])
+          # Original baselines are guarded but do NOT require a new estimator to fit these songs.
+          assert r['groups']['all']['quickExact']>=3
+          assert r['groups']['all']['verifyExact']>=4
+          assert r['groups']['all']['beatRootExact']>=12, 'BeatRoot integration failed fixed reference regression'
+          assert r['groups']['held-out']['beatRootExact']>=6, 'Fixed held-out regression; NOT untouched evaluation'
+          assert r['groups']['all']['beatRootTopTwo']>=r['groups']['all']['beatRootExact']
+          assert all(x['beatRootStatus'] in ('review','unavailable') for x in r['rows'])
+          print('Original Quick/Verify regressed?',False)
+          print('Original and BeatRoot experimental exact-BPM results:',r['groups'])
+          PY
+      - name: Save numeric results without copying source audio
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JonaAudio-real-rhythm-regression
+          path: JonaAudio/bench/fixtures/WaivOps/benchmark-results.json
+          if-no-files-found: warn

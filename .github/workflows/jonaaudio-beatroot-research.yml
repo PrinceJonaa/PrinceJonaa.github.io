@@ -1,0 +1,42 @@
+name: JonaAudio permissive BeatRoot tempo comparator (MIT research)
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install FFmpeg and MIT-only BeatRoot in isolated research directory
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+          mkdir -p /tmp/jona-beatroot
+          npm install --prefix /tmp/jona-beatroot --no-save --ignore-scripts music-tempo@1.0.3
+      - name: Evaluate 44.1kHz research reference
+        env:
+          BEATROOT_PACKAGE: /tmp/jona-beatroot/node_modules/music-tempo
+          BEATROOT_SAMPLE_RATE: '44100'
+        run: |
+          node JonaAudio/bench/compare-waivops-beatroot.mjs
+          cp JonaAudio/bench/fixtures/WaivOps/music-tempo-results.json JonaAudio/bench/fixtures/WaivOps/music-tempo-44100-results.json
+      - name: Evaluate production-compatible 11.025kHz worker inputs
+        env:
+          BEATROOT_PACKAGE: /tmp/jona-beatroot/node_modules/music-tempo
+          BEATROOT_SAMPLE_RATE: '11025'
+        run: |
+          node JonaAudio/bench/compare-waivops-beatroot.mjs
+          cp JonaAudio/bench/fixtures/WaivOps/music-tempo-results.json JonaAudio/bench/fixtures/WaivOps/music-tempo-11025-results.json
+      - name: Keep numerical results only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: WaivOps-MIT-BeatRoot-tempo-comparison
+          path: |
+            JonaAudio/bench/fixtures/WaivOps/music-tempo-44100-results.json
+            JonaAudio/bench/fixtures/WaivOps/music-tempo-11025-results.json
+          if-no-files-found: warn

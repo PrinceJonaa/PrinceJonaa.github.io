@@ -36,7 +36,7 @@ const metroFields=node('div','scope-fields');metroFields.append(labelControl('Ph
 const start=node('input',''),end=node('input','');for(const input of [start,end]){input.type='number';input.min='0';input.step='.001';}start.value='0';start.setAttribute('aria-label','Analysis start seconds');end.setAttribute('aria-label','Analysis end seconds');
 const regionFields=node('div','scope-fields');regionFields.append(labelControl('Start seconds',start),labelControl('End seconds',end));
 const scopeActions=node('div','quick-actions');scopeActions.append(button('Analyze this part',()=>{if(!bridge.setScope(Number(start.value),Number(end.value)))return status('Choose a start and end within this source.');bridge.requestAnalysis(['tempo','key']);}),button('Whole track',()=>bridge.setScope(null)));
-const analysisActions=node('div','quick-actions');analysisActions.append(button('Quick analysis',()=>bridge.requestAnalysis(['tempo','key','waveform'],{mode:'quick',force:true})),button('Deep analysis',()=>bridge.requestAnalysis(['tempo','key'],{mode:'verify',force:true})),button('Export tempo MIDI for Logic',()=>bridge.downloadTempoMidi()),button('Cancel analysis',()=>bridge.cancel(bridge.selectedId())));
+const analysisActions=node('div','quick-actions');analysisActions.append(button('Quick analysis',()=>bridge.requestAnalysis(['tempo','key','waveform'],{mode:'quick',force:true})),button('Improve BPM',()=>bridge.requestAnalysis(['tempo'],{mode:'verify',force:true})),button('Deep analysis',()=>bridge.requestAnalysis(['tempo','key'],{mode:'verify',force:true})),button('Export tempo MIDI for Logic',()=>bridge.downloadTempoMidi()),button('Cancel analysis',()=>bridge.cancel(bridge.selectedId())));
 controls.append(progress,rangeText,quickCandidates,musicalActions,metroFields,node('p','muted','Metronome phase is adjustable; an estimated beat does not establish a downbeat.'),regionFields,scopeActions,analysisActions);
 quick.append(empty,quickActions,quickWorkspace,controls,shortcuts);
 function labelControl(text,control){const l=node('label','compare-label',text);l.append(control);return l;}
@@ -191,17 +191,33 @@ function refreshMusical(current){
  const ranges=[...(tempo?.ranges||[]),...(key?.ranges||[])],unique=[...new Map(ranges.map(r=>[r.start+':'+r.end,r])).values()];
  rangeText.textContent='Scope: '+values.scope+(unique.length?' · Sampled '+unique.map(r=>r.start.toFixed(1)+'–'+r.end.toFixed(1)+' s').join(', '):' · Ranges appear as analysis completes');
  quickCandidates.replaceChildren();const result=current.scopeResult;
- const measured=(result?.tempo?.alternatives||[]).slice(0,3).map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · main estimate'}));
+ const beat=result?.tempo?.beatRootEvidence;
+ const beatCandidates=beat?.status==='review'?[
+  {field:'bpm',value:beat.primaryCandidate,text:beat.primaryCandidate+' BPM · BeatRoot candidate (unverified)'},
+  ...(beat.candidates[0]?.halfTime?[{field:'bpm',value:beat.candidates[0].halfTime,text:beat.candidates[0].halfTime+' BPM · ½-time BeatRoot feel'}]:[]),
+  ...(beat.candidates[0]?.doubleTime?[{field:'bpm',value:beat.candidates[0].doubleTime,text:beat.candidates[0].doubleTime+' BPM · 2× BeatRoot feel'}]:[])
+ ]:[];
+ const measured=(result?.tempo?.alternatives||[]).slice(0,3).map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · original estimate'}));
  const reviewPulse=result?.tempo?.tempoHypotheses;
  const direct=(reviewPulse?.direct||[]).filter(x=>x.source!=='original-estimate').slice(0,4)
   .map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · extra pulse'}));
  const metrical=(reviewPulse?.metricalAlternatives||[]).slice(0,5)
   .map(x=>({field:'bpm',value:x.bpm,text:x.bpm+' BPM · '+x.relationship}));
- const candidateKeys=(result?.keys||[]).slice(0,4).map(x=>({field:'key',value:x.key,text:x.key+' · estimated key'}));
- const choices=[...measured,...direct,...metrical,...candidateKeys].filter((value,index,array)=>
+ const savedQuick=result?.quickKeyEvidence;
+ const scopeRevision=current.analysisScopeId?
+  (current.regions||[]).find(r=>r.id===current.analysisScopeId)?.regionRevision??0:0;
+ const quickKeyChoices=savedQuick?.key&&savedQuick.sourceRevision===current.sourceRevision&&
+   savedQuick.scopeRevision===scopeRevision?
+  [{field:'key',value:savedQuick.key,text:savedQuick.key+' · Quick key (retained)'}]:[];
+ const candidateKeys=(result?.keys||[]).slice(0,4).map(x=>({field:'key',value:x.key,text:x.key+' · Deep key candidate'}));
+ const choices=[...beatCandidates,...measured,...direct,...metrical,...quickKeyChoices,...candidateKeys].filter((value,index,array)=>
   index===array.findIndex(other=>other.field===value.field&&Math.abs(value.field==='bpm'?other.value-value.value:0)<.75&&
    (value.field==='bpm'||other.value===value.value)));
- for(const c of choices)quickCandidates.append(button(c.text,()=>bridge.setOverride(c.field,c.value,'candidate-choice'),'candidate'));
+ // Keep this usable on iPhone: preferred pulse readings and the retained Quick
+ // key stay visible, while the full research candidate list remains in exports.
+ const visibleChoices=[...choices.filter(c=>c.field==='bpm').slice(0,7),
+  ...choices.filter(c=>c.field==='key').slice(0,4)];
+ for(const c of visibleChoices)quickCandidates.append(button(c.text,()=>bridge.setOverride(c.field,c.value,'candidate-choice'),'candidate'));
  for(const [b,f] of [[half,.5],[double,2]]){const value=tempoMultiple(values.bpm,f);b.disabled=value==null;b.title=value==null?'Choose a tempo; the result must stay between 25 and 400 BPM.':'Use '+value+' BPM';b.textContent=(f===.5?'½':'2×')+' tempo'+(value==null?'':' · '+value);}
  metroButton.disabled=!Number.isFinite(values.bpm);phase.disabled=metronome.running;count.disabled=metronome.running;
 }
