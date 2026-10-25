@@ -2,10 +2,10 @@ name: Site-99 archive acceptance
 on:
   pull_request:
     branches: [main]
-    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml']
+    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml', '.node-version']
   push:
     branches: [main]
-    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml']
+    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml', '.node-version']
   workflow_dispatch:
 permissions:
   contents: read

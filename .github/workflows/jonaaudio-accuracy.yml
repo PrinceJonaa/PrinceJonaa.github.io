@@ -4,6 +4,7 @@ on:
     paths:
       - 'JonaAudio/**'
       - '.github/workflows/jonaaudio-accuracy.yml'
+      - '.node-version'
   workflow_dispatch:
 permissions:
   contents: read

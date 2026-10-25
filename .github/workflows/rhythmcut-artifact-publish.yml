@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/publish-rhythmcut-artifact.mjs'
       - '.github/workflows/rhythmcut-artifact-publish.yml'
+      - '.node-version'
       - 'tests/catalog.test.mjs'
       - 'tests/live-release.test.mjs'
       - 'scripts/verify-rhythmcut-live.mjs'
@@ -13,6 +14,7 @@ on:
     paths:
       - 'scripts/publish-rhythmcut-artifact.mjs'
       - '.github/workflows/rhythmcut-artifact-publish.yml'
+      - '.node-version'
       - 'scripts/verify-rhythmcut-live.mjs'
       - 'tests/live-release.test.mjs'
   schedule:

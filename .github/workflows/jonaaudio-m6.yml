@@ -2,9 +2,9 @@ name: JonaAudio M6 regression
 on:
   push:
     branches: [main, feat/jonaaudio-m1]
-    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml']
+    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml', '.node-version']
   pull_request:
-    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml']
+    paths: ['JonaAudio/**', '.github/workflows/jonaaudio-m6.yml', '.node-version']
   workflow_dispatch:
 permissions:
   contents: read
