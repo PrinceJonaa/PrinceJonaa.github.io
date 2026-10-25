@@ -1,7 +1,7 @@
 {
   "app": "RhythmCut",
   "edition": "Unified Timeline Studio",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "source": "https://github.com/PrinceJonaa/rhythmcut",
   "sourceRef": "codex/unified-timeline-engine",
   "publicationMode": "pinned",
@@ -12,9 +12,9 @@
     "background preview copies",
     "prepared-frame backend (diagnostic opt-in, no device auto-enabled)"
   ],
-  "commit": "a6082f0af5accecf9793af1bd082b8d6677f20bc",
+  "commit": "ab370e09b27f73bdb5e7539065567d1005a2b477",
   "path": "/rhythmcut/",
-  "builtAt": "2026-10-21T03:13:41.065Z",
+  "builtAt": "2026-10-25T04:34:14.834Z",
   "verifiedChecks": [
     "Node 22 typecheck and unit tests",
     "Timeline editing and seed history",
