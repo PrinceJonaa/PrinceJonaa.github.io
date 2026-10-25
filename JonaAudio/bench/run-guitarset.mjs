@@ -41,6 +41,7 @@ try{
    ...fractionalPulseCandidates(w.samples,w.sampleRate,{start:0,end:w.samples.length/w.sampleRate})
   })));
   const refinedBpm=refinement.candidates?.[0]?.bpm??null;
+  const beatRootBpm=verifiedTempo.result?.beatRootEvidence?.primaryCandidate??null;
   const keyCandidates=verifiedKey.result?.keys?.slice(0,3)??[];
   const expected=parsedKey(track.key);
   const top3KeyMatch=Boolean(expected&&keyCandidates.some(k=>parsedKey(k.key)?.canonical===expected.canonical));
@@ -53,7 +54,8 @@ try{
    ['Spectral Peaks',peakKey,null],
    ['Spectral Flux',null,fluxBpm],
    ['Fused key (review only)',combinedKey,null],
-   ['Fractional pulse (review only)',null,refinedBpm]
+   ['Fractional pulse (review only)',null,refinedBpm],
+   ['MIT BeatRoot (review only)',null,beatRootBpm]
   ];
   annotations.push({id:track.id,basis:'session-confirmed',key:track.key,bpm:track.bpm});
   for(const [method,key,bpm] of values)predictions.push({id:track.id,method,key,bpm});
@@ -66,6 +68,9 @@ try{
    spectralFlux:{bpm:fluxBpm,candidates:verifiedTempo.result?.fluxEvidence?.candidates?.slice(0,3)??[]},
    keyFusion:{key:combinedKey,candidates:fusion.keys?.slice(0,3)??[],context:'offline-only'},
    fractionalPulse:{bpm:refinedBpm,candidates:refinement.candidates?.slice(0,3)??[],context:'offline-only'},
+   beatRoot:{bpm:beatRootBpm,sections:verifiedTempo.result?.beatRootEvidence?.sections??[],
+    halfTime:verifiedTempo.result?.beatRootEvidence?.candidates?.[0]?.halfTime??null,
+    context:'Deep review only; never automatically replaces the primary BPM'},
    hypothesisCoverage:{keyInTopThree:top3KeyMatch,tempoWithinOneAmongChoices:hasNearCorrectPulse,
     numberOfTempoChoices:possiblePulseChoices.length,alternativePulseModes:alternatives?.metricalAlternatives?.slice(0,6)??[]},
    evidence:{keyComparison:verifiedKey.result?.keyComparison??null,
@@ -74,7 +79,7 @@ try{
    durationSeconds:+audio.duration.toFixed(2)});
   console.log([track.id,'reference:',track.key,track.bpm+'BPM','quick:',values[0][1],values[0][2],
    'verify:',originalKey,values[1][2],'peaks:',peakKey,'flux:',fluxBpm,
-   'fusion:',combinedKey,'fractional:',refinedBpm].join(' | '));
+   'fusion:',combinedKey,'fractional:',refinedBpm,'beatroot:',beatRootBpm].join(' | '));
  }
 }finally{rmSync(working,{recursive:true,force:true});}
 
