@@ -1,0 +1,55 @@
+name: JonaAudio creator-separated expert tempo evaluation
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  creator-external:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install FSLD archive range reader and offline audio decoder
+        run: |
+          python -m pip install --disable-pip-version-check remotezip==0.12.3
+          sudo apt-get update -qq && sudo apt-get install -y -qq ffmpeg
+      - name: Download original creator-separated, expert-BPM-consensus loops from official FSLD
+        run: python -u JonaAudio/bench/fetch-fsld-creator-test.py
+      - name: Score JonaAudio on source BPMs with abstention and no model tuning
+        run: node JonaAudio/bench/run-fsld.mjs
+      - name: Verify no uploader leak, provenance, no labels learned by selector
+        run: |
+          python - <<'PY'
+          import json,pathlib,hashlib
+          folder=pathlib.Path('JonaAudio/bench/fixtures/FSLD')
+          manifest=json.loads((folder/'manifest.json').read_text())
+          result=json.loads((folder/'fsld-results.json').read_text())
+          sources=manifest['sources']
+          assert len(sources)>=20
+          assert len({x['creatorDigest'] for x in sources})==len(sources)
+          assert {x['split'] for x in sources}=={'development','evaluation'}
+          assert all(x['expertCount']>=2 and x['licenseType'] in ('CC0','CC BY') for x in sources)
+          assert all(hashlib.sha256((folder/x['file']).read_bytes()).hexdigest()==x['sha256'] for x in sources)
+          assert len(result['rows'])==len(sources)
+          assert result['creatorDisjoint'] and result['labelsFixedBeforeSelectorRun']
+          for scope,data in result['groups'].items():
+            assert data['recommended']==data['recommendedCorrect']+data['incorrectRecommendations']
+            assert data['abstained']==data['count']-data['recommended']
+          print('FSLD third-party expert BPM evaluated with creator-disjoint rights checked',result['groups'])
+          PY
+      - name: Preserve metadata and numerical test outcome only, NEVER third-party audio files
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: JonaAudio-FSLD-creator-separated-independent-metrics
+          path: |
+            JonaAudio/bench/fixtures/FSLD/manifest.json
+            JonaAudio/bench/fixtures/FSLD/fsld-results.json
+          if-no-files-found: warn
+          retention-days: 30
