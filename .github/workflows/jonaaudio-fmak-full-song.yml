@@ -1,12 +1,5 @@
 name: JonaAudio expert full-song key benchmark (FMAK, licensed only)
 on:
-  pull_request:
-    paths:
-      - 'JonaAudio/bench/audit-fmak-licenses.py'
-      - 'JonaAudio/bench/fetch-fmak-licensed-audio.py'
-      - 'JonaAudio/bench/run-fmak-full-songs.mjs'
-      - 'JonaAudio/bench/compare-fmak-essentia.py'
-      - '.github/workflows/jonaaudio-fmak-full-song.yml'
   workflow_dispatch:
 permissions:
   contents: read
