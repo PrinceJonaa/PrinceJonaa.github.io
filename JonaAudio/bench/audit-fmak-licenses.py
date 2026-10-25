@@ -66,12 +66,14 @@ def read_tracks_zip():
 def safe_license(license):
     norm=(license or '').strip().lower()
     # Conservative: allow CC0, public domain, CC BY / BY-SA; exclude NC and ND.
-    if any(x in norm for x in ('noncommercial','no-derivatives','nonderivatives','-nc','-nd','download only','limited')):
-        return False
-    if 'cc0' in norm or norm in ('public domain','publicdomain'):
-        return True
-    return norm in {'attribution','attribution-sharealike','cc by','cc by-sa',
-                    'creative commons attribution','creative commons attribution-sharealike'}
+    banned=('noncommercial','non-commercial','no-derivatives','nonderivatives',
+            'no derivative','no-deriv','noderiv','-nc','-nd','download only','limited')
+    if any(x in norm for x in banned):return False
+    if 'cc0' in norm or norm in ('public domain','publicdomain'):return True
+    # Legacy FMA license labels are often "Attribution 3.0 United States" and
+    # "Attribution 4.0 International"; those are CC BY, NOT ambiguous SA/NC/ND.
+    return bool(re.fullmatch(r'attribution(?: [1-9]\\.[0-9]+(?: [a-z][a-z :.-]*)?)?',norm) or
+                norm in ('cc by','creative commons attribution'))
 
 def main():
     labels,hashLabels=read_labels()
