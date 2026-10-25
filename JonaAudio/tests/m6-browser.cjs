@@ -29,8 +29,7 @@ function wav(seconds=5,rate=44100,tempo=120){
   const initialKey=await page.evaluate(()=>window.JonaAudioBridge.list()[0].scopeResult?.keys?.[0]?.key||null);
   assert.ok(await page.locator('#copy-tuning').isEnabled(),'Tuning reference available for a detected key');
   assert.match(await page.locator('#key-alt').innerText(),/Unverified estimate|Selected key/);
-  await page.locator('#mode').selectOption('verify');
-  await page.evaluate(()=>window.JonaAudioBridge.requestAnalysis(['key'],{force:true}));
+  await page.evaluate(()=>window.JonaAudioBridge.requestAnalysis(['key'],{mode:'verify',force:true}));
   await page.waitForFunction(()=>['agreement','disagreement','unavailable'].includes(window.JonaAudioBridge.list()[0]?.scopeResult?.keyComparison?.status),null,{timeout:60000});
   const checked=await page.evaluate(()=>window.JonaAudioBridge.list()[0].scopeResult);
   assert.equal(checked.keys[0].key,initialKey,'Secondary engine must not override legacy key');
