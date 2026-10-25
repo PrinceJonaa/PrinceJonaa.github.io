@@ -72,7 +72,7 @@ def safe_license(license):
     if 'cc0' in norm or norm in ('public domain','publicdomain'):return True
     # Legacy FMA license labels are often "Attribution 3.0 United States" and
     # "Attribution 4.0 International"; those are CC BY, NOT ambiguous SA/NC/ND.
-    return bool(re.fullmatch(r'attribution(?: [1-9]\\.[0-9]+(?: [a-z][a-z :.-]*)?)?',norm) or
+    return bool(re.fullmatch(r'attribution(?: [1-9]\.[0-9]+(?: [a-z][a-z :.-]*)?)?',norm) or
                 norm in ('cc by','creative commons attribution'))
 
 def main():
