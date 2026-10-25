@@ -15,7 +15,8 @@ export function decideTempo({beatRoot,originalBpm=null,flux=null}={}){
  const root=beatRoot?.primaryCandidate;
  const base={version:TEMPO_DECISION_VERSION,status:'abstain',suggestedBpm:null,
   suggestionType:null,calibratedProbability:null,autoApplied:false,
-  alternateBpm:null,reasonCodes:[],evidence:[],
+  alternateBpm:null,reasonCodes:[],evidence:[],safeToAutoApply:false,
+  reviewClassification:'experimental',
   note:'Musical metrical level may remain ambiguous even if onset tracking is precise.'};
  if(beatRoot?.status!=='review'||!valid(root)||root<MIN||root>MAX)
   return {...base,reasonCodes:['NO_TRACKED_PULSE']};
@@ -65,7 +66,7 @@ export function decideTempo({beatRoot,originalBpm=null,flux=null}={}){
  return {...suggestions,reasonCodes:['NO_INDEPENDENT_METER_SUPPORT']};
 }
 export function describeTempoDecision(decision){
- if(decision?.status==='recommend')return 'Suggested: '+decision.suggestedBpm+' BPM ('+
+ if(decision?.status==='recommend')return 'Experimental suggestion: '+decision.suggestedBpm+' BPM ('+
   (decision.suggestionType==='half-time'?'half-time':'normal pulse')+
   '; unverified — select to use)';
  return decision?.alternateBpm!=null?
