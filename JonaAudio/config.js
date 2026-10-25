@@ -1,5 +1,5 @@
 const MiB=1024*1024;
-export const ENGINE_VERSION='jona-dsp-2.2.0-experimental';
+export const ENGINE_VERSION='jona-dsp-2.3.0-experimental';
 export const RESOURCE_POLICY=Object.freeze({maxTracks:80,maxFileBytes:125*MiB,decodedBytes:128*MiB,decodedUpperCeiling:256*MiB,totalKnownBytes:192*MiB,analysisWindowBytes:24*MiB,workerScratchBytes:8*MiB,regionCacheBytes:16*MiB,exportBytes:64*MiB,decodeSampleRate:44100,nearSilenceDb:-70,jobTimeoutMs:120000,metadataTimeoutMs:4000,waveformBuckets:1200,waveformSamplesPerBucket:16,maxCacheEntries:256,featureChunkBytes:4*MiB});
 export function allocationEstimate({duration,channels=2,rate=RESOURCE_POLICY.decodeSampleRate,encodedBytes=0,windowBytes=RESOURCE_POLICY.analysisWindowBytes,scratchBytes=RESOURCE_POLICY.workerScratchBytes}) {
  const decodedBytes=Number.isFinite(duration)&&duration>0?Math.ceil(duration*rate*channels*4):null;
