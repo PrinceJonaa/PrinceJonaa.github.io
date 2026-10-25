@@ -50,3 +50,18 @@ test('separate full-spectrum and peak-profile estimates are still explicitly unc
  assert.equal(v.diagnostics.scores,'raw similarity/autocorrelation; not probabilities');
  assert.equal(v.result.peakEvidence.scores,'uncalibrated');
 });
+
+test('distinguish two tonal centers that permit the same notes from incompatible scales',()=>{
+ const same=compareKeyFamilies([{key:'A major'}],{keys:[{key:'F♯ minor'}]});
+ assert.equal(same.status,'disagreement');
+ assert.equal(same.relation,'same-scale-different-tonic');
+ assert.equal(same.sameAllowedNotes,true);
+ assert.deepEqual(same.changedNotes.baselineOnly,[]);
+ assert.deepEqual(same.changedNotes.peakOnly,[]);
+ const changed=compareKeyFamilies([{key:'F minor'}],{keys:[{key:'C♯ major'}]});
+ assert.equal(changed.status,'disagreement');
+ assert.equal(changed.relation,'different-scale-notes');
+ assert.equal(changed.sameAllowedNotes,false);
+ assert.ok(changed.changedNotes.baselineOnly.length);
+ assert.ok(changed.changedNotes.peakOnly.length);
+});
