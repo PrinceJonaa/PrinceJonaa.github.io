@@ -4,8 +4,7 @@ import {resample} from './resample.js';
 import {analyzePeakKey,compareKeyFamilies,PEAK_ENGINE_VERSION} from './harmonic-key.js';
 import {estimateBassEvidence,compareBassToKeys,BASS_EVIDENCE_VERSION} from './bass-evidence.js';
 import {spectralFluxCandidates,compareTempoFamilies,FLUX_TEMPO_VERSION} from './tempo-crosscheck.js';
-import {fractionalPulseCandidates,aggregateRefinedPulse} from './pulse-refinement.js';
-import {fuseKeyProfiles} from './key-fusion.js';
+import {buildTempoHypotheses} from './tempo-hypotheses.js';
 export {resample} from './resample.js';
 import {prepareRegion} from './sample-dsp.js';
 import {rankCandidates} from './sample-candidates.js';
@@ -34,7 +33,7 @@ export function analyzeCapability(capability,input){
   const variable=readings.some(v=>bpm&&Math.min(Math.abs(v-bpm),Math.abs(v*2-bpm),Math.abs(v/2-bpm))>4);
   // A different onset representation is evaluated only in Verify mode. Do not
   // silently change the BPM, beat markers, or an artist's manually confirmed grid.
-  let fluxEvidence=null,tempoComparison=null,pulseRefinement=null;
+  let fluxEvidence=null,tempoComparison=null,tempoHypotheses=null;
   if(input.analysisMode==='verify'){
    const measured=windows.map(w=>({start:w.start,end:w.end,...spectralFluxCandidates(w.samples,w.sampleRate)}));
    const weighted=new Map();
@@ -47,13 +46,10 @@ export function analyzeCapability(capability,input){
    fluxEvidence={method:FLUX_TEMPO_VERSION,candidates,scores:'uncalibrated',
     sections:measured.map(({start,end,status,candidates})=>({start,end,status,candidates:candidates.slice(0,3)}))};
    tempoComparison=compareTempoFamilies({bpm},fluxEvidence);
-   // Review-only sub-hop refinement; the published/main BPM never changes here.
-   const refined=windows.map(w=>({start:w.start,end:w.end,
-     ...fractionalPulseCandidates(w.samples,w.sampleRate,{start:0,end:w.samples.length/w.sampleRate})}));
-   pulseRefinement=aggregateRefinedPulse(refined);
+   tempoHypotheses=buildTempoHypotheses({bpm},fluxEvidence);
   }
   return {type:bpm?'result':'unavailable',reason:bpm?null:'No steady tempo found. Try tap tempo or a manual BPM.',
-    result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,fluxEvidence,tempoComparison,pulseRefinement,
+    result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,fluxEvidence,tempoComparison,tempoHypotheses,
       rangePreference:'none',thresholds:{pulseToRms:.005,aggregateAutocorrelation:.04}},ranges,diagnostics};
  }
  if(capability==='key'){
@@ -67,7 +63,7 @@ export function analyzeCapability(capability,input){
   const disagreement=new Set(evidence.flatMap(e=>e.keys.length?[e.keys[0].key]:[])).size>1,ambiguous=(keys[0].score-keys[1].score)<.025||disagreement;
   // Verify computes a SECOND, bounded spectral-peak profile. Quick remains baseline speed.
   // Both profiles share FFT and key templates; agreement is not independent validation.
-  let peakEvidence=null,keyComparison=null,bassEvidence=null,bassComparison=null,keyFusion=null;
+  let peakEvidence=null,keyComparison=null,bassEvidence=null,bassComparison=null;
   if(input.analysisMode==='verify'){
    const peaks=windows.map(w=>({start:w.start,end:w.end,...analyzePeakKey(w.samples,w.sampleRate,[{start:0,end:w.samples.length/w.sampleRate}],{maxFrames:24})}));
    const usable=peaks.filter(p=>p.status!=='unavailable');
@@ -79,8 +75,6 @@ export function analyzeCapability(capability,input){
      method:PEAK_ENGINE_VERSION,scores:'uncalibrated'};
    }else peakEvidence={keys:[],chroma:null,sections:peaks.map(({start,end,status,reason})=>({start,end,status,reason})),method:PEAK_ENGINE_VERSION};
    keyComparison=compareKeyFamilies(keys,peakEvidence);
-   // Correlated profile fusion is an additional candidate ranking, not an override.
-   keyFusion=fuseKeyProfiles(chroma,peakEvidence.chroma);
    // Separate low-frequency note distribution. Bass pitch support is not a key label.
    // Keep bounded work per region and never automatically rerank the original key.
    const bassSegments=windows.map(w=>({start:w.start,end:w.end,
@@ -100,7 +94,7 @@ export function analyzeCapability(capability,input){
    }else bassEvidence={status:'unavailable',method:BASS_EVIDENCE_VERSION,
      reason:'No usable low-register note evidence',notes:[]};
   }
-  return {type:'result',result:{keys,chroma,evidence,ambiguous,disagreement,peakEvidence,keyComparison,bassEvidence,bassComparison,keyFusion,
+  return {type:'result',result:{keys,chroma,evidence,ambiguous,disagreement,peakEvidence,keyComparison,bassEvidence,bassComparison,
    thresholds:{tonalContrast:.12,closeSimilarityGap:.025}},ranges,
    diagnostics:{...diagnostics,verification:input.analysisMode==='verify'?'bounded spectral-peak cross-check (experimental)':'baseline quick'}};
  }
