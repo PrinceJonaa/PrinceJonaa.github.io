@@ -56,7 +56,7 @@ try{
   rows.push(row);
   console.log('FSLD',index+1,meta.sources.length,song.split,'label',reference,
    'quick',row.quickBpm,'BeatRoot',row.beatRootBpm,'decision',suggested??'ABSTAIN',
-   'correct',row.sourceMatchDecision,flush=true);
+   'correct',row.sourceMatchDecision);
  }
 }finally{rmSync(work,{force:true,recursive:true});}
 const summarize=values=>{
