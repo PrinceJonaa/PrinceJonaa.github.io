@@ -50,7 +50,7 @@ try{
    verifyTopCandidates:candidates.map(x=>x.key)
   });
   console.log(track.id,track.genre,track.key,'quick',rows.at(-1).quick,
-    'verify',rows.at(-1).verify,'peaks',rows.at(-1).peak,'duration',audio.duration.toFixed(1),flush=true);
+    'verify',rows.at(-1).verify,'peaks',rows.at(-1).peak,'duration',audio.duration.toFixed(1));
  }
 }finally{rmSync(scratch,{recursive:true,force:true});}
 const summarize=(items)=>({
