@@ -8,6 +8,7 @@ import csv
 import hashlib
 import io
 import json
+import re
 import urllib.request
 from pathlib import Path
 
