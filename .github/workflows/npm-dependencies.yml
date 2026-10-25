@@ -18,16 +18,7 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version-file: .node-version
-      - name: Generate a reviewable lockfile during the bootstrap PR only
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [ ! -f package-lock.json ]; then
-            npm install --package-lock-only --ignore-scripts --no-audit --no-fund
-            echo "BOOTSTRAP_LOCKFILE_BEGIN"
-            node -e "const b=require('fs').readFileSync('package-lock.json').toString('base64');for(const part of b.match(/.{1,120}/g)||[])console.log('LOCKPART='+part)"
-            echo "BOOTSTRAP_LOCKFILE_END"
-          fi
+          cache: npm
       - name: Reproduce dependency graph
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Validate dependency and peer resolution

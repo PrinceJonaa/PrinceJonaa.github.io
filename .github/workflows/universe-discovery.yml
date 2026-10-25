@@ -2,9 +2,9 @@ name: Universe acceptance
 on:
   push:
     branches: [main, feat/universe-s0-s1, feat/universe-s1-s2]
-    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'cloudflare/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', 'records/**', '.github/workflows/universe-discovery.yml', '.node-version']
+    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'cloudflare/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', 'records/**', '.github/workflows/universe-discovery.yml', '.node-version', 'package.json', 'package-lock.json']
   pull_request:
-    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', 'records/**', '.github/workflows/universe-discovery.yml', '.node-version']
+    paths: ['assets/**', 'tests/**', 'scripts/**', '*.html', 'apps/**', 'atlas/**', 'music/**', 'work/**', 'services/**', 'beatcut/**', 'supabase/**', 'about/**', 'operations/**', 'craft/**', 'rhythmcut/index.html', 'JonaAudio/**', 'records/**', '.github/workflows/universe-discovery.yml', '.node-version', 'package.json', 'package-lock.json']
 permissions:
   contents: read
 jobs:
@@ -22,7 +22,7 @@ jobs:
           node records/jona-52/tests/m1-m2.smoke.mjs
       - name: Browser runtime
         run: |
-          npm install --no-save --no-package-lock playwright@1.58.2 @electric-sql/pglite@0.5.9
+          npm ci --ignore-scripts --no-audit --no-fund
           npx playwright install --with-deps chromium
       - name: Consolidated browser acceptance
         run: |

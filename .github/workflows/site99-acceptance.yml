@@ -2,10 +2,10 @@ name: Site-99 archive acceptance
 on:
   pull_request:
     branches: [main]
-    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml', '.node-version']
+    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml', '.node-version', 'package.json', 'package-lock.json']
   push:
     branches: [main]
-    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml', '.node-version']
+    paths: ['records/jona-52/**', '.github/workflows/site99-acceptance.yml', '.node-version', 'package.json', 'package-lock.json']
   workflow_dispatch:
 permissions:
   contents: read
@@ -33,7 +33,7 @@ jobs:
           node-version-file: .node-version
       - name: Install Chromium test runtime
         run: |
-          npm install --no-save --no-package-lock playwright@1.58.2
+          npm ci --ignore-scripts --no-audit --no-fund
           npx playwright install --with-deps chromium
       - name: Test Site-99 interactive routes and notebook at mobile sizes
         run: node records/jona-52/tests/browser.cjs
