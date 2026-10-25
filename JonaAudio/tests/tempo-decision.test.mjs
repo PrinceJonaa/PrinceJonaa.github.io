@@ -16,9 +16,11 @@ test('normal pulse is suggested only when independent reading supports it',()=>{
  assert.equal(result.suggestedBpm,145);
  assert.equal(result.suggestionType,'normal');
  assert.equal(result.autoApplied,false);
+ assert.equal(result.safeToAutoApply,false);
+ assert.equal(result.reviewClassification,'experimental');
  assert.equal(result.calibratedProbability,null);
  assert.equal(result.version,TEMPO_DECISION_VERSION);
- assert.match(describeTempoDecision(result),/Suggested/);
+ assert.match(describeTempoDecision(result),/Experimental suggestion/);
 });
 test('half-time requires both other onset representations to support half BPM',()=>{
  const approved=decideTempo({beatRoot:beat(160),originalBpm:80.5,flux:flux(79.6)});
