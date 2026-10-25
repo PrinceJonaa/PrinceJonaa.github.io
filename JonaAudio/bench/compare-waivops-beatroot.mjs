@@ -24,7 +24,8 @@ try{
     bufferSize:2048,hopSize:441,timeStep:.01,
     minBeatInterval:60/210,maxBeatInterval:60/55
   });
-  const bpm=Number.isFinite(mt.tempo)?+mt.tempo.toFixed(2):null;
+  const parsed=Number(mt.tempo); // Upstream BeatRoot serializes BPM with toFixed() to a string.
+  const bpm=Number.isFinite(parsed)&&parsed>0?+parsed.toFixed(2):null;
   rows.push({id:track.id,bpm,reference:track.bpm,split:track.split,group:track.genreGroup,
    within1:bpm!==null&&Math.abs(track.bpm-bpm)<=1,
    within3:bpm!==null&&Math.abs(track.bpm-bpm)<=3,
