@@ -26,5 +26,7 @@ test('BPM and meter validation never fabricate MIDI for unsafe values',()=>{
  for(const bad of [0,-90,Infinity,NaN,401,19])assert.throws(()=>makeTempoMidi(bad));
  assert.throws(()=>makeTempoMidi(120,{denominator:3}));
  assert.throws(()=>makeTempoMidi(120,{numerator:0}));
- assert.equal(makeTempoMidi(94,{numerator:3,denominator:8})[54],3);
+ const meter=makeTempoMidi(94,{numerator:3,denominator:8});
+ assert.equal(meter[52],3);
+ assert.equal(meter[53],3); // denominator 2^3 = 8
 });
