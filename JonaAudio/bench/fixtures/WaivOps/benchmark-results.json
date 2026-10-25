@@ -102,7 +102,7 @@
           "score": 0.623
         }
       ],
-      "elapsedMs": 116.5
+      "elapsedMs": 110.7
     },
     {
       "id": "115bpm_hh_trp_id_01_000678",
@@ -136,7 +136,7 @@
           "score": 0.624
         }
       ],
-      "elapsedMs": 53.2
+      "elapsedMs": 59.4
     },
     {
       "id": "122bpm_hh_trp_id_01_002090",
@@ -170,7 +170,7 @@
           "score": 0.672
         }
       ],
-      "elapsedMs": 50.3
+      "elapsedMs": 53.7
     },
     {
       "id": "128bpm_hh_trp_id_01_003019",
@@ -204,7 +204,7 @@
           "score": 0.392
         }
       ],
-      "elapsedMs": 66.1
+      "elapsedMs": 64.1
     },
     {
       "id": "135bpm_hh_trp_id_01_004513",
@@ -238,7 +238,7 @@
           "score": 1.864
         }
       ],
-      "elapsedMs": 45.6
+      "elapsedMs": 45.4
     },
     {
       "id": "140bpm_hh_trp_id_01_005898",
@@ -272,7 +272,7 @@
           "score": 1.593
         }
       ],
-      "elapsedMs": 47.2
+      "elapsedMs": 45.3
     },
     {
       "id": "142bpm_hh_trp_id_01_006363",
@@ -306,7 +306,7 @@
           "score": 0.743
         }
       ],
-      "elapsedMs": 53.9
+      "elapsedMs": 39.9
     },
     {
       "id": "145bpm_hh_trp_id_01_006875",
@@ -340,7 +340,7 @@
           "score": 1.041
         }
       ],
-      "elapsedMs": 45.3
+      "elapsedMs": 56.5
     },
     {
       "id": "148bpm_hh_trp_id_01_007214",
@@ -374,7 +374,7 @@
           "score": 0.98
         }
       ],
-      "elapsedMs": 42.8
+      "elapsedMs": 42.7
     },
     {
       "id": "150bpm_hh_trp_id_01_007953",
@@ -408,7 +408,7 @@
           "score": 1.953
         }
       ],
-      "elapsedMs": 33.6
+      "elapsedMs": 34.3
     },
     {
       "id": "152bpm_hh_trp_id_01_008400",
@@ -442,7 +442,7 @@
           "score": 1.1
         }
       ],
-      "elapsedMs": 40.2
+      "elapsedMs": 40.3
     },
     {
       "id": "155bpm_hh_trp_id_01_008570",
@@ -476,7 +476,7 @@
           "score": 1.579
         }
       ],
-      "elapsedMs": 46
+      "elapsedMs": 39.8
     },
     {
       "id": "158bpm_hh_trp_id_01_009305",
@@ -510,7 +510,7 @@
           "score": 0.454
         }
       ],
-      "elapsedMs": 32.1
+      "elapsedMs": 31.8
     },
     {
       "id": "162bpm_hh_trp_id_01_009977",
@@ -544,7 +544,7 @@
           "score": 1.221
         }
       ],
-      "elapsedMs": 37.9
+      "elapsedMs": 37.8
     },
     {
       "id": "165bpm_hh_trp_id_01_010639",
@@ -578,7 +578,7 @@
           "score": 0.81
         }
       ],
-      "elapsedMs": 38.2
+      "elapsedMs": 38.3
     },
     {
       "id": "79bpm_hh_lfbb_mid_012_15",
@@ -612,7 +612,7 @@
           "score": 0.646
         }
       ],
-      "elapsedMs": 61.5
+      "elapsedMs": 61.4
     },
     {
       "id": "79bpm_hh_lfbb_mid_012_16",
@@ -646,7 +646,7 @@
           "score": 0.624
         }
       ],
-      "elapsedMs": 62.9
+      "elapsedMs": 63
     },
     {
       "id": "80bpm_hh_lfbb_mid_010_06",
@@ -680,7 +680,7 @@
           "score": 1.81
         }
       ],
-      "elapsedMs": 63
+      "elapsedMs": 62.6
     },
     {
       "id": "81bpm_hh_lfbb_mid_006_07",
@@ -714,7 +714,7 @@
           "score": 0.532
         }
       ],
-      "elapsedMs": 47.7
+      "elapsedMs": 47.6
     },
     {
       "id": "81bpm_hh_lfbb_mid_011_03",
@@ -748,7 +748,7 @@
           "score": 0.385
         }
       ],
-      "elapsedMs": 62.8
+      "elapsedMs": 62.5
     },
     {
       "id": "81bpm_hh_lfbb_mid_012_02",
@@ -782,7 +782,7 @@
           "score": 1.08
         }
       ],
-      "elapsedMs": 63.1
+      "elapsedMs": 62.8
     }
   ]
 }
