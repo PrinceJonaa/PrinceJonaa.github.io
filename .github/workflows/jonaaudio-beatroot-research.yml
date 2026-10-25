@@ -1,9 +1,5 @@
 name: JonaAudio permissive BeatRoot tempo comparator (MIT research)
 on:
-  pull_request:
-    paths:
-      - 'JonaAudio/bench/compare-waivops-beatroot.mjs'
-      - '.github/workflows/jonaaudio-beatroot-research.yml'
   workflow_dispatch:
 permissions:
   contents: read
