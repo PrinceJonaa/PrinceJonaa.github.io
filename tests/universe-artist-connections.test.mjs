@@ -11,10 +11,11 @@ test('each public world links to another without JS',()=>{
 test('artist links are explicit, with no guessed Patreon or other SoundCloud profile',()=>{
  const music=f('music/index.html');
  assert.match(music,/Prince Jonah.*Sadboy Jona/);
- for(const href of ['https://soundcloud.com/princejona','https://www.ismsofficial.com/','https://music.apple.com/us/artist/prince-jona/1654646579','/JonaAudio/','/rhythmcut/','/jonavideo/'])assert.ok(music.includes('href="'+href+'"'),href);
+ for(const href of ['https://soundcloud.com/princejona','https://open.spotify.com/artist/4oLxy1WTGaWi2D5bCwRkzP','https://music.apple.com/us/artist/prince-jona/1654646579','/JonaAudio/','/rhythmcut/','/jonavideo/'])assert.ok(music.includes('href="'+href+'"'),href);
  for(const page of pages){
   const h=f(page),section=h.match(/<section class="section universe-thread"[\s\S]*?<\/section>/)?.[0]||'';
-  assert.doesNotMatch(section,/patreon\.com|\/records\/jona-52\/|soundcloud\.com\/sadboy/i,page);
+  assert.doesNotMatch(h,/ismsofficial\.com|THE ISMS/i,page);
+  assert.doesNotMatch(section,/patreon\.com|ismsofficial\.com|THE ISMS|\/records\/jona-52\/|soundcloud\.com\/sadboy/i,page);
   for(const match of section.matchAll(/<a[^>]*href="https:\/\/[^"]+"[^>]*>/g))assert.match(match[0],/rel="noopener noreferrer"/);
  }
  const catalog=JSON.parse(f('assets/music-catalog.json'));
