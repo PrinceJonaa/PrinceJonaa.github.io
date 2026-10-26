@@ -40,3 +40,17 @@ body.universe-editor-shell:not(.universe-rhythmcut)>canvas{
 }
 body.universe-editor-shell:not(.universe-rhythmcut)>#loading,
 body.universe-editor-shell:not(.universe-rhythmcut)>#lightcraft_loading{top:var(--return-row)}
+
+/* RhythmCut owns its mobile camera/editor toolbar. Dock the optional Universe
+   control away from camera tools, Export, and the recording dock on phones. */
+@media (max-width:600px) {
+  body.universe-rhythmcut .universe-return {
+    top:46%;left:max(4px,env(safe-area-inset-left));right:auto;
+    opacity:.76;transform:translateY(-50%);
+  }
+  body.universe-rhythmcut .universe-return:focus-visible,
+  body.universe-rhythmcut .universe-return:active { opacity:1; }
+  body.universe-rhythmcut .universe-return[data-size="pill"] {
+    max-width:96px;min-height:42px;padding:6px 8px;font-size:11px;
+  }
+}
