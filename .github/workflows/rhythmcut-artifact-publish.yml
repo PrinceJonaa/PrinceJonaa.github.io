@@ -18,7 +18,8 @@ on:
       - 'scripts/verify-rhythmcut-live.mjs'
       - 'tests/live-release.test.mjs'
   schedule:
-    - cron: '11,26,41,56 * * * *'
+    # Daily reconciliation avoids 96 scheduled runs/day; manually dispatch for immediate updates.
+    - cron: '11 7 * * *'
   workflow_dispatch:
 
 concurrency:
