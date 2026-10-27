@@ -42,6 +42,7 @@ function validate(data,root){
     assert(Number.isInteger(t.position)&&t.position>0,'track position invalid');
     tracks.set(t.id,t);
   }
+  const declaredPublicSlugs=new Set(data.releases.filter(r=>r?.status==='public').map(r=>r.slug));
   const published=[];
   for(const r of data.releases){
     assert(obj(r)&&/^release:[a-z0-9]+(?:-[a-z0-9]+)*$/.test(r.id)&&!ids.has(r.id),'release ID invalid/duplicate');
@@ -70,6 +71,11 @@ function validate(data,root){
     if(r.cover)assert(a.publicArtworkApproved===true&&typeof r.cover.alt==='string'&&!!r.cover.alt.trim()&&typeof r.cover.src==='string'&&/^\/assets\/[a-zA-Z0-9/_-]+\.(png|jpg|jpeg|webp|avif)$/.test(r.cover.src)&&existsSync(join(root,r.cover.src.slice(1))),'cover not cleared or local file missing');
     const editor=r.editorial||{};
     assert(obj(editor),'editorial must be object');
+    for(const field of ['introduction','whyIMadeIt','whatItRepresents','process']){
+      if(editor[field]!==undefined)assert(typeof editor[field]==='string','invalid editorial '+field);
+    }
+    if(editor.intentionalLyricNotes!==undefined)assert(Array.isArray(editor.intentionalLyricNotes),'invalid lyric notes');
+    if(editor.creativeTimeline!==undefined)assert(Array.isArray(editor.creativeTimeline)&&editor.creativeTimeline.every(x=>obj(x)&&typeof x.label==='string'&&!!x.label.trim()&&(x.date===undefined||date(x.date))&&(x.detail===undefined||typeof x.detail==='string')),'invalid creative timeline');
     const hasText=Object.values(editor).some(x=>typeof x==='string'&&!!x.trim()||Array.isArray(x)&&x.length>0);
     if(hasText)assert(a.publicTextApproved===true&&Array.isArray(fs.editorial)&&fs.editorial.length>0&&fs.editorial.every(id=>evidence.includes(id)),'text needs approval and source');
     if(editor.intentionalLyricNotes?.length){
@@ -83,10 +89,20 @@ function validate(data,root){
     }).sort((a,b)=>a.position-b.position);
     assert(new Set(attached.map(t=>t.position)).size===attached.length,'duplicate track positions');
     assert((r.links||[]).length>0||attached.length>0,'blank release cannot be public');
+    assert(r.credits===undefined||Array.isArray(r.credits),'credits must be array');
+    if(r.credits?.length)assert(a.publicCreditsApproved===true,'contributor credits require separate approval');
     for(const c of r.credits||[])assert(obj(c)&&typeof c.name==='string'&&!!c.name.trim()&&typeof c.role==='string'&&!!c.role.trim()&&evidence.includes(c.sourceId),'credit lacks provenance');
+    assert(r.related===undefined||Array.isArray(r.related),'related must be array');
+    if(r.related?.length)assert(a.publicRelationsApproved===true,'public relationships require separate approval');
     for(const edge of r.related||[]){
-      assert(obj(edge)&&typeof edge.title==='string'&&typeof edge.href==='string'&&/^\/(?:apps|JonaAudio|rhythmcut|work|music|notes)\/[a-zA-Z0-9/_-]*\/?$/.test(edge.href),'unsafe relationship');
-      assert(edge.href==='/music/'||existsSync(join(root,edge.href.slice(1),'index.html')),'related route not published');
+      assert(obj(edge)&&typeof edge.title==='string'&&!!edge.title.trim()&&typeof edge.href==='string'&&evidence.includes(edge.sourceId)&&/^\/(?:apps|JonaAudio|rhythmcut|work|music|notes)\/[a-zA-Z0-9/_-]*\/?$/.test(edge.href),'unsafe or unsourced relationship');
+      if(edge.href.startsWith('/music/')&&edge.href!=='/music/'){
+        const match=edge.href.match(/^\/music\/([a-z0-9]+(?:-[a-z0-9]+)*)\/$/);
+        assert(match&&match[1]!==r.slug&&declaredPublicSlugs.has(match[1]),'related release is not public');
+      } else if(edge.href!=='/music/'){
+        const linked=join(root,edge.href.slice(1),'index.html');
+        assert(existsSync(linked)&&!/<meta\s+name=["']robots["'][^>]*noindex/i.test(readFileSync(linked,'utf8')),'related route not published');
+      }
     }
     published.push({...r,publicTracks:attached});
   }
@@ -104,6 +120,7 @@ function page(r,template){
   const related=(r.related||[]).map(l=>'<li><a href="'+esc(l.href)+'">'+esc(l.title)+'</a></li>').join('');
   let editorial=section('About this release',paragraph(e.introduction))+section('Why I made it',paragraph(e.whyIMadeIt))+section('What it represents',paragraph(e.whatItRepresents))+section('The process',paragraph(e.process));
   if(e.intentionalLyricNotes?.length)editorial+=section('Lyric notes','<ul>'+e.intentionalLyricNotes.map(n=>'<li><blockquote>'+esc(n.excerpt)+'</blockquote>'+paragraph(n.meaning)+'</li>').join('')+'</ul>');
+  if(e.creativeTimeline?.length)editorial+=section('Creative timeline','<ol class="release-timeline">'+e.creativeTimeline.map(n=>'<li>'+(n.date?'<time datetime="'+esc(n.date)+'">'+esc(n.date)+'</time> · ':'')+'<strong>'+esc(n.label)+'</strong>'+paragraph(n.detail)+'</li>').join('')+'</ol>');
   const record={'@type':r.kind==='single'?'MusicRecording':'MusicAlbum','@id':url+'#release',name:r.title,url,byArtist:{'@id':PERSON}};
   if(r.releaseDate)record.datePublished=r.releaseDate;
   if(r.links?.length)record.sameAs=r.links.map(l=>l.url);
