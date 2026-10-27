@@ -26,10 +26,51 @@ test('core public pages advertise their own canonical and a stable artist identi
     assert.ok(person.sameAs.some(link => link.includes('instagram.com/princejonaa')));
   }
 });
-test('the sitemap includes main public pages but not personalized local state', () => {
+const publicRoutes = [
+  "/",
+  "/music/",
+  "/about/",
+  "/apps/",
+  "/rhythmcut/",
+  "/craft/",
+  "/craft/light/",
+  "/craft/film/",
+  "/craft/effect/",
+  "/atlas/",
+  "/work/",
+  "/operations/",
+  "/JonaAudio/",
+  "/services/",
+  "/beatcut/",
+  "/work/cases/jonaaudio/",
+  "/work/cases/universe/",
+  "/work/cases/heartz4sale/",
+  "/work/cases/song-to-video/",
+  "/work/cases/resume/",
+  "/updates/"
+];
+test('the XML sitemap includes exactly the indexable public pages with valid on-page signals', () => {
   const sitemap = read('sitemap.xml');
-  for (const [, url] of core) assert.ok(sitemap.includes(`<loc>${url}</loc>`), url);
-  assert.ok(!sitemap.includes('<loc>https://princejona.me/continue/</loc>'));
-  assert.ok(read('continue/index.html').includes('<meta name="robots" content="noindex,follow">'));
+  assert.match(sitemap, /<urlset xmlns="http:\/\/www\\.sitemaps\\.org\/schemas\/sitemap\/0\\.9">/);
+  const found = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
+  const expected = publicRoutes.map(route => 'https://princejona.me' + route);
+  assert.deepEqual([...found].sort(), [...expected].sort(), 'Sitemap must match public route allowlist');
+  assert.equal(new Set(found).size, found.length, 'No duplicate sitemap URLs');
+  for (const route of publicRoutes) {
+    const path = (route === '/' ? '' : route.slice(1)) + 'index.html';
+    const html = read(path);
+    const canonical = 'https://princejona.me' + route;
+    assert.ok(html.includes('<link rel="canonical" href="' + canonical + '"'), path + ' missing self-canonical');
+    assert.match(html, /<meta name="description" content=/i, path + ' missing description');
+    assert.doesNotMatch(html, /<meta name="robots" content="[^"]*noindex/i, path + ' must not be noindex');
+  }
   assert.ok(read('robots.txt').includes('Sitemap: https://princejona.me/sitemap.xml'));
+});
+test('private state pages and not-found page do not appear in the sitemap', () => {
+  for (const path of ['continue/index.html', 'craft/storage/index.html', '404.html']) {
+    const html = read(path);
+    assert.match(html, /<meta name="robots" content="[^"]*noindex/i, path);
+    const route = path === '404.html' ? '/404.html' : '/' + path.replace(/index\\.html$/, '');
+    assert.ok(!read('sitemap.xml').includes('<loc>https://princejona.me' + route + '</loc>'), route);
+  }
 });
