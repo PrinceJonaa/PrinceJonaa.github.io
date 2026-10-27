@@ -43,6 +43,9 @@ test('production release registry is empty and does not affect legacy schema-1 S
   assert.match(read('assets/music-world.js'),/publicMetadataApproved===true/);
   assert.match(read('music/index.html'),/data-music-provider/);
 });
+test('checked-in production archive matches deterministic generator output',()=>{
+  assert.doesNotThrow(()=>buildDiscography(ROOT,{check:true}));
+});
 test('no verified releases means no generated public pages, and check is stable',()=>{
   const h=harness({schemaVersion:1,reviewedAt:'2026-10-27',sources:[],releases:[],tracks:[]});
   try{
