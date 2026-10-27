@@ -51,7 +51,7 @@ const publicRoutes = [
 ];
 test('the XML sitemap includes exactly the indexable public pages with valid on-page signals', () => {
   const sitemap = read('sitemap.xml');
-  assert.match(sitemap, /<urlset xmlns="http:\/\/www\\.sitemaps\\.org\/schemas\/sitemap\/0\\.9">/);
+  assert.ok(sitemap.includes('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'));
   const found = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(match => match[1]);
   const expected = publicRoutes.map(route => 'https://princejona.me' + route);
   assert.deepEqual([...found].sort(), [...expected].sort(), 'Sitemap must match public route allowlist');
@@ -70,7 +70,7 @@ test('private state pages and not-found page do not appear in the sitemap', () =
   for (const path of ['continue/index.html', 'craft/storage/index.html', '404.html']) {
     const html = read(path);
     assert.match(html, /<meta name="robots" content="[^"]*noindex/i, path);
-    const route = path === '404.html' ? '/404.html' : '/' + path.replace(/index\\.html$/, '');
+    const route = path === '404.html' ? '/404.html' : '/' + path.slice(0, -'index.html'.length);
     assert.ok(!read('sitemap.xml').includes('<loc>https://princejona.me' + route + '</loc>'), route);
   }
 });
