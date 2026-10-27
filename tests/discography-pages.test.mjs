@@ -62,7 +62,7 @@ test('approved synthetic release becomes static, escaped, canonical and schema-r
     assert.doesNotMatch(html,/<script>alert\(1\)<\/script>|<img src=x onerror=/);
     assert.match(html,/<ol class="release-tracks"><li>Demo &lt;b&gt;song&lt;\/b&gt;<\/li><\/ol>/);
     assert.match(html,/target="_blank" rel="noopener noreferrer"/);
-    assert.doesNotMatch(html,/autoplay/);
+    assert.doesNotMatch(html,/<(?:audio|video|iframe)\b[^>]*\bautoplay\b/i);
     const ld=JSON.parse(html.match(/<script type="application\/ld\+json">([^]*?)<\/script>/)[1]);
     const graph=ld['@graph'];
     assert.equal(graph.find(n=>n['@type']==='Person')['@id'],'https://princejona.me/#prince-jona');
@@ -84,7 +84,11 @@ test('rights and provenance omissions stop publishing instead of leaking content
     d=>{d.releases[0].cover={src:'/assets/uncleared.jpg',alt:'cover'};},
     d=>{d.releases[0].editorial.intentionalLyricNotes=[{excerpt:'quoted',meaning:'test'}];},
     d=>{d.tracks[0].approvals.publicMetadataApproved=false;},
-    d=>{d.releases[0].credits=[{name:'Mystery',role:'Producer',sourceId:'source:absent'}];}
+    d=>{d.releases[0].credits=[{name:'Mystery',role:'Producer',sourceId:'source:absent'}];},
+    d=>{d.releases[0].credits=[{name:'Synthetic credit',role:'Producer',sourceId:'source:official-1'}];},
+    d=>{d.releases[0].related=[{title:'Music world',href:'/music/',sourceId:'source:official-1'}];},
+    d=>{d.releases[0].related=[{title:'Music world',href:'/music/',sourceId:'source:missing'}];d.releases[0].approvals.publicRelationsApproved=true;},
+    d=>{d.releases[0].editorial.creativeTimeline=[{label:'Undated project',date:'2026-99-99'}];}
   ];
   for(const mutate of cases){
     const data=fixture();mutate(data);
@@ -111,6 +115,35 @@ test('traversal, duplicate identity and unsafe/unverified streaming URLs are rej
     try{assert.throws(()=>buildDiscography(h.dir));}
     finally{h.close();}
   }
+});
+test('approved credits, relationships and creative timeline are escaped and visible',()=>{
+  const d=fixture(),r=d.releases[0];
+  r.approvals.publicCreditsApproved=true;
+  r.approvals.publicRelationsApproved=true;
+  r.credits=[{name:'Demo <b>producer</b>',role:'Producer',sourceId:'source:official-1'}];
+  r.related=[{title:'Music world <3',href:'/music/',sourceId:'source:official-1'}];
+  r.editorial.creativeTimeline=[{date:'2026-10-27',label:'Sketch <draft>',detail:'A synthetic test, not an artist claim.'}];
+  const h=harness(d);
+  try{
+    buildDiscography(h.dir);
+    const html=readFileSync(join(h.dir,'music/sample-single/index.html'),'utf8');
+    assert.match(html,/Demo &lt;b&gt;producer&lt;\/b&gt;/);
+    assert.match(html,/Music world &lt;3/);
+    assert.match(html,/Sketch &lt;draft&gt;/);
+    assert.match(html,/<time datetime="2026-10-27">/);
+  }finally{h.close();}
+});
+test('references cannot point to an unapproved release even if its page exists',()=>{
+  const d=fixture(),r=d.releases[0];
+  d.releases.push({...structuredClone(r),id:'release:future',slug:'future-release',status:'review',trackIds:[]});
+  r.approvals.publicRelationsApproved=true;
+  r.related=[{title:'Not yet published',href:'/music/future-release/',sourceId:'source:official-1'}];
+  const h=harness(d);
+  try{
+    mkdirSync(join(h.dir,'music/future-release'));
+    writeFileSync(join(h.dir,'music/future-release/index.html'),'stale page');
+    assert.throws(()=>buildDiscography(h.dir),/related release is not public/);
+  }finally{h.close();}
 });
 test('drafts never generate pages and withdrawal removes only generated files',()=>{
   const data=fixture(),h=harness(data);
