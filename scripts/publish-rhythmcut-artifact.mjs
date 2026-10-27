@@ -51,7 +51,8 @@ try {
   if (!expectedSha.test(release.commit || '') || release.sourceRef !== 'main' || release.path !== '/rhythmcut/') {
     throw new Error('Production release is not pinned to an approved main source SHA');
   }
-  if (info.commit !== release.commit || info.version !== release.version || info.sourceRef !== 'main' || info.manifest !== 'release.json') {
+  if (release.app !== 'RhythmCut' || info.app !== release.app || info.path !== release.path || info.kind !== 'static-browser-build' ||
+      info.commit !== release.commit || info.version !== release.version || info.sourceRef !== 'main' || info.manifest !== 'release.json') {
     throw new Error('Published artifact identity disagrees with the production release');
   }
   const archive = join(temp, 'release.tar.gz');
@@ -69,7 +70,8 @@ try {
   console.log(extracted.stdout.trim());
   const built = JSON.parse(await readFile(join(stage, 'release.json'), 'utf8'));
   const packaged = JSON.parse(await readFile(join(stage, 'release-info.json'), 'utf8'));
-  if (built.commit !== release.commit || built.version !== release.version || built.sourceRef !== 'main' ||
+  if (built.app !== 'RhythmCut' || built.path !== '/rhythmcut/' || packaged.app !== built.app || packaged.path !== built.path || packaged.kind !== 'static-browser-build' ||
+      built.commit !== release.commit || built.version !== release.version || built.sourceRef !== 'main' ||
       packaged.commit !== built.commit || packaged.version !== built.version) {
     throw new Error('Downloaded archive does not match verified public release manifest');
   }
