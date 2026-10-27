@@ -20,6 +20,7 @@ test('artist links are explicit, with no guessed Patreon or other SoundCloud pro
  }
  const catalog=JSON.parse(f('assets/music-catalog.json'));
  assert.ok(catalog.platforms.some(p=>p.id==='soundcloud'&&p.url==='https://soundcloud.com/princejona'));
+ assert.ok(catalog.platforms.some(p=>p.id==='apple-music'&&p.url==='https://music.apple.com/us/artist/prince-jona/1654646579'));
 });
 test('cross-site routes reconnect music, apps and public Atlas',()=>{
  for(const [p,hrefs] of Object.entries({'index.html':['/music/','/apps/'],'apps/index.html':['/music/','/JonaAudio/','/rhythmcut/'],'atlas/index.html':['/music/','/JonaAudio/','/work/'],'work/index.html':['/music/','/apps/']}))for(const href of hrefs)assert.ok(f(p).includes('href="'+href+'"'),p+': '+href);

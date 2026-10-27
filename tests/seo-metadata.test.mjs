@@ -23,6 +23,7 @@ test('core public pages advertise their own canonical and a stable artist identi
     const person = data['@graph'].find(node => node['@type'] === 'Person');
     assert.equal(person?.['@id'], 'https://princejona.me/#prince-jona');
     assert.ok(person.sameAs.some(link => link.startsWith('https://open.spotify.com/artist/')));
+    assert.ok(person.sameAs.includes('https://music.apple.com/us/artist/prince-jona/1654646579'));
     assert.ok(person.sameAs.some(link => link.includes('instagram.com/princejonaa')));
   }
 });
