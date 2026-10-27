@@ -13,9 +13,12 @@ test('core public pages advertise their own canonical and a stable artist identi
   for (const [path, url] of core) {
     const html = read(path);
     assert.ok(html.includes(`<link rel="canonical" href="${url}">`), path);
-    const match = html.match(/<script type="application\\/ld\\+json">([\\s\\S]*?)<\\/script>/);
-    assert.ok(match, `Missing JSON-LD in ${path}`);
-    const data = JSON.parse(match[1]);
+    const marker = '<script type="application/ld+json">';
+    const start = html.indexOf(marker);
+    assert.ok(start >= 0, `Missing JSON-LD in ${path}`);
+    const end = html.indexOf('</script>', start + marker.length);
+    assert.ok(end > start, `Unclosed JSON-LD in ${path}`);
+    const data = JSON.parse(html.slice(start + marker.length, end));
     assert.equal(data['@context'], 'https://schema.org');
     const person = data['@graph'].find(node => node['@type'] === 'Person');
     assert.equal(person?.['@id'], 'https://princejona.me/#prince-jona');
