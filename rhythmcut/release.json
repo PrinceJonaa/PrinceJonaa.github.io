@@ -12,9 +12,9 @@
     "background preview copies",
     "prepared-frame backend (diagnostic opt-in, no device auto-enabled)"
   ],
-  "commit": "38300c8e8f39ba438d301c8faf7849ebbed75590",
+  "commit": "86db8a4953703724f33b5f0a36e9e19a79e8bfeb",
   "path": "/rhythmcut/",
-  "builtAt": "2026-10-27T16:43:06.061Z",
+  "builtAt": "2026-10-29T13:57:16.497Z",
   "verifiedChecks": [
     "Node 22 typecheck and unit tests",
     "Timeline editing and seed history",

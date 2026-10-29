@@ -1,4 +1,4 @@
-import{n as e,t}from"./sceneAnalysis.worker-CppFPltA.js";var n=/* @__PURE__ */ t({InferenceSession:()=>De,TRACE:()=>ve,TRACE_EVENT_BEGIN:()=>Se,TRACE_EVENT_END:()=>Ce,TRACE_FUNC_BEGIN:()=>be,TRACE_FUNC_END:()=>xe,Tensor:()=>ge,default:()=>ir,env:()=>w,registerBackend:()=>m}),r=Object.defineProperty,i=Object.getOwnPropertyDescriptor,a=Object.getOwnPropertyNames,o=Object.prototype.hasOwnProperty,s=(t=>typeof e<`u`?e:typeof Proxy<`u`?new Proxy(t,{get:(t,n)=>(typeof e<`u`?e:t)[n]}):t)(function(t){
+import{n as e,t}from"./sceneAnalysis.worker-CSt9zLR7.js";var n=/* @__PURE__ */ t({InferenceSession:()=>De,TRACE:()=>ve,TRACE_EVENT_BEGIN:()=>Se,TRACE_EVENT_END:()=>Ce,TRACE_FUNC_BEGIN:()=>be,TRACE_FUNC_END:()=>xe,Tensor:()=>ge,default:()=>ir,env:()=>w,registerBackend:()=>m}),r=Object.defineProperty,i=Object.getOwnPropertyDescriptor,a=Object.getOwnPropertyNames,o=Object.prototype.hasOwnProperty,s=(t=>typeof e<`u`?e:typeof Proxy<`u`?new Proxy(t,{get:(t,n)=>(typeof e<`u`?e:t)[n]}):t)(function(t){
 /*!
 * ONNX Runtime Web v1.31.0-dev.20260914-8d85527a0
 * Copyright (c) Microsoft Corporation. All rights reserved.

@@ -1,10 +1,10 @@
 {
   "app": "RhythmCut",
   "version": "0.5.2",
-  "commit": "38300c8e8f39ba438d301c8faf7849ebbed75590",
+  "commit": "86db8a4953703724f33b5f0a36e9e19a79e8bfeb",
   "sourceRef": "main",
   "path": "/rhythmcut/",
   "manifest": "release.json",
   "kind": "static-browser-build",
-  "createdAt": "2026-10-27T16:43:06.159Z"
+  "createdAt": "2026-10-29T13:57:16.586Z"
 }
