@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow"><meta name="color-scheme" content="dark">
+<title>Private Writing Desk | Prince Jona Notes</title>
+<link rel="stylesheet" href="/assets/notes.css">
+<style>
+.desk{width:min(1440px,100%);margin:auto;padding:1.2rem clamp(1rem,4vw,3rem) 4rem}
+.desk-head{display:flex;justify-content:space-between;gap:1rem;align-items:center;border-bottom:1px solid #ffffff33;padding:1rem 0 1.4rem}
+.desk h1{font-size:clamp(2.9rem,6vw,5.8rem);margin:1.5rem 0 .8rem}
+.desk-intro{max-width:72ch;font-size:1.06rem}
+.desk-banner{margin:1.7rem 0 2rem;padding:1rem 1.2rem;border:1px solid #ffb8d17d;border-left:4px solid #ffa7bc;color:#f3d5e1;background:#2a1c2a}
+.desk-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:1.2rem}
+.desk-panel{background:#141321;border:1px solid #ffffff24;padding:clamp(1rem,2vw,1.8rem);min-width:0}
+.desk-panel h2{font-size:1.7rem;margin:0 0 1.3rem}
+.desk label{display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem;font-weight:700;font-size:.91rem;margin:1.2rem 0 .5rem}
+.desk label small{font-weight:400;color:#bbb4c5}
+.desk input,.desk textarea{width:100%;background:#08090f;border:1px solid #ffffff3b;color:#fff;font:inherit;padding:.8rem .9rem;border-radius:2px}
+.desk textarea{min-height:300px;resize:vertical;line-height:1.7;font-family:ui-monospace,monospace;font-size:.91rem}
+.desk input:focus-visible,.desk textarea:focus-visible,.desk button:focus-visible{outline:3px solid #ffadc5;outline-offset:3px}
+.desk button{background:#ffa7bc;color:#1f1123;font-weight:770;border:0;padding:.75rem 1rem;cursor:pointer;font:inherit}
+.desk button:hover{background:#ffd0de}
+.desk-footer{display:flex;flex-wrap:wrap;gap:1rem;align-items:center;margin-top:1.4rem}
+.desk-status{font-size:.84rem;color:#c9c2d1}
+.desk-preview{min-height:340px;padding:1rem 0;overflow-wrap:anywhere}
+.desk-preview h2{margin:1rem 0;font-size:2rem}
+.desk-preview h3{margin:1.5rem 0 .6rem}
+.desk-preview p{color:#e9e0e8}
+.seo-card{border-top:1px solid #ffffff35;margin-top:2rem;padding-top:1.5rem}
+.seo-title{color:#a7c7ff;margin-bottom:.35rem;overflow-wrap:anywhere;font-size:1.05rem}
+.seo-link{color:#9da2aa;font-size:.79rem;overflow-wrap:anywhere}
+.seo-desc{color:#d0cad2;font-size:.85rem}
+.seo-hint{font-size:.82rem;color:#cfc1ad}
+.desk .metadata{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+@media(max-width:850px){.desk-grid{grid-template-columns:1fr}}
+@media(max-width:560px){.desk .metadata{grid-template-columns:1fr}.desk-head{align-items:flex-start;flex-direction:column}}
+</style></head>
+<body><a class="skip" href="#main">Skip to editor</a>
+<main id="main" class="desk">
+<div class="desk-head"><a class="brand" href="/notes/">✳ PRINCE JONA <small>NOTES / WRITING DESK</small></a><a href="/notes/">Back to Notes</a></div>
+<span class="kicker">Draft privately / publish deliberately</span>
+<h1>Make room<br>for <em>a thought.</em></h1>
+<p class="desk-intro">A quiet place to shape an article, see how it will read, and prepare search metadata. Nothing is sent to a server.</p>
+<p class="desk-banner"><strong>Private browser scratchpad.</strong> Drafts are not saved or published here. Export your Markdown before leaving or refreshing. Publication still requires explicit editorial approval and a reviewed GitHub commit.</p>
+<div class="desk-grid">
+<section class="desk-panel" aria-labelledby="write-title"><h2 id="write-title">01 / Write</h2>
+<label for="title">Article title <small id="title-count">0 characters</small></label>
+<input id="title" maxlength="120" autocomplete="off" placeholder="A title that sounds like you">
+<div class="metadata"><div><label for="slug">URL slug</label><input id="slug" maxlength="100" placeholder="article-slug" autocomplete="off"></div><div><label for="category">Lens</label><select id="category" style="width:100%;background:#08090f;color:#fff;padding:.8rem;border:1px solid #ffffff3b"><option>Thoughts / Research</option><option>Behind the Music</option><option>Making / Engineering</option><option>Stories / Process</option><option>Creative Tools</option><option>Collaborations</option></select></div></div>
+<label for="summary">Search description <small id="desc-count">0 characters</small></label>
+<textarea id="summary" rows="3" style="min-height:95px" maxlength="300" placeholder="What is this about, in your own words?"></textarea>
+<label for="draft">Article in Markdown <small id="words">0 words</small></label>
+<textarea id="draft" spellcheck="true" placeholder="Start writing here.&#10;&#10;## A section&#10;&#10;Your thoughts belong to you..."></textarea>
+<div class="desk-footer"><button id="download" type="button">Export Markdown</button><span id="status" class="desk-status" role="status" aria-live="polite">Ready to draft</span></div>
+</section>
+<section class="desk-panel" aria-labelledby="preview-title"><h2 id="preview-title">02 / Read & discover</h2>
+<div class="desk-preview" aria-label="Live draft preview"><span class="kicker" id="preview-category">Thoughts / Research</span><h2 id="preview-heading">Untitled note</h2><p id="preview-summary">Your introduction will appear here.</p><div id="preview-body" class="article-body"><p>Write on the left to see a reading preview.</p></div></div>
+<div class="seo-card" aria-labelledby="seo-title"><span class="kicker">Free SEO preview / not submitted</span><h3 id="seo-title">Search appearance</h3><div class="seo-link" id="seo-url">princejona.me/notes/your-slug/</div><div class="seo-title" id="seo-headline">Your article title</div><p class="seo-desc" id="seo-description">Your description appears here when you write it.</p><p class="seo-hint" id="seo-hint">This is only a draft preview. Search Console submission happens after publication.</p></div>
+</section>
+</div></main>
+<script>
+const $=id=>document.getElementById(id);
+const title=$('title'),slug=$('slug'),summary=$('summary'),draft=$('draft'),category=$('category');
+let touchedSlug=false;
+const cleanSlug=value=>value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100);
+slug.addEventListener('input',()=>{touchedSlug=true;update();});
+const add=(parent,tag,text)=>{const el=document.createElement(tag);el.textContent=text;parent.append(el);return el;};
+function previewMarkdown(raw){
+ const out=$('preview-body');out.replaceChildren();let paragraph=[];
+ const flush=()=>{if(paragraph.length){add(out,'p',paragraph.join(' '));paragraph=[];}};
+ for(const line of raw.replace(/\r\n?/g,'\n').split('\n')){
+   if(!line.trim()){flush();continue;}
+   const h=/^(#{1,3})\s+(.+)$/.exec(line);
+   if(h){flush();add(out,'h'+Math.min(4,h[1].length+1),h[2]);}
+   else if(/^\s*[-*]\s+/.test(line)){flush();add(out,'p','• '+line.replace(/^\s*[-*]\s+/,'') );}
+   else paragraph.push(line.trim());
+ }
+ flush();if(!out.childNodes.length)add(out,'p','Write on the left to see a reading preview.');
+}
+function update(){
+ if(!touchedSlug)slug.value=cleanSlug(title.value);
+ $('preview-heading').textContent=title.value.trim()||'Untitled note';
+ $('preview-category').textContent=category.value;
+ $('preview-summary').textContent=summary.value.trim()||'Your introduction will appear here.';
+ $('title-count').textContent=title.value.length+' characters';
+ $('desc-count').textContent=summary.value.length+' characters';
+ $('words').textContent=(draft.value.trim()?draft.value.trim().split(/\s+/).length:0)+' words';
+ $('seo-headline').textContent=title.value.trim()||'Your article title';
+ $('seo-description').textContent=summary.value.trim()||'Your description appears here when you write it.';
+ $('seo-url').textContent='princejona.me/notes/'+(cleanSlug(slug.value)||'your-slug')+'/';
+ $('seo-hint').textContent=!title.value.trim()||!summary.value.trim()?'Add a title and description before publication.':summary.value.length>160?'Description is over 160 characters; shorten if clarity improves.':'Draft preview only. Publish and submit an approved sitemap separately.';
+ previewMarkdown(draft.value);
+}
+[title,summary,draft,category].forEach(input=>input.addEventListener('input',update));
+$('download').addEventListener('click',()=>{
+ if(!draft.value.trim()){$('status').textContent='Write some text before exporting.';return;}
+ const filename=(cleanSlug(slug.value)||'note-draft')+'.md';
+ const blob=new Blob([draft.value],{type:'text/markdown;charset=utf-8'});
+ const url=URL.createObjectURL(blob),link=document.createElement('a');
+ link.href=url;link.download=filename;document.body.append(link);link.click();link.remove();
+ setTimeout(()=>URL.revokeObjectURL(url),1000);$('status').textContent='Exported '+filename+' locally; not published.';
+});
+update();
+</script>
+</body></html>
