@@ -42,6 +42,8 @@ try{
   })));
   const refinedBpm=refinement.candidates?.[0]?.bpm??null;
   const beatRootBpm=verifiedTempo.result?.beatRootEvidence?.primaryCandidate??null;
+  const selective=verifiedTempo.result?.tempoDecision;
+  const suggested=selective?.status==='recommend'?selective.suggestedBpm:null;
   const keyCandidates=verifiedKey.result?.keys?.slice(0,3)??[];
   const expected=parsedKey(track.key);
   const top3KeyMatch=Boolean(expected&&keyCandidates.some(k=>parsedKey(k.key)?.canonical===expected.canonical));
@@ -68,6 +70,9 @@ try{
    spectralFlux:{bpm:fluxBpm,candidates:verifiedTempo.result?.fluxEvidence?.candidates?.slice(0,3)??[]},
    keyFusion:{key:combinedKey,candidates:fusion.keys?.slice(0,3)??[],context:'offline-only'},
    fractionalPulse:{bpm:refinedBpm,candidates:refinement.candidates?.slice(0,3)??[],context:'offline-only'},
+   selectiveTempo:{status:selective?.status??'abstain',bpm:suggested,
+    exactWithinOne:suggested!==null&&Math.abs(suggested-track.bpm)<=1,
+    reasonCodes:selective?.reasonCodes??[]},
    beatRoot:{bpm:beatRootBpm,sections:verifiedTempo.result?.beatRootEvidence?.sections??[],
     halfTime:verifiedTempo.result?.beatRootEvidence?.candidates?.[0]?.halfTime??null,
     context:'Deep review only; never automatically replaces the primary BPM'},
@@ -84,7 +89,12 @@ try{
 }finally{rmSync(working,{recursive:true,force:true});}
 
 const assessment=scoreLabeledPredictions({schema:1,annotations,predictions});
+const recommended=trackResults.filter(x=>x.selectiveTempo.status==='recommend');
 const report={schema:1,kind:'open-licensed-GuitarSet-real-recordings',
+ selectiveSummary:{count:trackResults.length,recommended:recommended.length,
+  correct:recommended.filter(x=>x.selectiveTempo.exactWithinOne).length,
+  wrong:recommended.filter(x=>!x.selectiveTempo.exactWithinOne).length,
+  abstained:trackResults.length-recommended.length},
  hypothesisCoverage:{keyInTopThree:trackResults.filter(t=>t.hypothesisCoverage.keyInTopThree).length,
   tempoWithinOneAmongChoices:trackResults.filter(t=>t.hypothesisCoverage.tempoWithinOneAmongChoices).length,
   countsOfTempoChoices:trackResults.map(t=>t.hypothesisCoverage.numberOfTempoChoices)},dataset:manifest.dataset,version:manifest.version,doi:manifest.doi,
@@ -101,4 +111,5 @@ for(const s of assessment.summaries){
 console.log('Top-three reference-key coverage:',report.hypothesisCoverage.keyInTopThree+'/'+manifest.tracks.length);
 console.log('Unverified alternative-pulse coverage within ±1 BPM:',report.hypothesisCoverage.tempoWithinOneAmongChoices+'/'+manifest.tracks.length,
   '(large alternative sets are NOT a precision/accuracy score)');
+console.log('Selective BPM decision, not automatically applied:',JSON.stringify(report.selectiveSummary));
 console.log('Saved reproducible real-audio report:',target);

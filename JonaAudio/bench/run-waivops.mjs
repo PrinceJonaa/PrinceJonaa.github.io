@@ -38,6 +38,7 @@ try{
   const flux=deep.result?.fluxEvidence?.candidates??[];
   const alt=deep.result?.tempoHypotheses;
   const beat=deep.result?.beatRootEvidence;
+  const decision=deep.result?.tempoDecision;
   const exact=accurate(primaryQuick,track.bpm);
   const close=accurate(primaryQuick,track.bpm,3);
   const hypotheses=[...(alt?.direct||[]),...(alt?.metricalAlternatives||[])];
@@ -46,6 +47,11 @@ try{
     quickBpm:primaryQuick,verifyBpm:primaryVerify,fluxBpm:flux[0]?.bpm??null,
     beatRootBpm:beat?.primaryCandidate??null,
     beatRootStatus:beat?.status??'unavailable',
+    decisionStatus:decision?.status??'abstain',
+    decisionBpm:decision?.suggestedBpm??null,
+    decisionType:decision?.suggestionType??null,
+    decisionCorrect:accurate(decision?.suggestedBpm,track.bpm),
+    decisionReasons:decision?.reasonCodes??[],
     beatRootExact:accurate(beat?.primaryCandidate,track.bpm),
     beatRootWithinThree:accurate(beat?.primaryCandidate,track.bpm,3),
     beatRootHalfTimeExact:accurate(beat?.candidates?.[0]?.halfTime,track.bpm),
@@ -73,6 +79,10 @@ const summarize=(items)=>({
  verifyExact:items.filter(x=>x.verifyExact).length,
  fluxExact:items.filter(x=>x.fluxExact).length,
  beatRootExact:items.filter(x=>x.beatRootExact).length,
+ suggestedCount:items.filter(x=>x.decisionStatus==='recommend').length,
+ suggestedCorrect:items.filter(x=>x.decisionStatus==='recommend'&&x.decisionCorrect).length,
+ suggestedIncorrect:items.filter(x=>x.decisionStatus==='recommend'&&!x.decisionCorrect).length,
+ abstained:items.filter(x=>x.decisionStatus!=='recommend').length,
  beatRootWithinThree:items.filter(x=>x.beatRootWithinThree).length,
  beatRootHalfTimeExact:items.filter(x=>x.beatRootHalfTimeExact).length,
  beatRootTopTwo:items.filter(x=>x.beatRootTopTwo).length,
