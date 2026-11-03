@@ -57,6 +57,45 @@ async function serve(){const root=process.cwd();const mime={'.html':'text/html',
  });assert.deepEqual(result,{prematurelyDone:false,key:'B',afterTimer:'C',timerClean:true,clean:true,failed:false,dirty:true});
  // App return navigation preserves the original editor browsing context.
  await page.goto(base+'/rhythmcut/');await page.locator('.universe-return').waitFor();await page.locator('.rc-app').waitFor();assert.equal(await page.locator('.rc-app').evaluate(el=>el.getBoundingClientRect().bottom<=innerHeight+1),true,'RhythmCut fits below return row');await page.locator('.universe-return').click();const popupPromise=context.waitForEvent('page');await page.locator('#universe-return-dialog a[href="/apps/"]').click();const popup=await popupPromise;await popup.waitForLoadState();assert.ok(popup.url().endsWith('/apps/'));assert.ok(page.url().endsWith('/rhythmcut/'));await popup.close();await page.getByRole('button',{name:'Keep editing'}).click();
+ // Shortcut regression: keep the optional control in a usable middle-edge dock
+ // without consuming editor viewport space. These are simulated browser widths,
+ // not physical-iPhone certification; the existing suite owns this check.
+ for (const width of [320,390,430]) {
+  await page.setViewportSize({width,height:844});
+  await page.evaluate(() => window.dispatchEvent(new CustomEvent('universe:shortcut-mode',{detail:{mode:'icon'}})));
+  const placement=await page.locator('.universe-return').evaluate(button=>{
+   const r=button.getBoundingClientRect();
+   const hit=document.elementFromPoint(r.left+r.width/2,r.top+r.height/2);
+   return {left:r.left,right:r.right,top:r.top,bottom:r.bottom,centerY:r.top+r.height/2,
+    minTarget:Math.min(r.width,r.height),clickable:hit===button,scrollWidth:document.documentElement.scrollWidth,
+    viewportWidth:innerWidth,viewportHeight:innerHeight};
+  });
+  assert.ok(placement.left>=0&&placement.left<=20,'RhythmCut '+width+'px shortcut stays at left edge');
+  assert.ok(placement.right<=placement.viewportWidth,'RhythmCut '+width+'px shortcut fully fits horizontally');
+  assert.ok(placement.top>=0&&placement.bottom<=placement.viewportHeight,'RhythmCut '+width+'px shortcut fully fits vertically');
+  assert.ok(Math.abs(placement.centerY/placement.viewportHeight-.46)<.04,'RhythmCut '+width+'px shortcut docks near vertical middle');
+  assert.ok(placement.minTarget>=40,'RhythmCut '+width+'px shortcut keeps an accessible tap target');
+  assert.ok(placement.clickable,'RhythmCut '+width+'px shortcut is the topmost hit target');
+  assert.ok(placement.scrollWidth<=placement.viewportWidth+1,'RhythmCut '+width+'px shortcut does not cause horizontal overflow');
+  await page.locator('.universe-return').click();
+  assert.equal(await page.locator('#universe-return-dialog').evaluate(d=>d.open),true);
+  await page.getByRole('button',{name:'Keep editing'}).click();
+ }
+ // Pill and hidden preferences survive navigation; the app can always restore
+ // a hidden shortcut via the documented Universe shortcut mode event.
+ await page.locator('.universe-return').click();
+ await page.locator('#universe-shortcut-size').selectOption('pill');
+ assert.equal(await page.locator('.universe-return').getAttribute('data-size'),'pill');
+ assert.equal(await page.locator('.universe-return').innerText(),'Universe');
+ await page.locator('#universe-shortcut-size').selectOption('hidden');
+ assert.equal(await page.locator('.universe-return').isHidden(),true);
+ await page.reload();await page.locator('.rc-app').waitFor();
+ assert.equal(await page.locator('.universe-return').isHidden(),true,'hidden mode persists across editor reload');
+ await page.evaluate(() => window.dispatchEvent(new CustomEvent('universe:shortcut-mode',{detail:{mode:'icon'}})));
+ assert.equal(await page.locator('.universe-return').isVisible(),true,'editor settings can restore icon mode');
+ await page.setViewportSize({width:900,height:844});
+ const desktopRight=await page.locator('.universe-return').evaluate(b=>b.getBoundingClientRect().right);
+ assert.ok(desktopRight>850,'RhythmCut desktop shortcut remains right aligned');
  await page.goto(base+'/craft/light/');await page.locator('.universe-return').waitFor();assert.equal(await page.locator('#lightcraft_canvas').evaluate(el=>{const r=el.getBoundingClientRect();return r.top>=60&&r.bottom<=innerHeight+1;}),true,'Craft canvas fits below return row');
  await page.goto(base+'/craft/');await page.locator('[data-tool="light"]').click();assert.equal(await page.locator('iframe[data-tool-frame]').count(),1);const src=await page.locator('#editor').getAttribute('src');await page.locator('#back').click();assert.equal(await page.locator('[data-tool=light]').evaluate(el=>document.activeElement===el),true);assert.equal(await page.locator('#editor').getAttribute('src'),src);await page.locator('[data-tool="film"]').click();assert.equal(await page.locator('iframe[data-tool-frame]').count(),2);await page.locator('#back').click();await page.locator('[data-tool="light"]').click();assert.equal(await page.locator('iframe[data-tool-frame]').count(),2);
  // S3 / S4 opt-in player and local persistence acceptance.
