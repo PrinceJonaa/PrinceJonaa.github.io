@@ -81,12 +81,24 @@ try {
     if ((await stat(join(stage, asset))).size === 0) throw new Error('Missing release asset: ' + asset);
   }
   const shell = '<script type="module" src="/assets/app-return.js"></script>';
+  const canonical = '<link rel="canonical" href="https://princejona.me/rhythmcut/" />';
   let html = await readFile(join(stage, 'index.html'), 'utf8');
+  const originalHtml = html;
+  // Pages is the public canonical host; upstream Vercel artifacts must not
+  // silently remove this tag when the next verified release is published.
+  if (!html.includes(canonical)) {
+    const existing = /<link\s+rel=["']canonical["'][^>]*>/i;
+    if (existing.test(html)) html = html.replace(existing, canonical);
+    else {
+      if (!html.includes('</head>')) throw new Error('Upstream app HTML is missing head close');
+      html = html.replace('</head>', '  ' + canonical + '\n</head>');
+    }
+  }
   if (!html.includes(shell)) {
     if (!html.includes('</body>')) throw new Error('Upstream app HTML is missing body close');
     html = html.replace('</body>', shell + '</body>');
-    await writeFile(join(stage, 'index.html'), html);
   }
+  if (html !== originalHtml) await writeFile(join(stage, 'index.html'), html);
   if (!html.includes('/rhythmcut/assets/')) throw new Error('Incorrect public asset prefix');
   if ((await stat('assets/app-return.js')).size === 0) throw new Error('Website return shell missing');
   const copy = spawnSync('rsync', ['-a', '--delete', '--exclude=rhythmcut-release.tar.gz', stage + '/', 'rhythmcut/'], { stdio: 'inherit' });
