@@ -63,8 +63,10 @@ export function analyzeCapability(capability,input){
    }));
    tempoDecision=decideTempo({beatRoot:beatRootEvidence,originalBpm:bpm,flux:fluxEvidence});
   }
-  return {type:bpm||tempoDecision?.status==='recommend'?'result':'unavailable',
-    reason:bpm||tempoDecision?.status==='recommend'?null:'No steady tempo found. Try tap tempo or a manual BPM.',
+  // Research-only decision metadata must never turn an unavailable BPM into
+  // an available/confirmed result. Only the existing detector owns status.
+  return {type:bpm?'result':'unavailable',
+    reason:bpm?null:'No steady tempo found. Try tap tempo or a manual BPM.',
     result:{bpm,alternatives:bpm?alternatives:[],sections,beats:bpm?beats:[],variable,fluxEvidence,tempoComparison,tempoHypotheses,beatRootEvidence,tempoDecision,
       rangePreference:'none',thresholds:{pulseToRms:.005,aggregateAutocorrelation:.04}},ranges,diagnostics};
  }
